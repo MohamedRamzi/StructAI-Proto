@@ -1,0 +1,220 @@
+# StructAI - Plateforme IA de Structuration & Valorisation de Produits Dérivés
+
+**StructAI** est une plateforme FinTech & InsurTech institutionnelle conçue pour les salles de marché, les ingénieurs financiers, les structurateurs et les conseillers en gestion de patrimoine. Elle permet de traduire des demandes clients en langage naturel (expressions de marché complexes, thématiques de sous-jacents, paniers d'actions) en structures financières réglementaires prêt-à-pricer, d'effectuer des simulations Monte Carlo en temps réel, d'analyser l'historique d'audit MIFID II et de générer des Termsheets officielles aux normes de banques d'investissement (Natixis CIB, BNP Paribas CIB, Société Générale CIB, etc.).
+
+---
+
+## 🌟 Fonctionnalités Clés
+
+1. **Parsing NLP & Extraction Financière Multi-Moteurs** :
+   - Traitement automatique du jargon de marché (*NC 1y, PDI 70%, départ forward 4 mois, coupon mémoire, observation trimestrielle*).
+   - Support du **Moteur IA Hybride** : **Gemini 3.5 Flash** (avec validation d'API via `/api/test-gemini`), **Ollama local** (DeepSeek R1, Qwen 2.5/3.6, Gemma 2/4), **LM Studio** et endpoints compatibles OpenAI.
+   - **Mode Raisonnement "Think" (Reasoning Tokens)** : Option basculable pour forcer les LLMs de raisonnement (DeepSeek R1, Qwen 2.5/3.6) à émettre leurs étapes de réflexion dans des balises `<think>...</think>` avant la génération du JSON.
+   - Consultation des logs d'échanges LLM (`llm_debug.log`) directement depuis l'interface UI.
+
+2. **Outil CLI en Ligne de Commande (`scripts/parse-query-cli.ts`)** :
+   - Invocable via `npm run parse-cli` ou `npx tsx scripts/parse-query-cli.ts`.
+   - **Option `--llm <prefix/model>`** : Sélection dynamique du fournisseur LLM (`cloud/gemini-3.5-flash`, `ollama/qwen3.6`, `lmstudio/qwen3.6`).
+   - **Option `--reqs <filename>`** : Traitement par lot d'un fichier contenant une liste de requêtes séparées par des lignes vides.
+   - **Option `--output <filename>`** : Export direct des résultats JSON vers un fichier (ou affichage console par défaut).
+
+3. **Référentiel Dynamique & Onglet "Gestion Sous-Jacents" (`UnderlyingsManagementDashboard.tsx`)** :
+   - **Moteur de Recherche Multi-Stratégies** :
+     - **Tickers Bloomberg Institutionnels** : Reconnaissance directe des codes et suffixes (ex: `FP FP`, `MC FP`, `KER FP`, `TSLA US`, `ASML NA`, `SX5E Index`).
+     - **Match Textuel par Nom** : Recherche sur `TotalEnergies`, `LVMH`, `Kering`, `Sanofi`, etc.
+     - **Recherche par Similarité Vectorielle (RAG)** : Recherche thématique pour requêtes floues (ex: *"luxe qui price bien"*, *"bancaires résilientes"*, *"haute volatilité et dividende"*).
+   - **Interface de Maintenance** : Formulaire CRUD (Création, Édition, Suppression), filtres par secteur, réinitialisation aux valeurs institutionnelles par défaut, et **Import/Export de fichiers CSV par lot**.
+
+4. **Moteur Quantitatif de Pricing & Simulation Monte Carlo Interférente** :
+   - **Axe des Temps Cohérent & Adaptatif** : L'axe des abscisses s'ajuste dynamiquement sur la maturité exacte du produit ($[0, \text{maturityMonths}]$) et occupe 100% de la largeur d'affichage réservée.
+   - **Contrôles Interactifs de Sensibilité ($\mu$ & $q$)** :
+     - **Taux de dérive ($\mu$)** : Slider de -5.0% à +15.0% p.a.
+     - **Rendement dividende ($q$)** : Slider de 0.0% à 10.0% p.a. (initialisé selon le sous-jacent).
+     - Recalcul dynamique des trajectoires browniennes géométriques $S_t$ en temps réel.
+   - Résolution automatique du coupon (*solve target*), calcul du Fair Value, barrières et probabilités d'Autocall/PDI.
+
+5. **Famille Institutionnelle « Autocall Yeti Phoenix » (9 Variantes)** :
+   - Prise en charge intégrale des 9 variantes de payoffs de référence :
+     - **Phoenix Asian PDI** (ID: 10449) - Moyennation asiatique (Asian In/Out) et PDI.
+     - **Vanilla Autocall** (ID: 10488) - Structure mono-action standard avec PDI in-fine.
+     - **Call On Custom Basket** (ID: 10627) - Performance Worst-Of sur-mesure & bonus digital.
+     - **Multi Range-Accrual** (ID: 10740) - Corridor Range-Accrual au jour le jour.
+     - **Capped/Floored Asian** (ID: 10401) - Caps et Floors individuels & globaux sur panier.
+     - **Strategies Yeti** (ID: 10702) - Barrière Yeti conditionnelle & coupons Phoenix.
+     - **Strategies Digits** (ID: 10756) - Barrières digitalisées & lissage dual-corridor.
+     - **Target Coupon Redemption** (ID: 10743) - Rappel anticipé sur cumul cible de coupons.
+     - **Yeti Phoenix Strategies** (ID: 10762) - Combinaison Yeti/Phoenix et effet Zenith.
+   - Guide développeur d'intégration de nouveaux payoffs disponible dans [INTEGRATION_NOUVEAUX_PAYOFFS.md](file:///Users/ramzimohamed/Dev/StructAI.agy/INTEGRATION_NOUVEAUX_PAYOFFS.md).
+
+6. **Termsheet Dynamic Renderer & Support Math (LaTeX) / Markdown** :
+   - Rendu automatique React JSX propre avec récursivité pour l'imbrication des formules mathématiques ($S_0$, $S_T / S_0$) à l'intérieur des balises de texte en gras `**texte**`.
+   - Fichier de configuration [src/assets/app-config.json](file:///Users/ramzimohamed/Dev/StructAI.agy/src/assets/app-config.json) liant automatiquement les Payoffs aux templates Markdown.
+
+7. **Dashboard d'Analytics & Historique d'Audit (MIFID II)** :
+   - Suivi et archivage automatique des cotations, métriques de coupons moyens et probabilités.
+   - Export CSV et réimport instantané des spécifications historiques d'un clic.
+
+---
+
+## 🛠️ Architecture Technique
+
+- **Frontend** : React 19, TypeScript 5, Tailwind CSS v4, Lucide Icons, Recharts (visualisation graphique).
+- **Backend Node.js / Express** (`server.ts`) : Serveur full-stack unifié — moteur quantitatif de pricing (Monte Carlo), résolution des sous-jacents, persistance des logs. Délègue l'analyse NLP des demandes client au `quotation-service`.
+- **`quotation-service/`** : Service Node.js **autonome** qui héberge l'analyse NLP (prompt + appel LLM + détection des champs manquants), avec authentification JWT, gestion des utilisateurs/rôles, et une page d'admin pour configurer le moteur LLM. Voir [`quotation-service/README.md`](quotation-service/README.md). Communique avec l'app principale via une clé d'API de service.
+- **Outil CLI** : `scripts/parse-query-cli.ts` (exécutable via `npx tsx` ou `npm run parse-cli`) — appelle `quotation-service`.
+- **Moteurs LLM** (configurés depuis la page d'admin de `quotation-service`, pas dans l'app principale) :
+  - **Google Gemini API** (Gemini 3.5 Flash).
+  - **Ollama Local** (`http://localhost:11434`).
+  - **LM Studio Local** (`http://localhost:1234/v1`).
+  - **Tout endpoint OpenAI-compatible** (vLLM, etc.).
+  - Aucun fallback déterministe : un échec d'extraction LLM renvoie une erreur explicite plutôt qu'un résultat deviné.
+- **Build & Packaging** : Vite 6 & ESBuild pour un bundle CommonJS autonome (`dist/server.cjs`).
+
+---
+
+## 💻 Utilisation du Script en Ligne de Commande (CLI)
+
+Le moteur LLM utilisé (provider/modèle) est celui configuré dans `quotation-service` (page d'admin), qui doit tourner pour que le script fonctionne.
+
+```bash
+# 1. Requête unique sans pricing (extraction rapide des caractéristiques)
+npx tsx scripts/parse-query-cli.ts "Reverse Convertible 1 an sur TotalEnergies FP."
+
+# 2. Requête unique AVEC les calculs de pricing et simulations Monte Carlo (--pricing)
+npx tsx scripts/parse-query-cli.ts "Autocall LVMH 3 ans PDI 70%" --pricing
+
+# 3. Traitement par lot d'un fichier de requêtes avec enregistrement du JSON
+npx tsx scripts/parse-query-cli.ts --reqs mes_requetes.txt --output resultats.json --pricing
+
+# Raccourci npm alternatif
+npm run parse-cli -- "Phoenix Kering 2 ans"
+```
+
+---
+
+## ⚙️ Configuration Applicative (`app-config.json`)
+
+Le fichier `src/assets/app-config.json` permet de piloter le comportement de l'application sans recompiler :
+
+```json
+{
+  "termsheetTemplatesByPayoff": {
+    "AUTOCALL_CLASSIC": "natixis_cib_standard",
+    "PHOENIX_MEMORY": "sg_cib_phoenix",
+    "REVERSE_CONVERTIBLE": "bnp_cib_standard",
+    "AUTOCALL_PHOENIX_ASIAN_PDI": "natixis_cib_standard"
+  },
+  "defaultTermsheetTemplateId": "natixis_cib_standard",
+  "allowedLocalModels": {
+    "ollama": [
+      { "id": "qwen3.6", "label": "Qwen 3.6 / Qwen 2.5 (32B / 14B)", "desc": "Recommandé pour structuration" },
+      { "id": "gemma4-e4b", "label": "Gemma 4 E4B / Gemma 2 (27B)", "desc": "Modèle léger Google" }
+    ],
+    "lmstudio": [
+      { "id": "qwen3.6", "label": "Qwen 3.6 (Local LM Studio)", "desc": "Modèle local LM Studio" }
+    ]
+  }
+}
+```
+
+---
+
+## 🚀 Guide d'Installation & Lancement en Local
+
+### Prérequis
+- **Node.js** v20.0.0, v22.0.0 ou v24.0.0+ (100% compatible avec Node v24.18.0)
+- **npm** v10.0.0 ou supérieur
+
+### 1. Cloner le Projet & Installer les Dépendances
+```bash
+git clone <URL_DU_DEPOT>
+cd structai
+npm install
+```
+
+### 2. Variables d'Environnement
+Créez un fichier `.env` à la racine du projet (voir `.env.example`) :
+```env
+PORT=3000
+NODE_ENV=development
+
+# quotation-service (voir quotation-service/README.md pour le générer)
+LLM_SERVICE_URL=http://localhost:4001
+LLM_SERVICE_API_KEY=qsk_...
+```
+
+Puis configurez et démarrez `quotation-service` (voir [`quotation-service/README.md`](quotation-service/README.md)) — c'est là que se trouve désormais la clé API Gemini / Ollama / LM Studio, configurable depuis sa page d'admin.
+
+### 3. Lancer l'Application en Mode Développement
+```bash
+npm run dev:all   # démarre l'app principale (port 3000) ET quotation-service (port 4001)
+```
+Ou séparément : `npm run dev` (app principale) et, dans un autre terminal, `npm --prefix quotation-service run dev`.
+
+La commande active le serveur et ouvre automatiquement un nouvel onglet navigateur sur : **`http://localhost:3000`**
+
+---
+
+## 📦 Guide de Déploiement en Production
+
+### Option 1 : Déploiement Docker
+
+Un fichier Dockerfile multi-stage permet un déploiement sécurisé et optimisé :
+
+```dockerfile
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+CMD ["node", "dist/server.cjs"]
+```
+
+#### Commandes de build & exécution Docker :
+```bash
+# Construction de l'image Docker
+docker build -t structai-app .
+
+# Exécution du conteneur
+docker run -d -p 3000:3000 -e GEMINI_API_KEY="votre_cle_gemini" --name structai structai-app
+```
+
+---
+
+### Option 2 : Déploiement GCP Cloud Run (Google Cloud)
+
+```bash
+gcloud run deploy structai \
+  --source . \
+  --region europe-west1 \
+  --platform managed \
+  --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY="votre_cle_gemini"
+```
+
+---
+
+## 📚 Documentation Additionnelle
+- **Guide d'Intégration d'un Nouveau Payoff** : [INTEGRATION_NOUVEAUX_PAYOFFS.md](file:///Users/ramzimohamed/Dev/StructAI.agy/INTEGRATION_NOUVEAUX_PAYOFFS.md)
+- **Spécification Famille Autocall Yeti Phoenix** : [Autocall.md](file:///Users/ramzimohamed/Dev/StructAI.agy/Autocall.md)
+- **Script CLI de Parsing** : [scripts/parse-query-cli.ts](file:///Users/ramzimohamed/Dev/StructAI.agy/scripts/parse-query-cli.ts)
+
+---
+
+## 📄 Licence
+Propriété Institutionnelle - StructAI FinTech Systems.

@@ -1,0 +1,60 @@
+{
+  "termsheetTemplatesByPayoff": {
+    "AUTOCALL_CLASSIC": "natixis_cib_standard",
+    "PHOENIX_MEMORY": "natixis_cib_standard",
+    "REVERSE_CONVERTIBLE": "natixis_cib_standard",
+    "CREDIT_LINKED_NOTE": "natixis_cib_standard"
+  },
+  "defaultTermsheetTemplateId": "natixis_cib_standard",
+  "allowedLocalModels": {
+    "ollama": [
+      {
+        "id": "qwen3.6",
+        "label": "Qwen 3.6 / Qwen 2.5 (32B / 14B)",
+        "desc": "Modèle finance haute précision (recommandé Mac 48Go)"
+      },
+      {
+        "id": "gemma4:e4b",
+        "label": "Gemma 4 E4B / Gemma 2 (27B)",
+        "desc": "Modèle léger & ultra-rapide par Google"
+      },
+      {
+        "id": "qwen2.5:32b",
+        "label": "Qwen 2.5 (32B Instruct)",
+        "desc": "Compréhension des dérivés et structures complexes"
+      },
+      {
+        "id": "mistral-small3.2",
+        "label": "Mistral Small 24b",
+        "desc": "Compréhension des dérivés et structures complexes"
+      },
+      {
+        "id": "deepseek-r1:32b",
+        "label": "DeepSeek R1 (32B Distill)",
+        "desc": "Modèle de raisonnement pas-à-pas"
+      }
+    ],
+    "lmstudio": [
+      {
+        "id": "qwen3.6",
+        "label": "Qwen 3.6 / 2.5 Instruct",
+        "desc": "Moteur local LM Studio OpenAI-compatible"
+      },
+      {
+        "id": "gemma-4-e4b",
+        "label": "Gemma 4 E4B / Gemma 2 27B",
+        "desc": "LM Studio local Google Gemma model"
+      },
+      {
+        "id": "deepseek-r1-qwen-32b",
+        "label": "DeepSeek R1 Distill Qwen 32B",
+        "desc": "Raisonnement structuré avancé"
+      },
+      {
+        "id": "local-model",
+        "label": "Modèle chargé actuellement dans LM Studio",
+        "desc": "Utilise le modèle déjà actif dans l'application LM Studio"
+      }
+    ]
+  }
+}

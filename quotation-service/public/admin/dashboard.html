@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>quotation-service · Administration</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <h1>quotation-service</h1>
+      <div class="row">
+        <span class="who" id="who"></span>
+        <button class="secondary" id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button data-tab="config" class="active">Configuration LLM</button>
+      <button data-tab="users">Utilisateurs</button>
+      <button data-tab="keys">Clés API</button>
+    </nav>
+
+    <!-- Config LLM -->
+    <section id="tab-config" class="card">
+      <h2>Configuration du moteur LLM</h2>
+      <div id="config-msg"></div>
+      <form id="config-form">
+        <label for="cfg-provider">Provider</label>
+        <select id="cfg-provider">
+          <option value="gemini">Gemini (Cloud)</option>
+          <option value="ollama">Ollama (local)</option>
+          <option value="lmstudio">LM Studio (local)</option>
+          <option value="openai_compatible">Endpoint OpenAI-compatible</option>
+        </select>
+
+        <label for="cfg-model">Modèle</label>
+        <input id="cfg-model" type="text" placeholder="ex: gemini-3.5-flash, qwen3.6, gpt-4o-mini" />
+
+        <label for="cfg-baseurl">URL de base (Ollama / LM Studio / endpoint OpenAI-compatible)</label>
+        <input id="cfg-baseurl" type="text" placeholder="ex: http://localhost:11434" />
+
+        <label for="cfg-apikey">
+          Clé API <span class="muted" id="cfg-apikey-hint"></span>
+        </label>
+        <input id="cfg-apikey" type="password" placeholder="Laisser vide pour conserver la clé actuelle" />
+
+        <label for="cfg-temp">Température</label>
+        <input id="cfg-temp" type="number" step="0.05" min="0" max="2" />
+
+        <div class="row" style="margin-top:18px">
+          <button type="submit" id="cfg-save-btn">Enregistrer</button>
+          <span class="muted" id="cfg-updated"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- Users -->
+    <section id="tab-users" class="card hidden">
+      <h2>Utilisateurs</h2>
+      <div id="users-msg"></div>
+      <table>
+        <thead><tr><th>Email</th><th>Rôle</th><th>Créé le</th><th></th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+
+      <h3 style="margin-top:22px">Ajouter un utilisateur</h3>
+      <form id="user-form">
+        <div class="row">
+          <div style="flex:1"><label for="new-email">Email</label><input id="new-email" type="email" required /></div>
+          <div style="flex:1"><label for="new-password">Mot de passe (min. 8 caractères)</label><input id="new-password" type="password" required minlength="8" /></div>
+          <div><label for="new-role">Rôle</label>
+            <select id="new-role">
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:14px"><button type="submit">Ajouter</button></div>
+      </form>
+    </section>
+
+    <!-- API Keys -->
+    <section id="tab-keys" class="card hidden">
+      <h2>Clés API de service</h2>
+      <p class="subtitle" style="margin-bottom:14px">Utilisées par l'application principale StructAI pour appeler <span class="mono">POST /api/analyze</span> (authentification machine-à-machine).</p>
+      <div id="keys-msg"></div>
+      <table>
+        <thead><tr><th>Label</th><th>Préfixe</th><th>Statut</th><th>Créée le</th><th></th></tr></thead>
+        <tbody id="keys-tbody"></tbody>
+      </table>
+
+      <h3 style="margin-top:22px">Générer une nouvelle clé</h3>
+      <div class="row">
+        <input id="new-key-label" type="text" placeholder="Label (ex: main-app-production)" style="flex:1" />
+        <button id="create-key-btn">Générer</button>
+      </div>
+      <div id="new-key-reveal" class="hidden" style="margin-top:12px">
+        <p class="muted" style="margin-bottom:6px">Copiez cette clé maintenant — elle ne sera plus jamais affichée :</p>
+        <div class="token-reveal" id="new-key-token"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    Auth.requireAuthOrRedirect();
+    var me = Auth.getUser();
+    var isAdmin = me && me.role === 'admin';
+
+    document.getElementById('who').textContent = me ? (me.email + ' · ' + me.role) : '';
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      Auth.clear();
+      window.location.href = 'login.html';
+    });
+
+    // --- Tabs ---
+    var tabs = document.querySelectorAll('nav.tabs button');
+    var sections = { config: document.getElementById('tab-config'), users: document.getElementById('tab-users'), keys: document.getElementById('tab-keys') };
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        tabs.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        Object.keys(sections).forEach(function (key) { sections[key].classList.toggle('hidden', key !== btn.dataset.tab); });
+      });
+    });
+    if (!isAdmin) {
+      document.querySelector('nav.tabs button[data-tab="users"]').classList.add('hidden');
+      document.querySelector('nav.tabs button[data-tab="keys"]').classList.add('hidden');
+    }
+
+    // --- Config LLM ---
+    async function loadConfig() {
+      var data = await Api.get('/api/config/llm');
+      var c = data.config;
+      document.getElementById('cfg-provider').value = c.provider;
+      document.getElementById('cfg-model').value = c.modelName || '';
+      document.getElementById('cfg-baseurl').value = c.baseUrl || '';
+      document.getElementById('cfg-temp').value = c.temperature;
+      document.getElementById('cfg-apikey-hint').textContent = c.hasApiKey ? '(une clé est déjà configurée)' : '(aucune clé configurée)';
+      document.getElementById('cfg-updated').textContent = c.updatedAt ? ('Dernière mise à jour : ' + c.updatedAt) : '';
+      if (!isAdmin) {
+        document.querySelectorAll('#config-form input, #config-form select').forEach(function (el) { el.disabled = true; });
+        document.getElementById('cfg-save-btn').classList.add('hidden');
+      }
+    }
+
+    document.getElementById('config-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var msg = document.getElementById('config-msg');
+      msg.innerHTML = '';
+      try {
+        var payload = {
+          provider: document.getElementById('cfg-provider').value,
+          modelName: document.getElementById('cfg-model').value,
+          baseUrl: document.getElementById('cfg-baseurl').value,
+          temperature: parseFloat(document.getElementById('cfg-temp').value),
+        };
+        var apiKeyVal = document.getElementById('cfg-apikey').value;
+        if (apiKeyVal !== '') payload.apiKey = apiKeyVal;
+        await Api.put('/api/config/llm', payload);
+        document.getElementById('cfg-apikey').value = '';
+        msg.innerHTML = '<div class="msg success">Configuration enregistrée.</div>';
+        loadConfig();
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    });
+
+    // --- Users ---
+    async function loadUsers() {
+      if (!isAdmin) return;
+      var data = await Api.get('/api/users');
+      var tbody = document.getElementById('users-tbody');
+      tbody.innerHTML = data.users.map(function (u) {
+        var canDelete = u.id !== me.id;
+        return '<tr>' +
+          '<td>' + escapeHtml(u.email) + '</td>' +
+          '<td><span class="badge ' + u.role + '">' + u.role + '</span></td>' +
+          '<td class="muted">' + escapeHtml(u.createdAt) + '</td>' +
+          '<td>' + (canDelete ? '<button class="danger" data-del-user="' + u.id + '">Supprimer</button>' : '<span class="muted">vous</span>') + '</td>' +
+          '</tr>';
+      }).join('');
+
+      tbody.querySelectorAll('[data-del-user]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          if (!confirm('Supprimer cet utilisateur ?')) return;
+          try {
+            await Api.del('/api/users/' + btn.dataset.delUser);
+            loadUsers();
+          } catch (err) {
+            document.getElementById('users-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+          }
+        });
+      });
+    }
+
+    var userForm = document.getElementById('user-form');
+    if (userForm) {
+      userForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var msg = document.getElementById('users-msg');
+        msg.innerHTML = '';
+        try {
+          await Api.post('/api/users', {
+            email: document.getElementById('new-email').value.trim(),
+            password: document.getElementById('new-password').value,
+            role: document.getElementById('new-role').value,
+          });
+          userForm.reset();
+          msg.innerHTML = '<div class="msg success">Utilisateur créé.</div>';
+          loadUsers();
+        } catch (err) {
+          msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+        }
+      });
+    }
+
+    // --- API keys ---
+    async function loadKeys() {
+      if (!isAdmin) return;
+      var data = await Api.get('/api/api-keys');
+      var tbody = document.getElementById('keys-tbody');
+      tbody.innerHTML = data.apiKeys.map(function (k) {
+        var active = !k.revokedAt;
+        return '<tr>' +
+          '<td>' + escapeHtml(k.label) + '</td>' +
+          '<td class="mono muted">' + escapeHtml(k.keyPrefix) + '…</td>' +
+          '<td><span class="badge ' + (active ? 'active' : 'revoked') + '">' + (active ? 'active' : 'révoquée') + '</span></td>' +
+          '<td class="muted">' + escapeHtml(k.createdAt) + '</td>' +
+          '<td>' + (active ? '<button class="danger" data-revoke-key="' + k.id + '">Révoquer</button>' : '') + '</td>' +
+          '</tr>';
+      }).join('');
+
+      tbody.querySelectorAll('[data-revoke-key]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          if (!confirm('Révoquer cette clé API ? Toute application qui l\'utilise perdra immédiatement l\'accès.')) return;
+          try {
+            await Api.del('/api/api-keys/' + btn.dataset.revokeKey);
+            loadKeys();
+          } catch (err) {
+            document.getElementById('keys-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+          }
+        });
+      });
+    }
+
+    var createKeyBtn = document.getElementById('create-key-btn');
+    if (createKeyBtn) {
+      createKeyBtn.addEventListener('click', async function () {
+        var msg = document.getElementById('keys-msg');
+        msg.innerHTML = '';
+        var label = document.getElementById('new-key-label').value.trim();
+        if (!label) { msg.innerHTML = '<div class="msg error">Un label est requis.</div>'; return; }
+        try {
+          var data = await Api.post('/api/api-keys', { label: label });
+          document.getElementById('new-key-token').textContent = data.token;
+          document.getElementById('new-key-reveal').classList.remove('hidden');
+          document.getElementById('new-key-label').value = '';
+          loadKeys();
+        } catch (err) {
+          msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+        }
+      });
+    }
+
+    loadConfig();
+    loadUsers();
+    loadKeys();
+  </script>
+</body>
+</html>

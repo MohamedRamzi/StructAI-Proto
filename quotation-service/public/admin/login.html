@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>quotation-service · Connexion</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="login-wrap">
+    <h1>quotation-service</h1>
+    <p class="subtitle">Administration — configuration LLM, utilisateurs, clés API</p>
+    <div class="card">
+      <div id="msg"></div>
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" required autocomplete="username" />
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" required autocomplete="current-password" />
+        <div class="row" style="margin-top:18px">
+          <button type="submit">Se connecter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      if (Auth.getToken()) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      var form = document.getElementById('login-form');
+      var msg = document.getElementById('msg');
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        msg.innerHTML = '';
+        var email = document.getElementById('email').value.trim();
+        var password = document.getElementById('password').value;
+        try {
+          var data = await Api.post('/api/auth/login', { email: email, password: password });
+          Auth.setSession(data.token, data.user);
+          window.location.href = 'dashboard.html';
+        } catch (err) {
+          msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
