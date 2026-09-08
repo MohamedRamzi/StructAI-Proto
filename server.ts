@@ -33,6 +33,13 @@ const LOG_FILE_PATH = path.join(process.cwd(), 'llm_debug.log');
 const LLM_SERVICE_URL = (process.env.LLM_SERVICE_URL || 'http://localhost:4001').replace(/\/$/, '');
 const LLM_SERVICE_API_KEY = process.env.LLM_SERVICE_API_KEY || '';
 
+// The qualitative/semantic search over underlyings (real embeddings + ChromaDB,
+// see vector-service/) lives in its own standalone Python service, reached the
+// same way as quotation-service: HTTP + a service API key from its admin UI
+// (http://localhost:4002/admin/login.html).
+const VECTOR_SERVICE_URL = (process.env.VECTOR_SERVICE_URL || 'http://localhost:4002').replace(/\/$/, '');
+const VECTOR_SERVICE_API_KEY = process.env.VECTOR_SERVICE_API_KEY || '';
+
 export function appendLlmLogToFile(data: {
   source?: string;
   provider?: string;
@@ -98,6 +105,54 @@ app.get('/api/llm-status', async (_req, res) => {
   } catch (err: any) {
     return res.status(503).json({ success: false, error: `quotation-service indisponible sur ${LLM_SERVICE_URL} : ${err.message}`, adminUrl });
   }
+});
+
+// API Endpoint 0.2: Public status of the configured embedding engine, proxied from vector-service.
+app.get('/api/vector-status', async (_req, res) => {
+  const adminUrl = `${VECTOR_SERVICE_URL}/admin/login.html`;
+  try {
+    const statusRes = await fetch(`${VECTOR_SERVICE_URL}/api/status`);
+    const statusData: any = await statusRes.json();
+    if (!statusRes.ok || !statusData.success) {
+      throw new Error(statusData.error || `HTTP ${statusRes.status}`);
+    }
+    return res.json({ success: true, provider: statusData.provider, model: statusData.model, adminUrl });
+  } catch (err: any) {
+    return res.status(503).json({ success: false, error: `vector-service indisponible sur ${VECTOR_SERVICE_URL} : ${err.message}`, adminUrl });
+  }
+});
+
+// API Endpoint 0.3: Semantic search over underlyings — proxies to vector-service's real
+// embeddings (Qwen3-Embedding via Ollama) + ChromaDB index. Deliberately no local
+// fallback on failure (see /api/parse-query's comment on the same principle): a
+// search failure must surface as a clear error, not a silently degraded result.
+app.post('/api/instruments/search', async (req, res) => {
+  if (!VECTOR_SERVICE_API_KEY) {
+    return res.status(503).json({
+      success: false,
+      error: "Le service de recherche vectorielle (vector-service) n'est pas configuré : VECTOR_SERVICE_API_KEY est manquante dans .env. Générez une clé depuis sa page d'admin (voir vector-service/README.md).",
+    });
+  }
+
+  let searchRes: Response;
+  try {
+    searchRes = await fetch(`${VECTOR_SERVICE_URL}/api/instruments/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${VECTOR_SERVICE_API_KEY}` },
+      body: JSON.stringify(req.body),
+    });
+  } catch (networkErr: any) {
+    return res.status(503).json({
+      success: false,
+      error: `Service de recherche vectorielle (vector-service) indisponible : ${networkErr.message}. Vérifiez qu'il tourne sur ${VECTOR_SERVICE_URL}.`,
+    });
+  }
+
+  const searchData: any = await searchRes.json();
+  if (!searchRes.ok || !searchData.success) {
+    return res.status(502).json({ success: false, error: `Échec de la recherche sémantique : ${searchData.error || `vector-service a répondu ${searchRes.status}`}` });
+  }
+  return res.json(searchData);
 });
 
 // Server-side in-memory underlyings database state (synced with client)

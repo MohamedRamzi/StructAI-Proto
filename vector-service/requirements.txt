@@ -1,0 +1,9 @@
+fastapi==0.125.0
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+chromadb==1.5.2
+httpx==0.28.1
+bcrypt==5.0.0
+python-jose[cryptography]==3.5.0
+python-multipart==0.0.32
+python-dotenv==1.2.3
