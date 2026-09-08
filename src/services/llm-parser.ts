@@ -75,9 +75,9 @@ export async function sendLlmLogToServer(data: {
  * priced spec (or specs, for a multi-quote request).
  *
  * The actual prompt-concatenation + LLM call + missing-field detection now
- * lives entirely in the standalone quotation-service (see
- * quotation-service/src/routes/analyze.ts) — this just calls the main app's
- * own POST /api/parse-query, which proxies to quotation-service and then
+ * lives entirely in the standalone inference-service (see
+ * inference-service/app/routers/analyze.py) — this just calls the main app's
+ * own POST /api/parse-query, which proxies to inference-service and then
  * resolves the underlying + prices the result (see server.ts, spec-builder.ts).
  * The LLM provider/model is configured centrally there (its admin UI), not
  * per-browser-session, so no config is passed here anymore.

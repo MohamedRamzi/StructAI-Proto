@@ -20,12 +20,10 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     test: {
-      // quotation-service/ is a standalone package with its own vitest config,
-      // deps, and env vars (e.g. QuotationPrompt.md resolved via its own
-      // process.cwd()) -- without this exclude, `npm test` at the repo root
-      // would also pick up its test files but run them with the WRONG cwd.
-      // Run its suite via `npm --prefix quotation-service test` instead.
-      exclude: [...configDefaults.exclude, 'quotation-service/**'],
+      // inference-service/ is a standalone Python package (pytest, not vitest) --
+      // exclude it defensively in case its data/ or venv ever contain stray
+      // JS-looking files; its own suite runs via `pytest` inside that directory.
+      exclude: [...configDefaults.exclude, 'inference-service/**'],
     },
   };
 });

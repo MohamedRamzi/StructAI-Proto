@@ -23,32 +23,32 @@ interface CliParseResult {
   error?: string;
 }
 
-const LLM_SERVICE_URL = (process.env.LLM_SERVICE_URL || 'http://localhost:4001').replace(/\/$/, '');
-const LLM_SERVICE_API_KEY = process.env.LLM_SERVICE_API_KEY || '';
+const INFERENCE_SERVICE_URL = (process.env.INFERENCE_SERVICE_URL || 'http://localhost:4001').replace(/\/$/, '');
+const INFERENCE_SERVICE_API_KEY = process.env.INFERENCE_SERVICE_API_KEY || '';
 
 // Single query processor function — delegates the actual NLP analysis to
-// quotation-service's POST /api/analyze (same call server.ts's /api/parse-query
+// inference-service's POST /api/analyze (same call server.ts's /api/parse-query
 // makes), then builds & prices the spec locally exactly like the main app does.
 async function processSingleQuery(query: string): Promise<CliParseResult> {
-  if (!LLM_SERVICE_API_KEY) {
+  if (!INFERENCE_SERVICE_API_KEY) {
     return {
       query,
       providerUsed: 'none',
       modelUsed: 'none',
       success: false,
-      error: 'LLM_SERVICE_API_KEY manquante dans .env — générez une clé depuis la page d\'admin de quotation-service (voir quotation-service/README.md).',
+      error: 'INFERENCE_SERVICE_API_KEY manquante dans .env — générez une clé depuis la page d\'admin de inference-service (voir inference-service/README.md).',
     };
   }
 
   try {
-    const analyzeRes = await fetch(`${LLM_SERVICE_URL}/api/analyze`, {
+    const analyzeRes = await fetch(`${INFERENCE_SERVICE_URL}/api/analyze`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${LLM_SERVICE_API_KEY}` },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${INFERENCE_SERVICE_API_KEY}` },
       body: JSON.stringify({ query }),
     });
     const analyzeData: any = await analyzeRes.json();
     if (!analyzeRes.ok || !analyzeData.success) {
-      throw new Error(analyzeData.error || `quotation-service a répondu ${analyzeRes.status}`);
+      throw new Error(analyzeData.error || `inference-service a répondu ${analyzeRes.status}`);
     }
 
     const processedQuotes = (analyzeData.quotes || []).map((quote: any, idx: number) => {
@@ -65,7 +65,7 @@ async function processSingleQuery(query: string): Promise<CliParseResult> {
 
     return {
       query,
-      providerUsed: analyzeData.providerUsed,
+      providerUsed: 'inference-service',
       modelUsed: analyzeData.modelUsed,
       success: true,
       spec: processedQuotes[0].spec,
@@ -78,7 +78,7 @@ async function processSingleQuery(query: string): Promise<CliParseResult> {
       providerUsed: 'error',
       modelUsed: 'error',
       success: false,
-      error: `Erreur lors de l'appel à quotation-service (${LLM_SERVICE_URL}) : ${err.message}. Vérifiez qu'il tourne ("npm run dev" dans quotation-service/).`,
+      error: `Erreur lors de l'appel à inference-service (${INFERENCE_SERVICE_URL}) : ${err.message}. Vérifiez qu'il tourne ("npm run dev" dans inference-service/).`,
     };
   }
 }
@@ -137,9 +137,9 @@ async function main() {
     console.error(`
 Usage: npx tsx scripts/parse-query-cli.ts "<requête client>" [options]
 
-Le moteur LLM utilisé (provider/modèle) est celui configuré dans quotation-service
+Le moteur LLM utilisé (modèle) est celui configuré dans inference-service
 (page d'admin http://localhost:4001/admin/login.html) — ce script n'appelle plus
-directement Gemini/Ollama/LM Studio, il délègue à quotation-service comme le fait
+directement Gemini/Ollama/LM Studio, il délègue à inference-service comme le fait
 l'application principale.
 
 Options:
@@ -147,8 +147,9 @@ Options:
   --output <filename>     Fichier où stocker les résultats JSON (affichage écran par défaut)
   --pricing               Inclut les résultats de pricing (calculs Monte Carlo, grecques) dans le JSON (exclu par défaut)
 
-Prérequis : quotation-service doit tourner (npm run dev dans quotation-service/)
-et LLM_SERVICE_URL / LLM_SERVICE_API_KEY doivent être définis dans .env.
+Prérequis : inference-service doit tourner (npm run dev dans inference-service/,
+avec ses deux sidecars vLLM démarrés séparément — voir inference-service/README.md)
+et INFERENCE_SERVICE_URL / INFERENCE_SERVICE_API_KEY doivent être définis dans .env.
 
 Exemples:
   npx tsx scripts/parse-query-cli.ts "Reverse Convertible 1 an TotalEnergies FP"
@@ -158,7 +159,7 @@ Exemples:
     process.exit(1);
   }
 
-  console.error(`[CLI Exec] Traitement de ${queriesToProcess.length} requête(s) via quotation-service (${LLM_SERVICE_URL}) (Pricing inclus: ${includePricing ? 'OUI' : 'NON'})...`);
+  console.error(`[CLI Exec] Traitement de ${queriesToProcess.length} requête(s) via inference-service (${INFERENCE_SERVICE_URL}) (Pricing inclus: ${includePricing ? 'OUI' : 'NON'})...`);
 
   const results: CliParseResult[] = [];
   for (let i = 0; i < queriesToProcess.length; i++) {

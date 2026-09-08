@@ -17,8 +17,8 @@ interface VectorSearchResult {
 }
 
 /**
- * Real semantic search — proxies to vector-service (Qwen3-Embedding via Ollama
- * + ChromaDB, see vector-service/) through the main server's
+ * Real semantic search — proxies to inference-service (Qwen3-Embedding via vLLM
+ * + ChromaDB, see inference-service/) through the main server's
  * POST /api/instruments/search. No local fallback: if the service is down or
  * misconfigured, this shows a clear error instead of a plausible-looking but
  * fabricated result (same principle as the LLM analysis pipeline).
@@ -252,7 +252,7 @@ export const VectorUnderlyingSearchModal: React.FC<VectorUnderlyingSearchModalPr
 
         {/* Footer */}
         <div className="border-t border-slate-800 pt-3.5 flex items-center justify-between text-xs text-slate-400">
-          <span>Recherche alimentée par embeddings Qwen3 &amp; ChromaDB (vector-service).</span>
+          <span>Recherche alimentée par embeddings Qwen3 &amp; ChromaDB (inference-service).</span>
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold border border-slate-700"

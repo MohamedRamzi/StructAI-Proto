@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </button>
           </nav>
 
-          {/* Read-only LLM engine status (configured centrally in quotation-service's admin UI) */}
+          {/* Read-only LLM engine status (configured centrally in inference-service's admin UI) */}
           <div className="flex items-center">
             <LlmStatusBadge />
           </div>

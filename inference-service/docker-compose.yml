@@ -1,0 +1,82 @@
+# Production deployment (Linux + NVIDIA GPU, e.g. a Grace Hopper GH200 with
+# 96GB VRAM). Three services:
+#
+#   - vllm-chat   : vLLM serving the chat/analysis model, OpenAI-compatible API.
+#   - vllm-embed  : vLLM serving the embedding model, OpenAI-compatible API.
+#   - app         : this FastAPI service — no GPU required, calls the two
+#                   vLLM services over the docker-compose network via HTTP.
+#
+# Both vLLM services use the OFFICIAL `vllm/vllm-openai` image — no hand-rolled
+# CUDA Dockerfile to build or maintain. `app` never imports vllm; see
+# app/services/inference_client.py.
+#
+# Adjust model names, --gpu-memory-utilization, and --max-model-len once the
+# real model sizes are settled against the 96GB of VRAM available. If a single
+# GPU can't comfortably host both models at once, split them across GPUs with
+# CUDA_VISIBLE_DEVICES / `deploy.resources.reservations.devices.device_ids`.
+
+services:
+  vllm-chat:
+    image: vllm/vllm-openai:latest
+    command: >
+      --model Qwen/Qwen3-32B
+      --port 8000
+      --gpu-memory-utilization 0.45
+    ports:
+      - "8001:8000"
+    volumes:
+      - vllm-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  vllm-embed:
+    image: vllm/vllm-openai:latest
+    command: >
+      --model Qwen/Qwen3-Embedding-0.6B
+      --port 8000
+      --runner pooling
+      --gpu-memory-utilization 0.15
+    ports:
+      - "8002:8000"
+    volumes:
+      - vllm-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: "4001"
+      JWT_SECRET: "${JWT_SECRET}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL:-admin@structai.local}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      LLM_BASE_URL: "http://vllm-chat:8000/v1"
+      LLM_MODEL: "Qwen/Qwen3-32B"
+      EMBEDDING_BASE_URL: "http://vllm-embed:8000/v1"
+      EMBEDDING_MODEL: "Qwen/Qwen3-Embedding-0.6B"
+      DB_PATH: "/data/inference-service.db"
+      CHROMA_PATH: "/data/chroma"
+    volumes:
+      - app-data:/data
+    depends_on:
+      - vllm-chat
+      - vllm-embed
+    restart: unless-stopped
+
+volumes:
+  vllm-cache:
+  app-data:

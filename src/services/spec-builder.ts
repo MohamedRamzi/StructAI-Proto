@@ -3,7 +3,7 @@ import { ExtractedProductSpec, UnderlyingAsset } from '../types/structured-produ
 import { parseFlexibleDate, monthsBetween, toIsoDateString } from './date-utils';
 
 /**
- * Loosely-typed shape of a parsed extraction (quotation-service's LLM JSON
+ * Loosely-typed shape of a parsed extraction (inference-service's LLM JSON
  * response) that buildExtractedProductSpec turns into a full
  * ExtractedProductSpec ready for pricing.
  */
@@ -20,7 +20,7 @@ export interface BuildSpecInput {
   fallbackAiExplanation?: string;
   /** "Today" used to convert an absolute forwardStartDate into forwardStartMonths. Defaults to `new Date()`; override for deterministic tests. */
   referenceDate?: Date;
-  /** Missing-field flags from quotation-service's POST /api/analyze (see quotation-service/src/services/validation.ts), merged into missingRequiredParams. */
+  /** Missing-field flags from inference-service's POST /api/analyze (see inference-service/app/services/validation.py), merged into missingRequiredParams. */
   externalMissingFields?: { field: string; label: string; message: string }[];
 }
 
@@ -74,7 +74,7 @@ export function buildExtractedProductSpec({
     });
   }
 
-  // Merge in quotation-service's own missing-field detection (validation.ts there
+  // Merge in inference-service's own missing-field detection (validation.py there
   // covers more than just maturity — e.g. missing underlying, missing target-to-solve,
   // missing barrier for barrier-dependent products), deduped against what's already
   // flagged above so the same field isn't listed twice.

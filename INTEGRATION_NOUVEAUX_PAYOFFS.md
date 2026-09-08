@@ -86,16 +86,16 @@ if (spec.productTypeId === 'NOUVEAU_PAYOFF_ID') {
 
 ## 🧠 Étape 3 : Entraîner / Adapter le Parsing NLP LLM
 
-### 3.1 Prompt Système (`quotation-service/QuotationPrompt.md`)
+### 3.1 Prompt Système (`inference-service/QuotationPrompt.md`)
 
-L'analyse NLP est désormais hébergée dans le service autonome `quotation-service/` (voir son [README](quotation-service/README.md)). Mettez à jour `quotation-service/QuotationPrompt.md` pour indiquer au modèle LLM comment extraire le nouveau `productTypeId` et ses balises spécifiques à partir du langage naturel :
+L'analyse NLP est désormais hébergée dans le service autonome `inference-service/` (voir son [README](inference-service/README.md)). Mettez à jour `inference-service/QuotationPrompt.md` pour indiquer au modèle LLM comment extraire le nouveau `productTypeId` et ses balises spécifiques à partir du langage naturel :
 
 ```text
 - "step-down" ou "barrière dégressive" -> productTypeId = "NOUVEAU_PAYOFF_ID"
 - Extraire "stepDownPctPerPeriod" (ex: 2.5% par trimestre)
 ```
 
-Aucune étape de "moteur de règles fallback" à maintenir : `quotation-service` n'a pas de mode dégradé déterministe — si le LLM configuré ne reconnaît pas le nouveau payoff, l'erreur ou l'extraction incomplète (via `missingFields`) remonte telle quelle plutôt que d'être masquée par une heuristique de secours.
+Aucune étape de "moteur de règles fallback" à maintenir : `inference-service` n'a pas de mode dégradé déterministe — si le LLM configuré ne reconnaît pas le nouveau payoff, l'erreur ou l'extraction incomplète (via `missingFields`) remonte telle quelle plutôt que d'être masquée par une heuristique de secours.
 
 ---
 

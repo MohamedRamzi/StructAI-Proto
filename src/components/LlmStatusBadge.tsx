@@ -8,17 +8,14 @@ interface LlmStatus {
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
-  gemini: 'Gemini',
-  ollama: 'Ollama',
-  lmstudio: 'LM Studio',
-  openai_compatible: 'OpenAI-compatible',
+  'inference-service': 'vLLM',
 };
 
 /**
  * Read-only "Moteur LLM: ..." indicator — replaces the old LlmEngineSelector
  * modal (which let every browser session pick its own LLM provider/model).
- * That configuration is now centralized and admin-managed in quotation-service
- * (see quotation-service/public/admin/); this badge just displays what's
+ * That configuration is now centralized and admin-managed in inference-service
+ * (see inference-service/public/admin/); this badge just displays what's
  * currently active (fetched via GET /api/llm-status, proxied by server.ts)
  * and links out to the admin UI to change it.
  */

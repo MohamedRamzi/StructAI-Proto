@@ -22,7 +22,7 @@
    - **Moteur de Recherche Multi-Stratégies** :
      - **Tickers Bloomberg Institutionnels** : Reconnaissance directe des codes et suffixes (ex: `FP FP`, `MC FP`, `KER FP`, `TSLA US`, `ASML NA`, `SX5E Index`).
      - **Match Textuel par Nom** : Recherche sur `TotalEnergies`, `LVMH`, `Kering`, `Sanofi`, etc.
-     - **Recherche Vectorielle Sémantique (RAG)** : embeddings réels (Qwen3-Embedding via Ollama) + ChromaDB, hébergés dans le service autonome `vector-service/` — requêtes floues (ex: *"luxe qui price bien"*, *"bancaires résilientes"*, *"haute volatilité et dividende"*).
+     - **Recherche Vectorielle Sémantique (RAG)** : embeddings réels (Qwen3-Embedding via vLLM) + ChromaDB, hébergés dans le service autonome `inference-service/` — requêtes floues (ex: *"luxe qui price bien"*, *"bancaires résilientes"*, *"haute volatilité et dividende"*).
    - **Interface de Maintenance** : Formulaire CRUD (Création, Édition, Suppression), filtres par secteur, réinitialisation aux valeurs institutionnelles par défaut, et **Import/Export de fichiers CSV par lot**.
 
 4. **Moteur Quantitatif de Pricing & Simulation Monte Carlo Interférente** :
@@ -59,23 +59,17 @@
 ## 🛠️ Architecture Technique
 
 - **Frontend** : React 19, TypeScript 5, Tailwind CSS v4, Lucide Icons, Recharts (visualisation graphique).
-- **Backend Node.js / Express** (`server.ts`) : Serveur full-stack unifié — moteur quantitatif de pricing (Monte Carlo), résolution des sous-jacents, persistance des logs. Délègue l'analyse NLP des demandes client au `quotation-service`.
-- **`quotation-service/`** : Service Node.js **autonome** qui héberge l'analyse NLP (prompt + appel LLM + détection des champs manquants), avec authentification JWT, gestion des utilisateurs/rôles, et une page d'admin pour configurer le moteur LLM. Voir [`quotation-service/README.md`](quotation-service/README.md). Communique avec l'app principale via une clé d'API de service.
-- **`vector-service/`** : Service **Python (FastAPI)** autonome qui héberge la base vectorielle RAG — ChromaDB embarqué + embeddings Qwen3-Embedding via Ollama, authentification JWT indépendante, page d'admin (instruments, import/export CSV/JSON, utilisateurs, clés API). Modèle de données extensible par `assetClass` (EQUITY aujourd'hui, RATE_INDEX/FX/CREDIT prêts). Voir [`vector-service/README.md`](vector-service/README.md).
-- **Outil CLI** : `scripts/parse-query-cli.ts` (exécutable via `npx tsx` ou `npm run parse-cli`) — appelle `quotation-service`.
-- **Moteurs LLM** (configurés depuis la page d'admin de `quotation-service`, pas dans l'app principale) :
-  - **Google Gemini API** (Gemini 3.5 Flash).
-  - **Ollama Local** (`http://localhost:11434`).
-  - **LM Studio Local** (`http://localhost:1234/v1`).
-  - **Tout endpoint OpenAI-compatible** (vLLM, etc.).
-  - Aucun fallback déterministe : un échec d'extraction LLM renvoie une erreur explicite plutôt qu'un résultat deviné.
+- **Backend Node.js / Express** (`server.ts`) : Serveur full-stack unifié — moteur quantitatif de pricing (Monte Carlo), résolution des sous-jacents, persistance des logs. Délègue l'analyse NLP des demandes client et la recherche sémantique au `inference-service`.
+- **`inference-service/`** : Service **Python (FastAPI)** autonome unique qui héberge à la fois l'analyse NLP (prompt + appel LLM + détection des champs manquants) et la base vectorielle RAG (ChromaDB embarqué), avec authentification JWT, gestion des utilisateurs/rôles, et une page d'admin (config des moteurs, instruments, import/export CSV/JSON, utilisateurs, clés API). Modèle de données extensible par `assetClass` (EQUITY aujourd'hui, RATE_INDEX/FX/CREDIT prêts). Communique avec l'app principale via une clé d'API de service. Voir [`inference-service/README.md`](inference-service/README.md).
+- **Outil CLI** : `scripts/parse-query-cli.ts` (exécutable via `npx tsx` ou `npm run parse-cli`) — appelle `inference-service`.
+- **Moteur LLM** (configuré depuis la page d'admin de `inference-service`, pas dans l'app principale) : **vLLM**, exécuté comme deux process sidecar indépendants (`vllm serve`) exposant une API compatible OpenAI — un pour le chat/analyse, un pour les embeddings. `inference-service` ne parle qu'HTTP à ces sidecars ; aucun fallback déterministe : un échec d'extraction LLM renvoie une erreur explicite plutôt qu'un résultat deviné.
 - **Build & Packaging** : Vite 6 & ESBuild pour un bundle CommonJS autonome (`dist/server.cjs`).
 
 ---
 
 ## 💻 Utilisation du Script en Ligne de Commande (CLI)
 
-Le moteur LLM utilisé (provider/modèle) est celui configuré dans `quotation-service` (page d'admin), qui doit tourner pour que le script fonctionne.
+Le moteur LLM utilisé (modèle) est celui configuré dans `inference-service` (page d'admin), qui doit tourner pour que le script fonctionne.
 
 ```bash
 # 1. Requête unique sans pricing (extraction rapide des caractéristiques)
@@ -125,8 +119,8 @@ Le fichier `src/assets/app-config.json` permet de piloter le comportement de l'a
 ### Prérequis
 - **Node.js** v20.0.0, v22.0.0 ou v24.0.0+ (100% compatible avec Node v24.18.0)
 - **npm** v10.0.0 ou supérieur
-- **Python 3.12** pour `vector-service/` (pas 3.14 : `chromadb`/`pydantic-core` n'a pas encore de wheel précompilé) — `uv python install 3.12` si besoin.
-- **Ollama** avec le modèle `qwen3-embedding` tiré (`ollama pull qwen3-embedding`) pour la recherche vectorielle.
+- **Python 3.12** pour `inference-service/` (pas 3.14 : `chromadb`/`pydantic-core` n'a pas encore de wheel précompilé) — `uv python install 3.12` si besoin.
+- **vLLM** (via le plugin `vllm-metal` sur Apple Silicon, ou vLLM natif sur Linux/GPU) pour servir les deux sidecars chat/embedding — voir [`inference-service/README.md`](inference-service/README.md).
 
 ### 1. Cloner le Projet & Installer les Dépendances
 ```bash
@@ -141,22 +135,18 @@ Créez un fichier `.env` à la racine du projet (voir `.env.example`) :
 PORT=3000
 NODE_ENV=development
 
-# quotation-service (voir quotation-service/README.md pour le générer)
-LLM_SERVICE_URL=http://localhost:4001
-LLM_SERVICE_API_KEY=qsk_...
-
-# vector-service (voir vector-service/README.md pour le générer)
-VECTOR_SERVICE_URL=http://localhost:4002
-VECTOR_SERVICE_API_KEY=vsk_...
+# inference-service (voir inference-service/README.md pour le générer)
+INFERENCE_SERVICE_URL=http://localhost:4001
+INFERENCE_SERVICE_API_KEY=isk_...
 ```
 
-Puis configurez et démarrez `quotation-service` (voir [`quotation-service/README.md`](quotation-service/README.md)) — c'est là que se trouve désormais la clé API Gemini / Ollama / LM Studio, configurable depuis sa page d'admin — et `vector-service` (voir [`vector-service/README.md`](vector-service/README.md)) pour la recherche vectorielle.
+Puis configurez et démarrez `inference-service` (voir [`inference-service/README.md`](inference-service/README.md)) — c'est là que se trouvent désormais la config des sidecars vLLM (chat + embedding), configurable depuis sa page d'admin.
 
 ### 3. Lancer l'Application en Mode Développement
 ```bash
-npm run dev:all   # démarre l'app principale (3000), quotation-service (4001) ET vector-service (4002)
+npm run dev:all   # démarre l'app principale (3000), les 2 sidecars vLLM (8001/8002) ET inference-service (4001)
 ```
-Ou séparément : `npm run dev` (app principale), `npm --prefix quotation-service run dev`, et `vector-service/.venv/bin/python vector-service/run.py`, chacun dans son propre terminal.
+Ou séparément, chacun dans son propre terminal : `npm run dev` (app principale), les deux sidecars vLLM (voir [`inference-service/README.md`](inference-service/README.md)), et `cd inference-service && .venv/bin/python run.py`.
 
 La commande active le serveur et ouvre automatiquement un nouvel onglet navigateur sur : **`http://localhost:3000`**
 
