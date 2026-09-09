@@ -100,6 +100,11 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
   const [showVectorModal, setShowVectorModal] = useState<boolean>(false);
   const [underlyingSearch, setUnderlyingSearch] = useState<string>('');
 
+  // When on, the sous-jacent identified by the parser is sent to inference-service's
+  // real vector search (embeddings + ChromaDB) to resolve the underlying, instead of
+  // the local deterministic ticker/keyword matcher — see handleParseQuery below.
+  const [useVectorSearchForUnderlying, setUseVectorSearchForUnderlying] = useState<boolean>(false);
+
   // Presets including multi-quote examples
   const PRESET_QUERIES = [
     {
@@ -128,11 +133,15 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
     setIsParsing(true);
     setOverriddenFields(new Set());
     try {
-      const result = await parseFinancialQuery(textToRun);
+      const result = await parseFinancialQuery(textToRun, { useVectorSearchForUnderlying });
       if (result.success && result.spec && result.pricing) {
-        // Enforce automatic synchronization of underlying asset from query text
+        // Enforce automatic synchronization of underlying asset from query text — but
+        // ONLY with the local deterministic matcher. When useVectorSearchForUnderlying
+        // is on, the server already resolved the underlying via inference-service's
+        // real semantic search (see server.ts, spec-builder.ts) and that choice must
+        // be trusted as-is, not immediately overwritten by the local matcher here.
         const db = getStoredUnderlyings();
-        const bestMatch = findUnderlyingMultiStrategy(textToRun, db).autoSelected;
+        const bestMatch = useVectorSearchForUnderlying ? null : findUnderlyingMultiStrategy(textToRun, db).autoSelected;
 
         let finalSpec = result.spec;
         let finalPricing = result.pricing;
@@ -155,7 +164,7 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
         onSpecAndPricingChange?.(finalSpec, finalPricing);
 
         if (result.quotes && result.quotes.length > 0) {
-          const updatedQuotes = result.quotes.map((q) => {
+          const updatedQuotes = useVectorSearchForUnderlying ? result.quotes : result.quotes.map((q) => {
             // Re-sync against THIS quote's own resolved underlying (ticker/name), not the
             // shared multi-quote rawQuery text — searching the full combined text here
             // would match the same (first) company for every quote in the bundle.
@@ -360,6 +369,19 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
               )}
             </button>
           </div>
+
+          <label className="flex items-center gap-2 mt-3 text-xs text-slate-400 font-medium cursor-pointer select-none w-fit">
+            <input
+              type="checkbox"
+              checked={useVectorSearchForUnderlying}
+              onChange={(e) => setUseVectorSearchForUnderlying(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-950 accent-indigo-500"
+            />
+            <span>
+              Résoudre le sous-jacent via recherche vectorielle (embeddings)
+              <span className="text-slate-500"> — au lieu de la correspondance locale par ticker/mots-clés</span>
+            </span>
+          </label>
         </div>
 
         {/* Preset Buttons */}

@@ -50,6 +50,18 @@ def search_instruments(payload: SearchRequest):
     return {"success": True, "results": results}
 
 
+@router.post("/reindex")
+def reindex_instruments(current: dict = Depends(require_role("admin"))):
+    """Re-embeds every stored instrument against the current build_description_text
+    formula — needed once after that formula changes (e.g. adding the ticker to the
+    embedded text), so instruments created before the change aren't left behind."""
+    try:
+        count = instruments_service.reindex_all()
+    except RuntimeError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc))
+    return {"success": True, "reindexed": count}
+
+
 @router.get("/{instrument_id:path}", dependencies=[Depends(require_api_key_or_auth)])
 def get_instrument(instrument_id: str):
     instrument = instruments_service.get(instrument_id)

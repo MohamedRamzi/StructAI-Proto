@@ -95,6 +95,12 @@
         <button class="secondary" id="export-csv-btn">Exporter CSV</button>
         <button class="secondary" id="export-json-btn">Exporter JSON</button>
       </div>
+
+      <h3 style="margin-top:24px">Ré-indexation</h3>
+      <p class="subtitle" style="margin-bottom:14px">Recalcule l'embedding de tous les instruments existants — à lancer une fois après une mise à jour du format de texte embeddé (ex: ajout du ticker) pour que les instruments déjà créés en bénéficient aussi.</p>
+      <div class="row">
+        <button class="secondary" id="reindex-btn">Ré-indexer tous les instruments</button>
+      </div>
     </section>
 
     <!-- Analyze tester -->
@@ -409,6 +415,18 @@
     }
     document.getElementById('export-csv-btn').addEventListener('click', function () { downloadExport('csv'); });
     document.getElementById('export-json-btn').addEventListener('click', function () { downloadExport('json'); });
+
+    document.getElementById('reindex-btn').addEventListener('click', async function () {
+      var msg = document.getElementById('instruments-msg');
+      msg.innerHTML = '';
+      if (!confirm('Ré-indexer tous les instruments ? Cela recalcule un embedding par instrument (peut prendre du temps selon leur nombre).')) return;
+      try {
+        var data = await Api.post('/api/instruments/reindex');
+        msg.innerHTML = '<div class="msg success">' + data.reindexed + ' instrument(s) ré-indexé(s).</div>';
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    });
 
     // --- Analyze tester ---
     document.getElementById('analyze-run-btn').addEventListener('click', async function () {

@@ -7,6 +7,7 @@ import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from './src/data/underl
 import { PRODUCT_CATALOG } from './src/data/product-taxonomy.js';
 import { priceStructuredProduct } from './src/services/quant-pricer.js';
 import { buildExtractedProductSpec } from './src/services/spec-builder.js';
+import { UnderlyingAsset } from './src/types/structured-product.js';
 
 const currentFilePath = typeof import.meta !== 'undefined' && import.meta.url ? fileURLToPath(import.meta.url) : (typeof __filename !== 'undefined' ? __filename : process.cwd());
 const currentDirPath = path.dirname(currentFilePath);
@@ -170,13 +171,81 @@ app.all('/api/underlyings*', (req, res) => {
   }
 });
 
+/**
+ * Resolves an underlying via inference-service's real semantic search (embeddings +
+ * ChromaDB) instead of the local deterministic ticker/keyword matcher — used by
+ * POST /api/parse-query when the caller opts in via `useVectorSearchForUnderlying`
+ * (see the checkbox in QueryParserWorkbench.tsx). Maps the top hit into the app's
+ * UnderlyingAsset shape (same mapping as VectorUnderlyingSearchModal.tsx's client-side
+ * searchInstruments, duplicated here since this call happens server-side).
+ *
+ * Deliberately returns null rather than throwing on any failure (service down,
+ * no API key configured, no results, or a rejected mismatch — see below): this is
+ * an optional resolution STRATEGY, not the core LLM extraction step the project's
+ * "no silent fallback" rule targets — the caller falls back to the local matcher
+ * and the response still succeeds, just without the vector-search-refined pick.
+ * Every rejection is still logged server-side for visibility.
+ */
+async function resolveUnderlyingViaVectorSearch(queryText: string): Promise<UnderlyingAsset | null> {
+  if (!queryText || !queryText.trim() || !INFERENCE_SERVICE_API_KEY) return null;
+
+  try {
+    const searchRes = await fetch(`${INFERENCE_SERVICE_URL}/api/instruments/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${INFERENCE_SERVICE_API_KEY}` },
+      body: JSON.stringify({ query: queryText, assetClass: 'EQUITY', limit: 1 }),
+    });
+    const searchData: any = await searchRes.json();
+    if (!searchRes.ok || !searchData.success || !searchData.results?.length) {
+      if (!searchData?.success) console.warn(`[Vector Underlying Resolution] Échec ou aucun résultat pour "${queryText}": ${searchData?.error || `HTTP ${searchRes.status}`}`);
+      return null;
+    }
+
+    const top = searchData.results[0];
+
+    // A vector search always returns its best-available match, even when nothing in
+    // the index is actually relevant (e.g. searching "FP FP" against an index that
+    // only contains "MC FP" still returns "MC FP", just with a mediocre score) — so
+    // when the query text itself looks like an explicit Bloomberg ticker (e.g. "MC FP",
+    // "TSLA US"), require the top hit's own code to actually match it before trusting
+    // it. Free-text / thematic queries ("un stock européen du luxe qui price bien")
+    // skip this check entirely: that fuzziness is exactly what semantic search is for.
+    const normalize = (s: string) => s.trim().toUpperCase().replace(/\s+/g, '');
+    const looksLikeExplicitTicker = /^[A-Z0-9]{1,6}\s+[A-Z]{2,6}(\s+INDEX)?$/i.test(queryText.trim());
+    if (looksLikeExplicitTicker && normalize(top.code) !== normalize(queryText)) {
+      console.warn(`[Vector Underlying Resolution] "${queryText}" ressemble à un ticker explicite mais le meilleur résultat vectoriel ("${top.code}") ne correspond pas — repli sur le matcher local.`);
+      return null;
+    }
+
+    const meta = top.metadata || {};
+    const resolved: UnderlyingAsset = {
+      ticker: top.code,
+      name: top.name,
+      sector: meta.sector || '',
+      region: meta.region || '',
+      spotPrice: meta.spotPrice ?? 0,
+      currency: meta.currency || 'EUR',
+      impliedVol3m: meta.impliedVol3m ?? 0,
+      dividendYield: meta.dividendYield ?? 0,
+      repoRate: meta.repoRate ?? 0,
+      volatilityScore: meta.volatilityScore || 'MEDIUM',
+      isin: meta.isin || undefined,
+      reasoningForRecommendation: meta.reasoningForRecommendation || undefined,
+    };
+    return resolved;
+  } catch (networkErr: any) {
+    console.warn(`[Vector Underlying Resolution] inference-service indisponible pour "${queryText}": ${networkErr.message}`);
+    return null;
+  }
+}
+
 // API Endpoint 1: Parse Natural Language Query — delegates the actual NLP analysis
 // (prompt + LLM call + missing-field detection) to inference-service's POST /api/analyze,
 // then builds the priced ExtractedProductSpec locally (underlying resolution + Monte
 // Carlo pricing stay app-side; see src/services/spec-builder.ts, quant-pricer.ts).
 app.post('/api/parse-query', async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query, useVectorSearchForUnderlying } = req.body;
     if (!query || typeof query !== 'string') {
       return res.status(400).json({ error: 'La requête en langage naturel est requise.' });
     }
@@ -238,13 +307,27 @@ app.post('/api/parse-query', async (req, res) => {
     // inference-service, then price it via the quant engine. Any field
     // inference-service flagged as missing (quote.missingFields) is merged into
     // spec.missingRequiredParams, reusing the UI's existing display for it.
+    //
+    // Underlying resolution strategy: by default the local deterministic matcher
+    // (findUnderlyingByTickerOrQuery, run inside buildExtractedProductSpec) is used.
+    // When `useVectorSearchForUnderlying` is set, the LLM-extracted
+    // underlyingQueryOrTicker (or, failing that, the underlying selection note or
+    // the raw query) is sent instead to inference-service's real semantic search
+    // — see resolveUnderlyingViaVectorSearch — and its top hit is used directly.
     const activeDb = req.body.underlyingsDb || req.body.underlyings || serverUnderlyingsDb;
-    const quotes = (analyzeData.quotes || []).map((quote: any, index: number) => {
+    const quotes = await Promise.all((analyzeData.quotes || []).map(async (quote: any, index: number) => {
+      let vectorResolvedUnderlying: UnderlyingAsset | null = null;
+      if (useVectorSearchForUnderlying) {
+        const vectorQueryText = quote.extraction?.underlyingQueryOrTicker || quote.extraction?.underlyingSelectionNote || query;
+        vectorResolvedUnderlying = await resolveUnderlyingViaVectorSearch(vectorQueryText);
+      }
+
       const { spec, underlyingMatches } = buildExtractedProductSpec({
         query,
         parsedJson: quote.extraction,
         underlyingsDb: activeDb,
         externalMissingFields: quote.missingFields,
+        vectorResolvedUnderlying: vectorResolvedUnderlying || undefined,
       });
       const pricing = priceStructuredProduct(spec);
       return {
@@ -254,7 +337,7 @@ app.post('/api/parse-query', async (req, res) => {
         pricing,
         underlyingMatches,
       };
-    });
+    }));
 
     if (quotes.length === 0) {
       return res.status(502).json({ error: "inference-service n'a retourné aucune cotation exploitable." });

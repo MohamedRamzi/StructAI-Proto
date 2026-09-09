@@ -11,13 +11,21 @@ from .. import db
 from . import inference_client, vector_store
 
 
-def build_description_text(name: str, description: str, tags: list[str], metadata: dict) -> str:
+def build_description_text(code: str, name: str, description: str, tags: list[str], metadata: dict) -> str:
     """
     Composes the actual text that gets embedded — folds quantitative metadata
     into descriptive text too, so a query like "fort dividende faible
     volatilité" can match assets with no hand-written qualitative blurb at all.
+
+    `code` (the ticker, e.g. "MC FP") is deliberately included, and first: a
+    caller searching for the exact Bloomberg ticker of an instrument must find
+    it, not just a caller searching by qualitative theme. Without it, a query
+    that IS the ticker has no lexical overlap with the embedded text at all
+    and its ranking depends entirely on the embedding model happening to know
+    that association — not reliable enough for what is effectively an exact
+    lookup dressed up as a semantic one.
     """
-    parts = [name, description, " ".join(tags)]
+    parts = [code, name, description, " ".join(tags)]
     for key, value in metadata.items():
         if value not in (None, ""):
             parts.append(f"{key}: {value}")
@@ -25,7 +33,7 @@ def build_description_text(name: str, description: str, tags: list[str], metadat
 
 
 def _embed_and_index(instrument: dict) -> None:
-    text = build_description_text(instrument["name"], instrument["description"], instrument["tags"], instrument["metadata"])
+    text = build_description_text(instrument["code"], instrument["name"], instrument["description"], instrument["tags"], instrument["metadata"])
     vector = inference_client.embed_one(text)
     vector_store.upsert(instrument["id"], vector, instrument["assetClass"])
 
@@ -76,6 +84,37 @@ def search(query: str, asset_class: Optional[str], limit: int) -> list[dict]:
         if instrument:
             results.append({**instrument, "score": round(score, 4)})
     return results
+
+
+def reindex_all() -> int:
+    """
+    Re-embeds and re-indexes every stored instrument against the CURRENT
+    build_description_text formula, without changing any of their SQLite
+    fields. Needed after a change to that formula (e.g. adding `code` to the
+    embedded text) so instruments created before the change benefit from it
+    too — otherwise the fix would only apply to instruments created from then
+    on. Reuses create_or_replace with each instrument's own existing values,
+    which re-embeds unconditionally.
+    """
+    count = 0
+    offset = 0
+    batch_size = 500
+    while True:
+        batch = db.list_instruments(limit=batch_size, offset=offset)
+        if not batch:
+            break
+        for instrument in batch:
+            create_or_replace(
+                instrument["assetClass"],
+                instrument["code"],
+                instrument["name"],
+                instrument["description"],
+                instrument["tags"],
+                instrument["metadata"],
+            )
+            count += 1
+        offset += batch_size
+    return count
 
 
 def import_instruments(rows: list[dict]) -> int:

@@ -78,6 +78,19 @@ describe('buildExtractedProductSpec', () => {
     expect(underlyingMatches.length).toBeGreaterThan(0);
   });
 
+  it('uses vectorResolvedUnderlying directly, bypassing the local ticker matcher entirely', () => {
+    const vectorPick = STOCK_DATABASE.find((a) => a.ticker === 'TSLA US')!;
+    const { spec, underlyingMatches } = buildExtractedProductSpec({
+      query: 'Autocall sur LVMH 3 ans', // the LLM/local matcher would normally resolve MC FP
+      parsedJson: { maturityMonths: 36, underlyingQueryOrTicker: 'MC FP' },
+      vectorResolvedUnderlying: vectorPick,
+    });
+
+    expect(spec.commonParams.underlyings[0].ticker).toBe('TSLA US');
+    expect(underlyingMatches).toEqual([vectorPick]);
+    expect(spec.underlyingSelectionNote).toMatch(/recherche vectorielle/i);
+  });
+
   it('rounds down / rejects non-positive or non-numeric maturityMonths to null', () => {
     const { spec } = buildExtractedProductSpec({
       query: 'q',

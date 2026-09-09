@@ -22,6 +22,14 @@ export interface BuildSpecInput {
   referenceDate?: Date;
   /** Missing-field flags from inference-service's POST /api/analyze (see inference-service/app/services/validation.py), merged into missingRequiredParams. */
   externalMissingFields?: { field: string; label: string; message: string }[];
+  /**
+   * When set, used directly as the resolved underlying instead of running the
+   * local deterministic matcher (findUnderlyingByTickerOrQuery) — the caller
+   * (server.ts's /api/parse-query, when `useVectorSearchForUnderlying` is on)
+   * has already resolved it via inference-service's real semantic search
+   * (embeddings + ChromaDB) against the LLM-extracted underlyingQueryOrTicker.
+   */
+  vectorResolvedUnderlying?: UnderlyingAsset;
 }
 
 export interface BuildSpecOutput {
@@ -47,19 +55,22 @@ export function buildExtractedProductSpec({
   fallbackAiExplanation,
   referenceDate,
   externalMissingFields,
+  vectorResolvedUnderlying,
 }: BuildSpecInput): BuildSpecOutput {
   // Resolve the underlying: try the ticker/theme hint extracted by the parser first,
   // then retry against the full raw query if that only fell back to the DB default.
+  // Skipped entirely when the caller already resolved it via real semantic search
+  // (vectorResolvedUnderlying) — that result wins outright, no local re-matching.
   let underlyingResult = findUnderlyingByTickerOrQuery(parsedJson.underlyingQueryOrTicker || query || '', underlyingsDb);
   const fallbackDb = (underlyingsDb && underlyingsDb.length > 0) ? underlyingsDb : STOCK_DATABASE;
 
-  if (!underlyingResult.autoSelected || (underlyingResult.autoSelected === fallbackDb[0] && fallbackDb.length > 1)) {
+  if (!vectorResolvedUnderlying && (!underlyingResult.autoSelected || (underlyingResult.autoSelected === fallbackDb[0] && fallbackDb.length > 1))) {
     const fullQueryMatch = findUnderlyingByTickerOrQuery(query, underlyingsDb);
     if (fullQueryMatch.autoSelected && fullQueryMatch.autoSelected !== fallbackDb[0]) {
       underlyingResult = fullQueryMatch;
     }
   }
-  const selectedUnderlying = underlyingResult.autoSelected || fallbackDb[0] || STOCK_DATABASE[0];
+  const selectedUnderlying = vectorResolvedUnderlying || underlyingResult.autoSelected || fallbackDb[0] || STOCK_DATABASE[0];
 
   const parsedMaturity = (parsedJson.maturityMonths !== undefined && parsedJson.maturityMonths !== null && !isNaN(Number(parsedJson.maturityMonths)) && Number(parsedJson.maturityMonths) > 0)
     ? Number(parsedJson.maturityMonths)
@@ -154,8 +165,10 @@ export function buildExtractedProductSpec({
     missingRequiredParams,
     assumedDefaults,
     aiExplanation: parsedJson.aiExplanation || fallbackAiExplanation || 'Produit structuré Autocall avec départ différé de 3 mois et protection à maturité.',
-    underlyingSelectionNote: parsedJson.underlyingSelectionNote || selectedUnderlying.reasoningForRecommendation,
+    underlyingSelectionNote: vectorResolvedUnderlying
+      ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${parsedJson.underlyingQueryOrTicker || query}".`
+      : parsedJson.underlyingSelectionNote || selectedUnderlying.reasoningForRecommendation,
   };
 
-  return { spec, underlyingMatches: underlyingResult.matches };
+  return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };
 }

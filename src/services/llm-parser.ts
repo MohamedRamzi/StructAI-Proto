@@ -81,15 +81,27 @@ export async function sendLlmLogToServer(data: {
  * resolves the underlying + prices the result (see server.ts, spec-builder.ts).
  * The LLM provider/model is configured centrally there (its admin UI), not
  * per-browser-session, so no config is passed here anymore.
+ *
+ * `options.useVectorSearchForUnderlying`: when true, the underlying is resolved
+ * server-side via inference-service's real semantic search (embeddings + ChromaDB)
+ * against the LLM-extracted ticker/description, instead of the local deterministic
+ * matcher — see the corresponding checkbox in QueryParserWorkbench.tsx.
  */
-export async function parseFinancialQuery(query: string): Promise<ParseQueryResult> {
-  logLlmDebug('LLM PARSE QUERY STARTED', { query });
+export async function parseFinancialQuery(
+  query: string,
+  options?: { useVectorSearchForUnderlying?: boolean }
+): Promise<ParseQueryResult> {
+  logLlmDebug('LLM PARSE QUERY STARTED', { query, options });
 
   try {
     const res = await fetch('/api/parse-query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, underlyingsDb: getStoredUnderlyings() }),
+      body: JSON.stringify({
+        query,
+        underlyingsDb: getStoredUnderlyings(),
+        useVectorSearchForUnderlying: options?.useVectorSearchForUnderlying ?? false,
+      }),
     });
     const data = await res.json();
     logLlmDebug('BACKEND PARSE QUERY RESPONSE', data);

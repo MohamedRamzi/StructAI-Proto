@@ -56,6 +56,40 @@ def test_search_returns_a_clear_error_when_the_embedding_call_fails_no_silent_fa
     assert "vLLM" in body["error"]
 
 
+def test_search_by_exact_bloomberg_ticker_returns_the_matching_instrument_first(client, auth_headers):
+    # Regression test: the embedded text used to omit `code` entirely, so a query
+    # that IS the ticker (e.g. typed directly into the vector-search UI) had zero
+    # lexical overlap with any instrument's embedded text and could rank anything
+    # first. `code` is now folded into the embedded text (see build_description_text).
+    # Uses two tickers with no shared exchange-suffix token (unlike "MC FP" vs
+    # "FP FP" in _seed) so this is a clean test of "is the ticker embedded at
+    # all", not of how well a real embedding model disambiguates two Paris-listed
+    # tickers sharing "FP" — a genuine but separate, model-quality concern.
+    client.post("/api/instruments", json=LVMH, headers=auth_headers)
+    client.post("/api/instruments", json={"assetClass": "EQUITY", "code": "TSLA US", "name": "Tesla", "description": "Constructeur automobile electrique americain.", "tags": ["auto"], "metadata": {"sector": "Automobile"}}, headers=auth_headers)
+
+    res = client.post("/api/instruments/search", json={"query": "MC FP"}, headers=auth_headers)
+    assert res.status_code == 200
+    results = res.json()["results"]
+    assert results[0]["code"] == "MC FP"
+
+
+def test_reindex_requires_admin(client):
+    res = client.post("/api/instruments/reindex")
+    assert res.status_code == 401
+
+
+def test_reindex_recomputes_embeddings_for_every_instrument(client, auth_headers):
+    _seed(client, auth_headers)
+    res = client.post("/api/instruments/reindex", headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["reindexed"] == 2
+
+    # Search still works correctly after a reindex.
+    search_res = client.post("/api/instruments/search", json={"query": "energie petroliere"}, headers=auth_headers)
+    assert search_res.json()["results"][0]["code"] == "FP FP"
+
+
 def test_rejects_a_revoked_api_key(client, auth_headers):
     key_res = client.post("/api/api-keys", json={"label": "to-revoke"}, headers=auth_headers)
     api_key_token = key_res.json()["token"]
