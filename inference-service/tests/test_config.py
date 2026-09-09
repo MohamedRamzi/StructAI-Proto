@@ -27,6 +27,45 @@ def test_llm_config_rejects_out_of_range_temperature(client, auth_headers):
     assert res.status_code == 400
 
 
+def test_llm_config_defaults_to_openai_compatible_provider_with_no_key(client, auth_headers):
+    res = client.get("/api/config/llm", headers=auth_headers)
+    cfg = res.json()["config"]
+    assert cfg["provider"] == "openai_compatible"
+    assert cfg["hasApiKey"] is False
+
+
+def test_llm_config_rejects_an_unknown_provider(client, auth_headers):
+    res = client.put("/api/config/llm", json={"provider": "carrier-pigeon"}, headers=auth_headers)
+    assert res.status_code == 400
+
+
+def test_llm_config_can_switch_to_gemini_with_an_api_key_without_ever_returning_it(client, auth_headers):
+    res = client.put("/api/config/llm", json={"provider": "gemini", "model": "gemini-2.5-flash", "apiKey": "AIza-secret-key"}, headers=auth_headers)
+    assert res.status_code == 200
+    cfg = res.json()["config"]
+    assert cfg["provider"] == "gemini"
+    assert cfg["hasApiKey"] is True
+    assert "apiKey" not in cfg
+    assert "AIza-secret-key" not in res.text  # the raw key must never round-trip through the API
+
+    # A subsequent GET must not leak it either.
+    get_res = client.get("/api/config/llm", headers=auth_headers)
+    assert "AIza-secret-key" not in get_res.text
+    assert get_res.json()["config"]["hasApiKey"] is True
+
+
+def test_llm_config_omitting_api_key_keeps_the_existing_one(client, auth_headers):
+    client.put("/api/config/llm", json={"provider": "gemini", "apiKey": "AIza-secret-key"}, headers=auth_headers)
+    res = client.put("/api/config/llm", json={"temperature": 0.3}, headers=auth_headers)
+    assert res.json()["config"]["hasApiKey"] is True
+
+
+def test_llm_config_empty_string_api_key_clears_it(client, auth_headers):
+    client.put("/api/config/llm", json={"provider": "gemini", "apiKey": "AIza-secret-key"}, headers=auth_headers)
+    res = client.put("/api/config/llm", json={"apiKey": ""}, headers=auth_headers)
+    assert res.json()["config"]["hasApiKey"] is False
+
+
 def test_admin_updates_embedding_config(client, auth_headers):
     res = client.put("/api/config/embedding", json={"model": "Qwen/Qwen3-Embedding-0.6B", "baseUrl": "http://localhost:8002/v1"}, headers=auth_headers)
     assert res.status_code == 200

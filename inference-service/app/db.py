@@ -43,8 +43,10 @@ def init_schema() -> None:
 
         CREATE TABLE IF NOT EXISTS llm_settings (
             id INTEGER PRIMARY KEY CHECK (id = 1),
+            provider TEXT NOT NULL DEFAULT 'openai_compatible',
             model TEXT NOT NULL DEFAULT '',
             base_url TEXT NOT NULL DEFAULT '',
+            api_key TEXT,
             temperature REAL NOT NULL DEFAULT 0.1,
             updated_at TEXT NOT NULL,
             updated_by INTEGER REFERENCES users(id)
@@ -83,7 +85,21 @@ def init_schema() -> None:
         """
     )
     db.commit()
+    _migrate_llm_settings()
     _bootstrap()
+
+
+def _migrate_llm_settings() -> None:
+    """CREATE TABLE IF NOT EXISTS never adds columns to an already-existing table —
+    a db created before `provider`/`api_key` existed on llm_settings (restoring
+    multi-provider support: a local OpenAI-compatible sidecar OR a cloud provider
+    like Gemini, given an API key) needs them added explicitly, once, in place."""
+    existing_cols = {row["name"] for row in db.execute("PRAGMA table_info(llm_settings)").fetchall()}
+    if "provider" not in existing_cols:
+        db.execute("ALTER TABLE llm_settings ADD COLUMN provider TEXT NOT NULL DEFAULT 'openai_compatible'")
+    if "api_key" not in existing_cols:
+        db.execute("ALTER TABLE llm_settings ADD COLUMN api_key TEXT")
+    db.commit()
 
 
 def _bootstrap() -> None:
@@ -99,9 +115,14 @@ def _bootstrap() -> None:
         print(f"[inference-service] Compte admin initial créé : {config.ADMIN_EMAIL}{note}")
 
     if db.execute("SELECT id FROM llm_settings WHERE id = 1").fetchone() is None:
+        # GEMINI_API_KEY is only used as an initial convenience if the bootstrap
+        # provider is actually "gemini" — same principle as everywhere else: no
+        # implicit cross-provider fallback, an admin can always set/change this
+        # from the UI afterwards.
+        initial_api_key = config.GEMINI_API_KEY if config.LLM_PROVIDER == "gemini" else None
         db.execute(
-            "INSERT INTO llm_settings (id, model, base_url, temperature, updated_at) VALUES (1, ?, ?, ?, ?)",
-            (config.LLM_MODEL, config.LLM_BASE_URL, config.LLM_TEMPERATURE, _now()),
+            "INSERT INTO llm_settings (id, provider, model, base_url, api_key, temperature, updated_at) VALUES (1, ?, ?, ?, ?, ?, ?)",
+            (config.LLM_PROVIDER, config.LLM_MODEL, config.LLM_BASE_URL, initial_api_key, config.LLM_TEMPERATURE, _now()),
         )
         db.commit()
 
@@ -162,20 +183,50 @@ def verify_user_credentials(email: str, password: str) -> Optional[sqlite3.Row]:
     return user
 
 
-# --- LLM (chat/analysis) sidecar config ---
+# --- LLM (chat/analysis) provider config ---
+# `provider` is either "openai_compatible" (any endpoint speaking the OpenAI
+# chat-completions protocol — the local vLLM sidecar, LM Studio, Ollama's own
+# OpenAI-compat endpoint, or a real cloud OpenAI-compatible API, with `apiKey`
+# as an optional Bearer token) or "gemini" (Google's own protocol, `apiKey`
+# required). `get_llm_settings()` returns the real apiKey — it's for internal
+# use by inference_client.py only; routers/llm_config.py must redact it to
+# `hasApiKey` before this ever reaches an HTTP response.
+
+_KEEP_API_KEY = "\x00KEEP\x00"  # sentinel default for update_llm_settings's api_key param — see below.
+
 
 def get_llm_settings() -> dict:
     row = db.execute("SELECT * FROM llm_settings WHERE id = 1").fetchone()
-    return {"model": row["model"], "baseUrl": row["base_url"], "temperature": row["temperature"], "updatedAt": row["updated_at"]}
+    return {
+        "provider": row["provider"],
+        "model": row["model"],
+        "baseUrl": row["base_url"],
+        "apiKey": row["api_key"],
+        "temperature": row["temperature"],
+        "updatedAt": row["updated_at"],
+    }
 
 
-def update_llm_settings(model: Optional[str], base_url: Optional[str], temperature: Optional[float], updated_by: int) -> dict:
+def update_llm_settings(
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    base_url: Optional[str] = None,
+    temperature: Optional[float] = None,
+    updated_by: Optional[int] = None,
+    api_key: Optional[str] = _KEEP_API_KEY,
+) -> dict:
+    """`api_key` has three distinct states, matching the API layer's contract
+    (see routers/llm_config.py): omitted (default sentinel) -> leave the stored
+    key untouched; None -> explicitly clear it; any string -> set it."""
     current = get_llm_settings()
+    new_api_key = current["apiKey"] if api_key is _KEEP_API_KEY else api_key
     db.execute(
-        "UPDATE llm_settings SET model = ?, base_url = ?, temperature = ?, updated_at = ?, updated_by = ? WHERE id = 1",
+        "UPDATE llm_settings SET provider = ?, model = ?, base_url = ?, api_key = ?, temperature = ?, updated_at = ?, updated_by = ? WHERE id = 1",
         (
+            provider if provider is not None else current["provider"],
             model if model is not None else current["model"],
             base_url if base_url is not None else current["baseUrl"],
+            new_api_key,
             temperature if temperature is not None else current["temperature"],
             _now(),
             updated_by,

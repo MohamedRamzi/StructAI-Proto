@@ -29,14 +29,18 @@ JWT_SECRET = os.environ.get("JWT_SECRET", "")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@structai.local")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 
-# Bootstrap defaults for the two vLLM sidecars — configurable afterwards from
-# the admin UI (public/admin), same pattern as quotation-service/vector-service's
-# Gemini/Ollama settings used to be. In dev these point at `vllm serve` running
-# locally via the vllm-metal venv; in prod, at the docker-compose vllm-chat /
-# vllm-embed services (see docker-compose.yml).
+# Bootstrap defaults for the chat/analysis provider — configurable afterwards
+# from the admin UI (public/admin). LLM_PROVIDER is "openai_compatible" (any
+# endpoint speaking the OpenAI chat-completions protocol — by default the
+# local vLLM sidecar; in prod, the docker-compose vllm-chat service, see
+# docker-compose.yml) or "gemini" (Google's cloud API, needs GEMINI_API_KEY or
+# a key set later from the admin UI). Embeddings are always served by the
+# vLLM sidecar (no cloud embedding provider is wired up).
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai_compatible")
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "http://localhost:8001/v1")
 LLM_MODEL = os.environ.get("LLM_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
 LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.1"))
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip() or None
 EMBEDDING_BASE_URL = os.environ.get("EMBEDDING_BASE_URL", "http://localhost:8002/v1")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "Qwen/Qwen3-Embedding-0.6B")
 

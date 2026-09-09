@@ -67,9 +67,11 @@ class UserOut(BaseModel):
 
 
 class LlmConfigOut(BaseModel):
+    provider: str
     model: str
     baseUrl: str
     temperature: float
+    hasApiKey: bool
     updatedAt: str
 
 

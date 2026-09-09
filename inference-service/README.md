@@ -5,7 +5,13 @@ Service Python unique regroupant :
 - **l'analyse NLP** des demandes client (remplace l'ancien `quotation-service` Node — prompt + extraction JSON + détection des champs manquants) ;
 - **les embeddings** pour la recherche sémantique sur les sous-jacents (remplace l'ancien `vector-service` — ChromaDB + ranking).
 
-Les deux besoins sont servis par **vLLM**, exécuté comme deux process **sidecar** indépendants (`vllm serve`), jamais importé en Python dans ce service. `inference-service` ne parle qu'HTTP à ces deux sidecars, via une API compatible OpenAI (`/v1/chat/completions`, `/v1/embeddings`).
+Les embeddings sont toujours servis par un sidecar **vLLM** local (`vllm serve --runner pooling`), jamais importé en Python dans ce service — `inference-service` ne lui parle qu'en HTTP, via son API compatible OpenAI (`/v1/embeddings`).
+
+Le chat/analyse, lui, supporte **deux types de fournisseur** (configurable depuis l'admin, onglet "Config. Chat") :
+- **`openai_compatible`** : tout endpoint parlant le protocole OpenAI chat-completions — par défaut le sidecar vLLM local (`vllm serve`, même principe que pour l'embedding), mais aussi LM Studio, l'endpoint OpenAI-compatible d'Ollama, ou une vraie API cloud OpenAI-compatible moyennant une clé.
+- **`gemini`** : l'API Google Gemini (cloud), appelée directement en REST (pas de dépendance SDK) — une clé API est requise.
+
+La clé API, quand elle existe, est stockée en base et **n'est jamais renvoyée en clair** par l'API (`GET /api/config/llm` ne renvoie que `hasApiKey: true/false`).
 
 ## Pourquoi un sidecar HTTP plutôt qu'un import direct de `vllm` ?
 

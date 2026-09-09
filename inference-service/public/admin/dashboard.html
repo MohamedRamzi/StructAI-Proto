@@ -119,13 +119,24 @@
     <!-- Chat (LLM) config -->
     <section id="tab-llm" class="card hidden">
       <h2>Configuration du moteur de chat (analyse NLP)</h2>
-      <p class="subtitle" style="margin-bottom:14px">Sidecar <span class="mono">vllm serve</span> exposant une API compatible OpenAI. Aucune clé API n'est nécessaire pour un sidecar local.</p>
+      <p class="subtitle" style="margin-bottom:14px">Un endpoint compatible OpenAI (sidecar <span class="mono">vllm serve</span> local, LM Studio, ou tout endpoint cloud nécessitant une clé) ou Google Gemini (cloud, clé API requise).</p>
       <div id="llm-msg"></div>
       <form id="llm-form">
+        <label for="llm-provider">Fournisseur</label>
+        <select id="llm-provider">
+          <option value="openai_compatible">Endpoint OpenAI-compatible (vLLM local, LM Studio, ...)</option>
+          <option value="gemini">Google Gemini (cloud)</option>
+        </select>
         <label for="llm-model">Modèle</label>
-        <input id="llm-model" type="text" placeholder="ex: Qwen/Qwen3-4B-Instruct-2507" />
-        <label for="llm-baseurl">URL de base (endpoint OpenAI-compatible du sidecar vLLM)</label>
-        <input id="llm-baseurl" type="text" placeholder="ex: http://localhost:8001/v1" />
+        <input id="llm-model" type="text" placeholder="ex: Qwen/Qwen3-4B-Instruct-2507 ou gemini-2.5-flash" />
+        <div id="llm-baseurl-row">
+          <label for="llm-baseurl">URL de base (endpoint OpenAI-compatible)</label>
+          <input id="llm-baseurl" type="text" placeholder="ex: http://localhost:8001/v1" />
+        </div>
+        <label for="llm-apikey">
+          Clé API <span class="muted" id="llm-apikey-hint"></span>
+        </label>
+        <input id="llm-apikey" type="password" placeholder="Laisser vide pour conserver la clé actuelle" />
         <label for="llm-temp">Température</label>
         <input id="llm-temp" type="number" step="0.05" min="0" max="2" />
         <div class="row" style="margin-top:18px">
@@ -446,15 +457,24 @@
     });
 
     // --- Chat (LLM) config ---
+    function updateLlmProviderVisibility() {
+      var isGemini = document.getElementById('llm-provider').value === 'gemini';
+      document.getElementById('llm-baseurl-row').classList.toggle('hidden', isGemini);
+    }
+    document.getElementById('llm-provider').addEventListener('change', updateLlmProviderVisibility);
+
     async function loadLlmConfig() {
       var data = await Api.get('/api/config/llm');
       var c = data.config;
+      document.getElementById('llm-provider').value = c.provider;
       document.getElementById('llm-model').value = c.model;
       document.getElementById('llm-baseurl').value = c.baseUrl;
       document.getElementById('llm-temp').value = c.temperature;
+      document.getElementById('llm-apikey-hint').textContent = c.hasApiKey ? '(une clé est déjà configurée)' : '(aucune clé configurée)';
       document.getElementById('llm-updated').textContent = c.updatedAt ? ('Dernière mise à jour : ' + c.updatedAt) : '';
+      updateLlmProviderVisibility();
       if (!isAdmin) {
-        document.querySelectorAll('#llm-form input').forEach(function (el) { el.disabled = true; });
+        document.querySelectorAll('#llm-form input, #llm-form select').forEach(function (el) { el.disabled = true; });
         document.getElementById('llm-save-btn').classList.add('hidden');
       }
     }
@@ -463,11 +483,16 @@
       var msg = document.getElementById('llm-msg');
       msg.innerHTML = '';
       try {
-        await Api.put('/api/config/llm', {
+        var payload = {
+          provider: document.getElementById('llm-provider').value,
           model: document.getElementById('llm-model').value,
           baseUrl: document.getElementById('llm-baseurl').value,
           temperature: parseFloat(document.getElementById('llm-temp').value),
-        });
+        };
+        var apiKeyVal = document.getElementById('llm-apikey').value;
+        if (apiKeyVal !== '') payload.apiKey = apiKeyVal;
+        await Api.put('/api/config/llm', payload);
+        document.getElementById('llm-apikey').value = '';
         msg.innerHTML = '<div class="msg success">Configuration enregistrée.</div>';
         loadLlmConfig();
       } catch (err) {
