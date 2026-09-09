@@ -66,7 +66,15 @@ input, select, textarea {
   font-family: inherit;
 }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-textarea { resize: vertical; min-height: 90px; }
+textarea {
+  display: block;
+  resize: none;
+  min-height: 120px;
+  border-radius: 12px;
+  padding: 14px 16px;
+  line-height: 1.5;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.25);
+}
 
 button {
   cursor: pointer;
