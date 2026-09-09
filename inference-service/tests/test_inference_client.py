@@ -119,6 +119,71 @@ def test_openai_compatible_network_error_is_wrapped_no_silent_fallback(client, m
         inference_client.chat_completion("system", "user")
 
 
+def test_gemini_retries_once_on_503_then_succeeds(client, monkeypatch):
+    """A 503 is documented by Google as "temporarily overloaded, retry" — this
+    is the one case where a bounded retry is correct, not a masked failure."""
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="a-key", updated_by=1)
+    monkeypatch.setattr(inference_client.time, "sleep", lambda seconds: None)
+
+    calls = {"count": 0}
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            return FakeResponse(503, {"error": {"message": "high demand"}}, text='{"error": {"message": "high demand"}}')
+        return FakeResponse(200, {"candidates": [{"content": {"parts": [{"text": "ok after retry"}]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    result = inference_client.chat_completion("system", "user")
+    assert result == "ok after retry"
+    assert calls["count"] == 2
+
+
+def test_gemini_gives_up_after_max_retries_on_persistent_503(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="a-key", updated_by=1)
+    monkeypatch.setattr(inference_client.time, "sleep", lambda seconds: None)
+
+    calls = {"count": 0}
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        calls["count"] += 1
+        return FakeResponse(503, {"error": {"message": "high demand"}}, text='{"error": {"message": "high demand"}}')
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    with pytest.raises(RuntimeError, match="503"):
+        inference_client.chat_completion("system", "user")
+    # 1 initial attempt + _MAX_RETRIES retries, never more.
+    assert calls["count"] == 1 + inference_client._MAX_RETRIES
+
+
+def test_other_error_statuses_are_never_retried(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="bad-key", updated_by=1)
+    monkeypatch.setattr(inference_client.time, "sleep", lambda seconds: None)
+
+    calls = {"count": 0}
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        calls["count"] += 1
+        return FakeResponse(400, {"error": {"message": "API key not valid"}}, text='{"error": {"message": "API key not valid"}}')
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+
+    with pytest.raises(RuntimeError, match="API key not valid"):
+        inference_client.chat_completion("system", "user")
+    assert calls["count"] == 1
+
+
 def test_unknown_provider_raises_a_clear_error(client):
     from app import db
     from app.services import inference_client

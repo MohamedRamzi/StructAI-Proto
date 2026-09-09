@@ -23,13 +23,38 @@ unreachable, missing API key, non-200 response, unexpected payload shape)
 propagates as a RuntimeError with a clear, specific message to the caller.
 There is no silent degraded mode: an inference failure must be visible, never
 masked behind a best-effort guess (same principle already applied throughout
-this project).
+this project). A bounded retry-with-backoff on HTTP 503 is the one exception
+(see _post_with_retry) — Google's own Gemini docs explicitly document 503 as
+"model temporarily overloaded, please retry", and a local vLLM sidecar can
+briefly 503 right as it finishes starting up; both are transient-by-design,
+not a failure to mask.
 """
+import time
+
 import httpx
 
 from .. import db
 
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
+
+_RETRYABLE_STATUS_CODES = {503}
+_MAX_RETRIES = 2
+_RETRY_BACKOFF_SECONDS = 1.5
+
+
+def _post_with_retry(url: str, **kwargs) -> httpx.Response:
+    """POSTs with a short retry-with-backoff on HTTP 503 only. Any other
+    status, or a connection-level error (httpx.RequestError, handled by the
+    caller), is NOT retried and propagates immediately — those mean something
+    needs the user's attention (bad config, service actually down), not
+    "wait a moment and it'll clear up"."""
+    attempt = 0
+    while True:
+        response = httpx.post(url, **kwargs)
+        if response.status_code not in _RETRYABLE_STATUS_CODES or attempt >= _MAX_RETRIES:
+            return response
+        attempt += 1
+        time.sleep(_RETRY_BACKOFF_SECONDS * attempt)
 
 
 def chat_completion(system_prompt: str, user_prompt: str) -> str:
@@ -54,7 +79,7 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
     headers = {"Authorization": f"Bearer {cfg['apiKey']}"} if cfg.get("apiKey") else {}
 
     try:
-        response = httpx.post(
+        response = _post_with_retry(
             url,
             json={
                 "model": cfg["model"],
@@ -90,11 +115,16 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> 
     if not api_key:
         raise RuntimeError("Aucune clé API Gemini configurée. Renseignez-la depuis la page d'admin (\"Config. Chat\").")
 
-    model = cfg.get("model") or "gemini-2.5-flash"
+    # "gemini-flash-latest" is Google's own always-current alias — used as the
+    # fallback so this doesn't need bumping by hand every time Google ships a
+    # new flash model (its dated model ids, e.g. gemini-2.5-flash, do get
+    # retired for new API keys — confirmed empirically via a 404 telling
+    # callers to switch to the current one).
+    model = cfg.get("model") or "gemini-flash-latest"
     url = f"{GEMINI_API_BASE}/models/{model}:generateContent"
 
     try:
-        response = httpx.post(
+        response = _post_with_retry(
             url,
             params={"key": api_key},
             json={
@@ -133,7 +163,7 @@ def embed(texts: list[str]) -> list[list[float]]:
     base_url = cfg["baseUrl"].rstrip("/")
     url = f"{base_url}/embeddings"
     try:
-        response = httpx.post(url, json={"model": cfg["model"], "input": texts}, timeout=60.0)
+        response = _post_with_retry(url, json={"model": cfg["model"], "input": texts}, timeout=60.0)
     except httpx.RequestError as exc:
         raise RuntimeError(
             f"Impossible de contacter le moteur d'embedding (vLLM) sur {base_url} : {exc}. "
