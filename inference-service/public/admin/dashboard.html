@@ -109,7 +109,7 @@
       <p class="subtitle" style="margin-bottom:14px">Envoie une demande client au moteur de chat configuré ci-dessous (<span class="mono">POST /api/analyze</span>) et affiche le JSON extrait, sans passer par l'application principale.</p>
       <div id="analyze-msg"></div>
       <label for="analyze-query">Demande client</label>
-      <input id="analyze-query" type="text" placeholder="ex: Autocall LVMH 3 ans PDI 70% NC 1y fwd 3m" />
+      <textarea id="analyze-query" rows="6" placeholder="ex: Autocall LVMH 3 ans PDI 70% NC 1y fwd 3m&#10;(les demandes réelles tiennent souvent sur plusieurs lignes — les sauts de ligne sont conservés et transmis tels quels à l'analyse)"></textarea>
       <div class="row" style="margin-top:14px">
         <button id="analyze-run-btn">Analyser</button>
       </div>

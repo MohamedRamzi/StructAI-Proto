@@ -55,7 +55,7 @@ label {
 }
 label:first-child { margin-top: 0; }
 
-input, select {
+input, select, textarea {
   width: 100%;
   background: var(--panel-2);
   border: 1px solid var(--border);
@@ -63,8 +63,10 @@ input, select {
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 14px;
+  font-family: inherit;
 }
-input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+textarea { resize: vertical; min-height: 90px; }
 
 button {
   cursor: pointer;
