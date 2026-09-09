@@ -441,18 +441,28 @@
 
     // --- Analyze tester ---
     document.getElementById('analyze-run-btn').addEventListener('click', async function () {
+      var btn = this;
       var msg = document.getElementById('analyze-msg');
       var result = document.getElementById('analyze-result');
       var query = document.getElementById('analyze-query').value.trim();
       msg.innerHTML = '';
       result.style.display = 'none';
       if (!query) { msg.innerHTML = '<div class="msg error">Saisissez une demande client.</div>'; return; }
+
+      var originalLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Analyse en cours…';
+      msg.innerHTML = '<div class="msg info">Analyse en cours — le moteur LLM peut prendre plusieurs dizaines de secondes…</div>';
       try {
         var data = await Api.post('/api/analyze', { query: query });
+        msg.innerHTML = '';
         result.textContent = JSON.stringify(data, null, 2);
         result.style.display = 'block';
       } catch (err) {
         msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
       }
     });
 
