@@ -41,7 +41,15 @@ var Api = {
       body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
     });
 
-    if (res.status === 401) {
+    // A 401 from the login endpoint itself means "wrong email/password", not
+    // "your session expired" — it must fall through to the normal error path
+    // below so login.html can show it. Redirecting to login.html here (as for
+    // every OTHER 401) was the bug: on the login page that's a same-page
+    // reload, wiping out the error message before it could ever be seen —
+    // from the user's perspective, submitting the form just silently bounced
+    // back to a blank login page.
+    var isLoginCall = path === '/api/auth/login';
+    if (res.status === 401 && !isLoginCall) {
       Auth.clear();
       window.location.href = 'login.html';
       throw new Error('Session expirée, veuillez vous reconnecter.');
