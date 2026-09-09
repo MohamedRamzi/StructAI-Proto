@@ -20,12 +20,10 @@ Conséquence : `requirements.txt` ne contient **aucune dépendance vLLM**.
 
 ```bash
 # Terminal 1 — sidecar chat
-source ~/.venv-vllm-metal/bin/activate
-vllm serve Qwen/Qwen3-4B-Instruct-2507 --port 8001
+bash ../scripts/dev-vllm-chat.sh
 
 # Terminal 2 — sidecar embedding
-source ~/.venv-vllm-metal/bin/activate
-vllm serve Qwen/Qwen3-Embedding-0.6B --port 8002 --runner pooling
+bash ../scripts/dev-vllm-embed.sh
 
 # Terminal 3 — ce service (venv léger, sans vllm)
 cd inference-service
@@ -38,6 +36,11 @@ cp .env.example .env   # puis ajuster JWT_SECRET / ADMIN_PASSWORD
 Page d'admin : http://localhost:4001/admin/login.html (identifiants bootstrap : voir `.env`, un mot de passe est généré et affiché dans les logs au premier démarrage si `ADMIN_PASSWORD` n'est pas défini).
 
 Depuis la racine du monorepo, `npm run dev:all` démarre les 3 process ci-dessus en même temps que l'app principale (voir `package.json`).
+
+**Vérifié en réel** sur ce Mac avec `Qwen/Qwen3-4B-Instruct-2507` (chat) et `Qwen/Qwen3-Embedding-0.6B` (embedding) : `/api/analyze` et `/api/instruments/search` fonctionnent de bout en bout contre de vrais sidecars vLLM. Deux limitations vllm-metal réelles ont été rencontrées et corrigées dans `scripts/dev-vllm-*.sh` :
+
+- **Contexte par défaut trop grand** : `Qwen3-4B-Instruct-2507` réclame par défaut un contexte de 262144 tokens (~36 Go de KV cache à lui seul), ce qui affame le sidecar d'embedding tournant en parallèle sur la même mémoire unifiée. `dev-vllm-chat.sh` passe `--max-model-len 8192` (largement suffisant pour ces prompts courts, ajustable via `LLM_MAX_MODEL_LEN_DEV`).
+- **Checkpoints d'embedding Qwen incompatibles avec le chargeur MLX de vllm-metal** : les poids `.safetensors` des modèles d'embedding Qwen (`Qwen3-Embedding-*`) sont stockés avec des noms de clés "plats" (`embed_tokens.weight`, `layers.0...`) — convention encoder-only/sentence-transformers — alors que le chargeur MLX de vllm-metal construit un squelette `Qwen3ForCausalLM` qui attend un préfixe `model.` (comme les checkpoints de chat, qui eux fonctionnent sans problème). Résultat sans le contournement : `ValueError: Received 310 parameters not in model: embed_tokens.weight, ...`. `dev-vllm-embed.sh` appelle automatiquement `scripts/patch-vllm-metal-embedding.py`, qui télécharge le modèle, réécrit les noms de clés avec le préfixe manquant, et sert cette copie locale (mise en cache sous `~/.cache/vllm-metal-patched/`, réécrite une seule fois) — totalement transparent, `EMBEDDING_MODEL_DEV` reste le nom du modèle HF.
 
 ## Tests
 
