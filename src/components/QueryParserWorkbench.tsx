@@ -6,6 +6,7 @@ import { getStoredUnderlyings, findUnderlyingMultiStrategy } from '../services/u
 import { priceStructuredProduct } from '../services/quant-pricer';
 import { parseFinancialQuery, QuoteBundle } from '../services/llm-parser';
 import { VectorUnderlyingSearchModal } from './VectorUnderlyingSearchModal';
+import { RichExtractionPanel } from './RichExtractionPanel';
 import {
   Search,
   Sparkles,
@@ -91,6 +92,12 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
   const [quotesBundle, setQuotesBundle] = useState<QuoteBundle[]>([]);
   const [activeQuoteId, setActiveQuoteId] = useState<number>(1);
   const [showComparisonView, setShowComparisonView] = useState<boolean>(false);
+  // Set when the active quote was parsed into a rich schema with no local
+  // pricer (rates/fx/credit) — the workbench shows RichExtractionPanel instead
+  // of the pricing grid. Mutually exclusive with `spec` being set.
+  const [activeRichQuote, setActiveRichQuote] = useState<QuoteBundle | null>(null);
+
+  const isPriceable = (q: QuoteBundle) => q.pricingAvailable !== false && !!q.spec && !!q.pricing;
 
   // Overrides tracker
   const [overriddenFields, setOverriddenFields] = useState<Set<string>>(new Set());
@@ -134,68 +141,56 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
     setOverriddenFields(new Set());
     try {
       const result = await parseFinancialQuery(textToRun, { useVectorSearchForUnderlying });
-      if (result.success && result.spec && result.pricing) {
-        // Enforce automatic synchronization of underlying asset from query text — but
-        // ONLY with the local deterministic matcher. When useVectorSearchForUnderlying
-        // is on, the server already resolved the underlying via inference-service's
-        // real semantic search (see server.ts, spec-builder.ts) and that choice must
-        // be trusted as-is, not immediately overwritten by the local matcher here.
+      const hasUsableResult = result.success && (!!result.spec || (result.quotes?.length ?? 0) > 0);
+      if (hasUsableResult) {
         const db = getStoredUnderlyings();
-        const bestMatch = useVectorSearchForUnderlying ? null : findUnderlyingMultiStrategy(textToRun, db).autoSelected;
 
-        let finalSpec = result.spec;
-        let finalPricing = result.pricing;
+        // Normalize to a quotes array — a single-quote response may omit `quotes`.
+        let quotes: QuoteBundle[] = (result.quotes && result.quotes.length > 0)
+          ? result.quotes
+          : (result.spec && result.pricing
+              ? [{ quoteId: 1, label: result.spec.productTypeName, spec: result.spec, pricing: result.pricing, pricingAvailable: true }]
+              : []);
 
-        if (bestMatch) {
-          finalSpec = {
-            ...finalSpec,
-            commonParams: {
-              ...finalSpec.commonParams,
-              underlyings: [bestMatch],
-            },
-            underlyingSelectionNote: bestMatch.reasoningForRecommendation || `Sous-jacent ${bestMatch.name} (${bestMatch.ticker}) sélectionné.`,
-          };
-          finalPricing = priceStructuredProduct(finalSpec);
+        // Re-sync each PRICEABLE quote's underlying via the local deterministic
+        // matcher (skipped when useVectorSearchForUnderlying already resolved it
+        // server-side against inference-service's real semantic search). Rich
+        // parse-only quotes (rates/fx/credit — no spec) are passed through as-is.
+        if (!useVectorSearchForUnderlying) {
+          quotes = quotes.map((q) => {
+            if (!isPriceable(q)) return q;
+            const hint = q.spec!.commonParams?.underlyings?.[0]?.ticker
+              || q.spec!.commonParams?.underlyings?.[0]?.name
+              || q.spec!.rawQuery
+              || textToRun;
+            const qMatch = findUnderlyingMultiStrategy(hint, db).autoSelected;
+            if (!qMatch) return q;
+            const updatedQSpec = {
+              ...q.spec!,
+              commonParams: { ...q.spec!.commonParams, underlyings: [qMatch] },
+              underlyingSelectionNote: qMatch.reasoningForRecommendation || `Sous-jacent ${qMatch.name} (${qMatch.ticker}) sélectionné.`,
+            };
+            return { ...q, spec: updatedQSpec, pricing: priceStructuredProduct(updatedQSpec) };
+          });
         }
 
-        setSpec(finalSpec);
-        setPricing(finalPricing);
-        setBaseAiSpec(finalSpec);
-        onSpecAndPricingChange?.(finalSpec, finalPricing);
+        setQuotesBundle(quotes.length > 1 ? quotes : []);
 
-        if (result.quotes && result.quotes.length > 0) {
-          const updatedQuotes = useVectorSearchForUnderlying ? result.quotes : result.quotes.map((q) => {
-            // Re-sync against THIS quote's own resolved underlying (ticker/name), not the
-            // shared multi-quote rawQuery text — searching the full combined text here
-            // would match the same (first) company for every quote in the bundle.
-            const quoteUnderlyingHint = q.spec.commonParams?.underlyings?.[0]?.ticker
-              || q.spec.commonParams?.underlyings?.[0]?.name
-              || q.spec.rawQuery
-              || textToRun;
-            const qMatch = findUnderlyingMultiStrategy(quoteUnderlyingHint, db).autoSelected;
-            if (qMatch) {
-              const updatedQSpec = {
-                ...q.spec,
-                commonParams: { ...q.spec.commonParams, underlyings: [qMatch] },
-              };
-              return {
-                ...q,
-                spec: updatedQSpec,
-                pricing: priceStructuredProduct(updatedQSpec),
-              };
-            }
-            return q;
-          });
-          setQuotesBundle(updatedQuotes);
-          setActiveQuoteId(1);
-          if (updatedQuotes[0]) {
-            setSpec(updatedQuotes[0].spec);
-            setPricing(updatedQuotes[0].pricing);
-            setBaseAiSpec(updatedQuotes[0].spec);
-            onSpecAndPricingChange?.(updatedQuotes[0].spec, updatedQuotes[0].pricing);
-          }
-        } else {
-          setQuotesBundle([]);
+        const firstPriceable = quotes.find(isPriceable);
+        if (firstPriceable) {
+          setActiveQuoteId(firstPriceable.quoteId);
+          setActiveRichQuote(null);
+          setSpec(firstPriceable.spec!);
+          setPricing(firstPriceable.pricing!);
+          setBaseAiSpec(firstPriceable.spec!);
+          onSpecAndPricingChange?.(firstPriceable.spec!, firstPriceable.pricing!);
+        } else if (quotes.length > 0) {
+          // Every quote parsed into a rich schema with no local pricer.
+          setActiveQuoteId(quotes[0].quoteId);
+          setActiveRichQuote(quotes[0]);
+          setSpec(null);
+          setPricing(null);
+          setBaseAiSpec(null);
         }
       } else {
         alert(`Erreur de parsing : ${result.error || 'Modèle non disponible'}`);
@@ -211,11 +206,19 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
   // Switch active quote in multi-quote mode
   const handleSwitchQuote = (quote: QuoteBundle) => {
     setActiveQuoteId(quote.quoteId);
-    setSpec(quote.spec);
-    setPricing(quote.pricing);
-    setBaseAiSpec(quote.spec);
     setOverriddenFields(new Set());
-    onSpecAndPricingChange?.(quote.spec, quote.pricing);
+    if (isPriceable(quote)) {
+      setActiveRichQuote(null);
+      setSpec(quote.spec!);
+      setPricing(quote.pricing!);
+      setBaseAiSpec(quote.spec!);
+      onSpecAndPricingChange?.(quote.spec!, quote.pricing!);
+    } else {
+      setActiveRichQuote(quote);
+      setSpec(null);
+      setPricing(null);
+      setBaseAiSpec(null);
+    }
   };
 
   // Re-calculate pricing when user manually overrides parameter form
@@ -429,6 +432,7 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
           {/* Quote Selection Tabs */}
           <div className="flex flex-wrap gap-2">
             {quotesBundle.map((q) => {
+              const priceable = isPriceable(q);
               const couponVal = q.pricing?.solvedTarget?.solvedValueNumber ?? (q.pricing as any)?.solvedCouponPct ?? 0;
               return (
                 <button
@@ -440,10 +444,10 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
                       : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:bg-slate-800'
                   }`}
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span className={`w-2 h-2 rounded-full ${priceable ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
                   <span>{q.label}</span>
                   <span className="font-mono text-cyan-300 text-[11px]">
-                    ({couponVal.toFixed(2)}%)
+                    {priceable ? `(${couponVal.toFixed(2)}%)` : `(${q.schemaVersion || 'parse-only'})`}
                   </span>
                 </button>
               );
@@ -467,28 +471,30 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
                 </thead>
                 <tbody className="divide-y divide-slate-800/80 font-medium">
                   {quotesBundle.map((q) => {
+                    const priceable = isPriceable(q);
                     const cVal = q.pricing?.solvedTarget?.solvedValueNumber ?? (q.pricing as any)?.solvedCouponPct ?? 0;
                     const fVal = q.pricing?.theoreticalValuePct ?? (q.pricing as any)?.fairValuePct ?? 100;
-                    const ticker = q.spec?.commonParams?.underlyings?.[0]?.ticker || 'MULTI';
-                    const mat = q.spec?.commonParams?.maturityMonths ?? 36;
-                    const pdi = (q.spec?.specificParams as any)?.pdiBarrierPct ?? 70;
+                    const ticker = q.spec?.commonParams?.underlyings?.[0]?.ticker
+                      || (q.routing ? `${q.routing.assetClass ?? '—'} / ${q.routing.productFamily ?? '—'}` : 'MULTI');
+                    const mat = q.spec?.commonParams?.maturityMonths ?? null;
+                    const pdi = (q.spec?.specificParams as any)?.pdiBarrierPct ?? null;
 
                     return (
                       <tr
                         key={q.quoteId}
                         className={activeQuoteId === q.quoteId ? 'bg-indigo-950/60 font-bold text-white' : 'hover:bg-slate-800/50'}
                       >
-                        <td className="p-3 text-white">{q.spec?.productTypeName || 'Produit Structuré'}</td>
+                        <td className="p-3 text-white">{q.spec?.productTypeName || q.label || 'Produit Structuré'}</td>
                         <td className="p-3 font-mono text-cyan-400">
                           {ticker}
                         </td>
-                        <td className="p-3">{mat}m</td>
-                        <td className="p-3">{pdi}%</td>
+                        <td className="p-3">{mat != null ? `${mat}m` : '—'}</td>
+                        <td className="p-3">{pdi != null ? `${pdi}%` : '—'}</td>
                         <td className="p-3 text-right font-mono font-extrabold text-emerald-400 text-sm">
-                          {cVal.toFixed(2)} %
+                          {priceable ? `${cVal.toFixed(2)} %` : '—'}
                         </td>
                         <td className="p-3 text-right font-mono text-slate-300">
-                          {fVal.toFixed(2)} %
+                          {priceable ? `${fVal.toFixed(2)} %` : <span className="text-amber-400 text-[11px]">pricing indispo.</span>}
                         </td>
                         <td className="p-3 text-center">
                           <button
@@ -508,8 +514,10 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
         </div>
       )}
 
-      {/* Main Workbench Grid or Blank State Welcome */}
-      {!spec || !spec.commonParams?.underlyings?.length ? (
+      {/* Rich parse-only quote (rates/fx/credit — no local pricer), Main Workbench Grid, or Blank State Welcome */}
+      {activeRichQuote && !spec ? (
+        <RichExtractionPanel quote={activeRichQuote} />
+      ) : !spec || !spec.commonParams?.underlyings?.length ? (
         <div key="welcome-placeholder-card" className="bg-slate-900/90 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 space-y-4 shadow-xl backdrop-blur-md max-w-3xl mx-auto my-6">
           <div className="w-14 h-14 rounded-2xl bg-indigo-950/80 border border-indigo-700/60 flex items-center justify-center text-cyan-400 mx-auto shadow-md">
             <Sparkles className="w-7 h-7 animate-pulse text-cyan-400" />
