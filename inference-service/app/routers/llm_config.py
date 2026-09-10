@@ -19,6 +19,7 @@ from ..auth.dependencies import require_auth, require_role
 router = APIRouter(prefix="/api/config", tags=["config"])
 
 VALID_PROVIDERS = {"openai_compatible", "gemini"}
+VALID_REASONING_MODES = {"auto", "fast", "thinking"}
 
 
 def _load_presets() -> dict:
@@ -40,6 +41,7 @@ class UpdateLlmConfigRequest(BaseModel):
     baseUrl: Optional[str] = None
     apiKey: Optional[str] = None
     temperature: Optional[float] = None
+    reasoningMode: Optional[str] = None
 
 
 def _redact(cfg: dict) -> dict:
@@ -48,6 +50,7 @@ def _redact(cfg: dict) -> dict:
         "model": cfg["model"],
         "baseUrl": cfg["baseUrl"],
         "temperature": cfg["temperature"],
+        "reasoningMode": cfg.get("reasoningMode", "auto"),
         "hasApiKey": bool(cfg["apiKey"]),
         "updatedAt": cfg["updatedAt"],
     }
@@ -71,11 +74,14 @@ def update_llm_config(payload: UpdateLlmConfigRequest, current: dict = Depends(r
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"provider invalide. Valeurs autorisées : {', '.join(sorted(VALID_PROVIDERS))}.")
     if payload.temperature is not None and not (0 <= payload.temperature <= 2):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "temperature doit être un nombre entre 0 et 2.")
+    if payload.reasoningMode is not None and payload.reasoningMode not in VALID_REASONING_MODES:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"reasoningMode invalide. Valeurs autorisées : {', '.join(sorted(VALID_REASONING_MODES))}.")
 
     # apiKey omitted entirely (None) -> keep the existing key. apiKey: "" explicitly -> clear it.
     update_kwargs = {} if payload.apiKey is None else {"api_key": (payload.apiKey or None)}
     updated = db.update_llm_settings(
         payload.provider, payload.model, payload.baseUrl,
-        temperature=payload.temperature, updated_by=current["userId"], **update_kwargs,
+        temperature=payload.temperature, updated_by=current["userId"],
+        reasoning_mode=payload.reasoningMode, **update_kwargs,
     )
     return {"success": True, "config": _redact(updated)}

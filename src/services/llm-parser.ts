@@ -108,7 +108,7 @@ export async function sendLlmLogToServer(data: {
  */
 export async function parseFinancialQuery(
   query: string,
-  options?: { useVectorSearchForUnderlying?: boolean }
+  options?: { useVectorSearchForUnderlying?: boolean; reasoningMode?: 'auto' | 'fast' | 'thinking' }
 ): Promise<ParseQueryResult> {
   logLlmDebug('LLM PARSE QUERY STARTED', { query, options });
 
@@ -120,6 +120,7 @@ export async function parseFinancialQuery(
         query,
         underlyingsDb: getStoredUnderlyings(),
         useVectorSearchForUnderlying: options?.useVectorSearchForUnderlying ?? false,
+        ...(options?.reasoningMode ? { reasoningMode: options.reasoningMode } : {}),
       }),
     });
     const data = await res.json();

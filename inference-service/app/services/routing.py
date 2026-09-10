@@ -27,14 +27,14 @@ def _router_prompt_body() -> str:
     return row["body"]
 
 
-def classify_request(query: str) -> list[dict]:
+def classify_request(query: str, reasoning_mode: Optional[str] = None) -> list[dict]:
     """Returns [{quoteId, assetClass, productFamily, underlying, routerConfidence}, ...]."""
     system_prompt = _router_prompt_body()
     user_prompt = (
         "Classe la demande client suivante. Réponds uniquement avec l'objet JSON "
         f'décrit (une clé "quotes").\n\n"{query}"'
     )
-    raw_text = inference_client.chat_completion(system_prompt, user_prompt)
+    raw_text = inference_client.chat_completion(system_prompt, user_prompt, reasoning_mode=reasoning_mode)
     parsed = extract_json_from_text(raw_text)
     if not parsed:
         model = db.get_llm_settings()["model"]

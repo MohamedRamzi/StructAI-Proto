@@ -81,6 +81,23 @@ def test_embedding_config_requires_admin_to_write(client, auth_headers):
     assert res.status_code == 403
 
 
+def test_llm_config_reasoning_mode_defaults_to_auto_and_round_trips(client, auth_headers):
+    assert client.get("/api/config/llm", headers=auth_headers).json()["config"]["reasoningMode"] == "auto"
+
+    res = client.put("/api/config/llm", json={"reasoningMode": "fast"}, headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["config"]["reasoningMode"] == "fast"
+    assert client.get("/api/config/llm", headers=auth_headers).json()["config"]["reasoningMode"] == "fast"
+
+    # other fields untouched by a reasoning-mode-only update
+    assert res.json()["config"]["model"]  # still set
+
+
+def test_llm_config_rejects_an_unknown_reasoning_mode(client, auth_headers):
+    res = client.put("/api/config/llm", json={"reasoningMode": "telepathy"}, headers=auth_headers)
+    assert res.status_code == 400
+
+
 def test_config_presets_endpoint_returns_chat_and_embedding_lists(client, auth_headers):
     res = client.get("/api/config/presets", headers=auth_headers)
     assert res.status_code == 200

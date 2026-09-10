@@ -15,6 +15,8 @@ La clé API, quand elle existe, est stockée en base et **n'est jamais renvoyée
 
 **Préréglages** : les onglets « Config. Chat » et « Config. Embedding » proposent un menu *« Charger une configuration connue »* (vLLM local Qwen3, LM Studio, Ollama, Gemini Flash, …) qui remplit le formulaire en un clic — on clique ensuite sur *Enregistrer* pour appliquer, et cela ne touche jamais la clé API stockée. La liste vient de `inference-service/llm-presets.json` (relu à chaque requête, éditable sans redémarrage ; supprimer le fichier retombe sur `app/config.py:BUILTIN_LLM_PRESETS`). Servie par `GET /api/config/presets`.
 
+**Mode de raisonnement** (`reasoningMode` : `auto` / `fast` / `thinking`) : valeur par défaut dans « Config. Chat », surchargeable par requête (`POST /api/analyze` champ `reasoningMode`, sélecteur dans « Tester l'analyse » et dans l'app principale, `--reasoning` du CLI). Mappé sur `chat_template_kwargs.enable_thinking` (Qwen3 via vLLM) ou `thinkingConfig.thinkingBudget` (Gemini 2.5). Sans effet — voire rejeté (400) — sur un modèle/endpoint sans mode de raisonnement : rester sur `auto` dans ce cas. `fast` accélère l'extraction ; `thinking` peut aider quand un parsing échoue.
+
 ## Pourquoi un sidecar HTTP plutôt qu'un import direct de `vllm` ?
 
 - **Isolation des pannes** : un crash du moteur vLLM (observé en pratique : segfault au shutdown avec `vllm-metal`) ne touche jamais ce service — le sidecar redémarre seul.

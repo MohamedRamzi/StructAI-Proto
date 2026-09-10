@@ -245,10 +245,15 @@ async function resolveUnderlyingViaVectorSearch(queryText: string): Promise<Unde
 // Carlo pricing stay app-side; see src/services/spec-builder.ts, quant-pricer.ts).
 app.post('/api/parse-query', async (req, res) => {
   try {
-    const { query, useVectorSearchForUnderlying } = req.body;
+    const { query, useVectorSearchForUnderlying, reasoningMode, pipeline } = req.body;
     if (!query || typeof query !== 'string') {
       return res.status(400).json({ error: 'La requête en langage naturel est requise.' });
     }
+    // Optional per-request overrides forwarded verbatim to inference-service
+    // (it validates them; anything invalid falls back to the configured default).
+    const analyzeOverrides: Record<string, string> = {};
+    if (reasoningMode) analyzeOverrides.reasoningMode = String(reasoningMode);
+    if (pipeline) analyzeOverrides.pipeline = String(pipeline);
 
     console.log(`[Parse Query] Processing query: "${query}"`);
     logServerLlmDebug('PARSE QUERY REQUEST RECEIVED', { query, body: req.body });
@@ -271,7 +276,7 @@ app.post('/api/parse-query', async (req, res) => {
       analyzeRes = await fetch(`${INFERENCE_SERVICE_URL}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${INFERENCE_SERVICE_API_KEY}` },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, ...analyzeOverrides }),
       });
     } catch (networkErr: any) {
       console.error('[Parse Query] inference-service unreachable:', networkErr.message);

@@ -48,6 +48,7 @@ def init_schema() -> None:
             base_url TEXT NOT NULL DEFAULT '',
             api_key TEXT,
             temperature REAL NOT NULL DEFAULT 0.1,
+            reasoning_mode TEXT NOT NULL DEFAULT 'auto',
             updated_at TEXT NOT NULL,
             updated_by INTEGER REFERENCES users(id)
         );
@@ -113,6 +114,8 @@ def _migrate_llm_settings() -> None:
         db.execute("ALTER TABLE llm_settings ADD COLUMN provider TEXT NOT NULL DEFAULT 'openai_compatible'")
     if "api_key" not in existing_cols:
         db.execute("ALTER TABLE llm_settings ADD COLUMN api_key TEXT")
+    if "reasoning_mode" not in existing_cols:
+        db.execute("ALTER TABLE llm_settings ADD COLUMN reasoning_mode TEXT NOT NULL DEFAULT 'auto'")
     db.commit()
 
 
@@ -135,8 +138,8 @@ def _bootstrap() -> None:
         # from the UI afterwards.
         initial_api_key = config.GEMINI_API_KEY if config.LLM_PROVIDER == "gemini" else None
         db.execute(
-            "INSERT INTO llm_settings (id, provider, model, base_url, api_key, temperature, updated_at) VALUES (1, ?, ?, ?, ?, ?, ?)",
-            (config.LLM_PROVIDER, config.LLM_MODEL, config.LLM_BASE_URL, initial_api_key, config.LLM_TEMPERATURE, _now()),
+            "INSERT INTO llm_settings (id, provider, model, base_url, api_key, temperature, reasoning_mode, updated_at) VALUES (1, ?, ?, ?, ?, ?, ?, ?)",
+            (config.LLM_PROVIDER, config.LLM_MODEL, config.LLM_BASE_URL, initial_api_key, config.LLM_TEMPERATURE, config.LLM_REASONING_MODE, _now()),
         )
         db.commit()
 
@@ -405,6 +408,7 @@ def get_llm_settings() -> dict:
         "baseUrl": row["base_url"],
         "apiKey": row["api_key"],
         "temperature": row["temperature"],
+        "reasoningMode": row["reasoning_mode"],
         "updatedAt": row["updated_at"],
     }
 
@@ -416,6 +420,7 @@ def update_llm_settings(
     temperature: Optional[float] = None,
     updated_by: Optional[int] = None,
     api_key: Optional[str] = _KEEP_API_KEY,
+    reasoning_mode: Optional[str] = None,
 ) -> dict:
     """`api_key` has three distinct states, matching the API layer's contract
     (see routers/llm_config.py): omitted (default sentinel) -> leave the stored
@@ -423,13 +428,14 @@ def update_llm_settings(
     current = get_llm_settings()
     new_api_key = current["apiKey"] if api_key is _KEEP_API_KEY else api_key
     db.execute(
-        "UPDATE llm_settings SET provider = ?, model = ?, base_url = ?, api_key = ?, temperature = ?, updated_at = ?, updated_by = ? WHERE id = 1",
+        "UPDATE llm_settings SET provider = ?, model = ?, base_url = ?, api_key = ?, temperature = ?, reasoning_mode = ?, updated_at = ?, updated_by = ? WHERE id = 1",
         (
             provider if provider is not None else current["provider"],
             model if model is not None else current["model"],
             base_url if base_url is not None else current["baseUrl"],
             new_api_key,
             temperature if temperature is not None else current["temperature"],
+            reasoning_mode if reasoning_mode is not None else current["reasoningMode"],
             _now(),
             updated_by,
         ),

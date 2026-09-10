@@ -177,6 +177,15 @@
             <option value="single">single (default + _common, schéma plat)</option>
           </select>
         </div>
+        <div>
+          <label for="analyze-reasoning">Raisonnement</label>
+          <select id="analyze-reasoning" style="max-width:220px">
+            <option value="">(défaut configuré)</option>
+            <option value="auto">auto</option>
+            <option value="fast">fast</option>
+            <option value="thinking">thinking</option>
+          </select>
+        </div>
         <button id="analyze-run-btn">Analyser</button>
       </div>
       <div id="analyze-routing" style="margin-top:16px; display:none"></div>
@@ -214,6 +223,13 @@
         <input id="llm-apikey" type="password" placeholder="Laisser vide pour conserver la clé actuelle" />
         <label for="llm-temp">Température</label>
         <input id="llm-temp" type="number" step="0.05" min="0" max="2" />
+        <label for="llm-reasoning">Mode de raisonnement (par défaut)</label>
+        <select id="llm-reasoning">
+          <option value="auto">auto — laisser le modèle décider</option>
+          <option value="fast">fast — sans raisonnement étendu (extraction plus rapide)</option>
+          <option value="thinking">thinking — raisonnement étendu (si le parsing échoue)</option>
+        </select>
+        <p class="subtitle" style="margin:4px 0 0">Qwen3 via vLLM (<span class="mono">enable_thinking</span>) et Gemini 2.5 (<span class="mono">thinkingBudget</span>). Sans effet sur un modèle sans mode de raisonnement. Surchargeable par requête dans « Tester l'analyse » et côté application.</p>
         <div class="row" style="margin-top:18px">
           <button type="submit" id="llm-save-btn">Enregistrer</button>
           <span class="muted" id="llm-updated"></span>
@@ -667,6 +683,7 @@
       var routingBox = document.getElementById('analyze-routing');
       var query = document.getElementById('analyze-query').value.trim();
       var pipeline = document.getElementById('analyze-pipeline').value;
+      var reasoningMode = document.getElementById('analyze-reasoning').value;
       msg.innerHTML = '';
       result.style.display = 'none';
       routingBox.style.display = 'none';
@@ -677,7 +694,9 @@
       btn.textContent = 'Analyse en cours…';
       msg.innerHTML = '<div class="msg info">Analyse en cours — le moteur LLM peut prendre plusieurs dizaines de secondes…</div>';
       try {
-        var data = await Api.post('/api/analyze', { query: query, pipeline: pipeline });
+        var analyzeBody = { query: query, pipeline: pipeline };
+        if (reasoningMode) analyzeBody.reasoningMode = reasoningMode;
+        var data = await Api.post('/api/analyze', analyzeBody);
         msg.innerHTML = '';
         renderAnalyzeRouting(data);
         result.textContent = JSON.stringify(data, null, 2);
@@ -753,6 +772,7 @@
       document.getElementById('llm-model').value = c.model;
       document.getElementById('llm-baseurl').value = c.baseUrl;
       document.getElementById('llm-temp').value = c.temperature;
+      document.getElementById('llm-reasoning').value = c.reasoningMode || 'auto';
       document.getElementById('llm-apikey-hint').textContent = c.hasApiKey ? '(une clé est déjà configurée)' : '(aucune clé configurée)';
       document.getElementById('llm-updated').textContent = c.updatedAt ? ('Dernière mise à jour : ' + c.updatedAt) : '';
       updateLlmProviderVisibility();
@@ -771,6 +791,7 @@
           model: document.getElementById('llm-model').value,
           baseUrl: document.getElementById('llm-baseurl').value,
           temperature: parseFloat(document.getElementById('llm-temp').value),
+          reasoningMode: document.getElementById('llm-reasoning').value,
         };
         var apiKeyVal = document.getElementById('llm-apikey').value;
         if (apiKeyVal !== '') payload.apiKey = apiKeyVal;

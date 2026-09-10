@@ -30,6 +30,7 @@ briefly 503 right as it finishes starting up; both are transient-by-design,
 not a failure to mask.
 """
 import time
+from typing import Optional
 
 import httpx
 
@@ -57,41 +58,60 @@ def _post_with_retry(url: str, **kwargs) -> httpx.Response:
         time.sleep(_RETRY_BACKOFF_SECONDS * attempt)
 
 
-def chat_completion(system_prompt: str, user_prompt: str) -> str:
+VALID_REASONING_MODES = {"auto", "fast", "thinking"}
+
+
+def _resolve_reasoning_mode(cfg: dict, override: Optional[str]) -> str:
+    """Per-request override wins over the stored default; anything unrecognised
+    (or None) falls back to the stored default, itself defaulting to "auto"."""
+    if override in VALID_REASONING_MODES:
+        return override
+    stored = cfg.get("reasoningMode")
+    return stored if stored in VALID_REASONING_MODES else "auto"
+
+
+def chat_completion(system_prompt: str, user_prompt: str, reasoning_mode: Optional[str] = None) -> str:
     cfg = db.get_llm_settings()
     provider = cfg.get("provider") or "openai_compatible"
+    mode = _resolve_reasoning_mode(cfg, reasoning_mode)
     if provider == "gemini":
-        return _gemini_chat_completion(system_prompt, user_prompt, cfg)
+        return _gemini_chat_completion(system_prompt, user_prompt, cfg, mode)
     if provider == "openai_compatible":
-        return _openai_compatible_chat_completion(system_prompt, user_prompt, cfg)
+        return _openai_compatible_chat_completion(system_prompt, user_prompt, cfg, mode)
     raise RuntimeError(f'Provider LLM inconnu ou non configuré : "{provider}". Configurez un moteur depuis la page d\'admin.')
 
 
-def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> str:
+def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, reasoning_mode: str = "auto") -> str:
     """Calls POST {baseUrl}/chat/completions (OpenAI-compatible) and returns the
     assistant message's raw text content. `apiKey`, if set, is sent as a Bearer
     token — required for a real cloud OpenAI-compatible API, optional (and
-    normally unset) for a local sidecar."""
+    normally unset) for a local sidecar.
+
+    `reasoning_mode` "fast"/"thinking" is passed via vLLM's `chat_template_kwargs`
+    (`enable_thinking`), which Qwen3 & other reasoning models' chat templates
+    honour; "auto" sends nothing. A non-vLLM endpoint (real OpenAI, LM Studio)
+    may reject `chat_template_kwargs` — keep the mode on "auto" there."""
     base_url = (cfg.get("baseUrl") or "").rstrip("/")
     if not base_url:
         raise RuntimeError("Aucune URL de base configurée pour le moteur de chat. Configurez-la depuis la page d'admin.")
     url = f"{base_url}/chat/completions"
     headers = {"Authorization": f"Bearer {cfg['apiKey']}"} if cfg.get("apiKey") else {}
 
+    payload = {
+        "model": cfg["model"],
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "temperature": cfg["temperature"],
+    }
+    if reasoning_mode == "fast":
+        payload["chat_template_kwargs"] = {"enable_thinking": False}
+    elif reasoning_mode == "thinking":
+        payload["chat_template_kwargs"] = {"enable_thinking": True}
+
     try:
-        response = _post_with_retry(
-            url,
-            json={
-                "model": cfg["model"],
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                "temperature": cfg["temperature"],
-            },
-            headers=headers,
-            timeout=120.0,
-        )
+        response = _post_with_retry(url, json=payload, headers=headers, timeout=120.0)
     except httpx.RequestError as exc:
         raise RuntimeError(
             f"Impossible de contacter le moteur de chat configuré sur {base_url} : {exc}. "
@@ -109,8 +129,12 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
     return content or ""
 
 
-def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> str:
-    """Calls Google's Generative Language API directly (no SDK dependency)."""
+def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, reasoning_mode: str = "auto") -> str:
+    """Calls Google's Generative Language API directly (no SDK dependency).
+
+    `reasoning_mode` maps to `thinkingConfig.thinkingBudget` (0 = off for
+    "fast", -1 = dynamic for "thinking"); "auto" sends nothing. Only the 2.5+
+    thinking models honour it — an older model may 400, so keep "auto" there."""
     api_key = cfg.get("apiKey")
     if not api_key:
         raise RuntimeError("Aucune clé API Gemini configurée. Renseignez-la depuis la page d'admin (\"Config. Chat\").")
@@ -123,6 +147,15 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> 
     model = cfg.get("model") or "gemini-flash-latest"
     url = f"{GEMINI_API_BASE}/models/{model}:generateContent"
 
+    generation_config = {
+        "temperature": cfg["temperature"],
+        "responseMimeType": "application/json",
+    }
+    if reasoning_mode == "fast":
+        generation_config["thinkingConfig"] = {"thinkingBudget": 0}
+    elif reasoning_mode == "thinking":
+        generation_config["thinkingConfig"] = {"thinkingBudget": -1}
+
     try:
         response = _post_with_retry(
             url,
@@ -130,10 +163,7 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> 
             json={
                 "system_instruction": {"parts": [{"text": system_prompt}]},
                 "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
-                "generationConfig": {
-                    "temperature": cfg["temperature"],
-                    "responseMimeType": "application/json",
-                },
+                "generationConfig": generation_config,
             },
             timeout=120.0,
         )
@@ -149,7 +179,9 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict) -> 
     data = response.json()
     try:
         parts = data["candidates"][0]["content"]["parts"]
-        content = "".join(part.get("text", "") for part in parts)
+        # In "thinking" mode a reasoning summary can come back as parts flagged
+        # `thought: true` — keep only the actual answer text.
+        content = "".join(part.get("text", "") for part in parts if not part.get("thought"))
     except (KeyError, IndexError, TypeError) as exc:
         raise RuntimeError(f"Réponse Gemini dans un format inattendu : {data}") from exc
     return content or ""

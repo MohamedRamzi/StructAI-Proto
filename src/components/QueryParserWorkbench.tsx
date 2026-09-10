@@ -112,6 +112,10 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
   // the local deterministic ticker/keyword matcher — see handleParseQuery below.
   const [useVectorSearchForUnderlying, setUseVectorSearchForUnderlying] = useState<boolean>(false);
 
+  // Per-request override of inference-service's configured "thinking" mode.
+  // "default" = don't send anything, let the service use its configured default.
+  const [reasoningMode, setReasoningMode] = useState<'default' | 'auto' | 'fast' | 'thinking'>('default');
+
   // Presets including multi-quote examples
   const PRESET_QUERIES = [
     {
@@ -140,7 +144,10 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
     setIsParsing(true);
     setOverriddenFields(new Set());
     try {
-      const result = await parseFinancialQuery(textToRun, { useVectorSearchForUnderlying });
+      const result = await parseFinancialQuery(textToRun, {
+        useVectorSearchForUnderlying,
+        ...(reasoningMode !== 'default' ? { reasoningMode } : {}),
+      });
       const hasUsableResult = result.success && (!!result.spec || (result.quotes?.length ?? 0) > 0);
       if (hasUsableResult) {
         const db = getStoredUnderlyings();
@@ -384,6 +391,20 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
               Résoudre le sous-jacent via recherche vectorielle (embeddings)
               <span className="text-slate-500"> — au lieu de la correspondance locale par ticker/mots-clés</span>
             </span>
+          </label>
+
+          <label className="flex items-center gap-2 mt-2 text-xs text-slate-400 font-medium select-none w-fit">
+            <span>Raisonnement du modèle :</span>
+            <select
+              value={reasoningMode}
+              onChange={(e) => setReasoningMode(e.target.value as 'default' | 'auto' | 'fast' | 'thinking')}
+              className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 accent-indigo-500"
+            >
+              <option value="default">défaut configuré</option>
+              <option value="fast">fast (plus rapide)</option>
+              <option value="thinking">thinking (si le parsing échoue)</option>
+              <option value="auto">auto</option>
+            </select>
           </label>
         </div>
 

@@ -17,7 +17,7 @@ def routing(client, monkeypatch):
 
     def set_response(payload):
         text = payload if isinstance(payload, str) else json.dumps(payload)
-        monkeypatch.setattr(inference_client, "chat_completion", lambda system, user: text)
+        monkeypatch.setattr(inference_client, "chat_completion", lambda system, user, **_: text)
 
     return routing_module, set_response
 
@@ -96,7 +96,7 @@ def test_uses_the_seeded_router_prompt_as_the_system_prompt(routing, monkeypatch
 
     captured = {}
 
-    def spy(system, user):
+    def spy(system, user, reasoning_mode=None):
         captured["system"] = system
         captured["user"] = user
         return json.dumps({"quotes": [{"quoteId": 1, "assetClass": "EQUITY", "productFamily": "autocall"}]})

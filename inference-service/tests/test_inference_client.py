@@ -194,3 +194,92 @@ def test_unknown_provider_raises_a_clear_error(client):
 
     with pytest.raises(RuntimeError, match="Provider LLM inconnu"):
         inference_client.chat_completion("system", "user")
+
+
+# --- reasoning / "thinking" mode ---------------------------------------------
+
+def _capture_openai_post(monkeypatch):
+    captured = {}
+
+    def fake_post(url, json=None, headers=None, timeout=None, params=None):
+        captured["json"] = json
+        return FakeResponse(200, {"choices": [{"message": {"content": "ok"}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    return captured
+
+
+def _capture_gemini_post(monkeypatch):
+    captured = {}
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        captured["json"] = json
+        return FakeResponse(200, {"candidates": [{"content": {"parts": [{"text": "ok"}]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    return captured
+
+
+def test_openai_reasoning_mode_auto_sends_no_chat_template_kwargs(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="qwen3", base_url="http://localhost:8001/v1", api_key=None, updated_by=1, reasoning_mode="auto")
+    captured = _capture_openai_post(monkeypatch)
+    inference_client.chat_completion("system", "user")
+    assert "chat_template_kwargs" not in captured["json"]
+
+
+def test_openai_reasoning_mode_fast_disables_thinking(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="qwen3", base_url="http://localhost:8001/v1", api_key=None, updated_by=1, reasoning_mode="fast")
+    captured = _capture_openai_post(monkeypatch)
+    inference_client.chat_completion("system", "user")
+    assert captured["json"]["chat_template_kwargs"] == {"enable_thinking": False}
+
+
+def test_per_request_override_beats_the_stored_default(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="qwen3", base_url="http://localhost:8001/v1", api_key=None, updated_by=1, reasoning_mode="fast")
+    captured = _capture_openai_post(monkeypatch)
+    inference_client.chat_completion("system", "user", reasoning_mode="thinking")
+    assert captured["json"]["chat_template_kwargs"] == {"enable_thinking": True}
+
+
+def test_gemini_reasoning_mode_maps_to_thinking_budget(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="k", updated_by=1, reasoning_mode="auto")
+
+    captured = _capture_gemini_post(monkeypatch)
+    inference_client.chat_completion("system", "user")
+    assert "thinkingConfig" not in captured["json"]["generationConfig"]
+
+    captured = _capture_gemini_post(monkeypatch)
+    inference_client.chat_completion("system", "user", reasoning_mode="fast")
+    assert captured["json"]["generationConfig"]["thinkingConfig"] == {"thinkingBudget": 0}
+
+    captured = _capture_gemini_post(monkeypatch)
+    inference_client.chat_completion("system", "user", reasoning_mode="thinking")
+    assert captured["json"]["generationConfig"]["thinkingConfig"] == {"thinkingBudget": -1}
+
+
+def test_gemini_thinking_summary_parts_are_dropped_from_the_answer(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="k", updated_by=1)
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        return FakeResponse(200, {"candidates": [{"content": {"parts": [
+            {"text": "let me think...", "thought": True},
+            {"text": '{"quotes": []}'},
+        ]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    assert inference_client.chat_completion("system", "user") == '{"quotes": []}'

@@ -112,8 +112,8 @@ def _system_prompt(domain_body: str) -> str:
     return f"{domain_body}\n\n---\n\n{_common_prompt_body()}"
 
 
-def _run_extraction(system_prompt: str, user_prompt: str) -> list[dict]:
-    raw_text = inference_client.chat_completion(system_prompt, user_prompt)
+def _run_extraction(system_prompt: str, user_prompt: str, reasoning_mode: Optional[str] = None) -> list[dict]:
+    raw_text = inference_client.chat_completion(system_prompt, user_prompt, reasoning_mode=reasoning_mode)
     parsed = extract_json_from_text(raw_text)
     if not parsed:
         model = db.get_llm_settings()["model"]
@@ -140,7 +140,7 @@ def _finalize_quote(raw: dict, index: int, routing: Optional[dict], prompt_key: 
     }
 
 
-def _analyze_single(query: str) -> dict:
+def _analyze_single(query: str, reasoning_mode: Optional[str] = None) -> dict:
     default_prompt = db.get_prompt("default")
     if default_prompt is None:
         raise RuntimeError("Aucun pré-prompt 'default' en base — le seed des prompts a échoué.")
@@ -149,16 +149,16 @@ def _analyze_single(query: str) -> dict:
         f'Analyse cette demande client de produit(s) structuré(s) et extrais les spécifications au format JSON :\n"{query}"'
         "\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau)."
     )
-    raw_quotes = _run_extraction(system_prompt, user_prompt)
+    raw_quotes = _run_extraction(system_prompt, user_prompt, reasoning_mode)
     routing = {"promptKey": "default", "scopePrecision": 1, "assetClass": None, "productFamily": None, "routerConfidence": None}
     quotes = [_finalize_quote(raw, i, routing, "default") for i, raw in enumerate(raw_quotes)]
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "single", "quotes": quotes}
 
 
-def _analyze_routed(query: str) -> dict:
+def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
     from . import prompt_resolver, routing as routing_svc
 
-    classifications = routing_svc.classify_request(query)
+    classifications = routing_svc.classify_request(query, reasoning_mode=reasoning_mode)
 
     # Resolve a domain prompt per classification, then group by resolved promptKey.
     groups: "OrderedDict[str, dict]" = OrderedDict()
@@ -192,7 +192,7 @@ def _analyze_routed(query: str) -> dict:
                 "en conservant les quoteId d'origine."
             )
 
-        raw_quotes = _run_extraction(system_prompt, user_prompt)
+        raw_quotes = _run_extraction(system_prompt, user_prompt, reasoning_mode)
 
         # Attach this group's routing to each quote it produced, matched to a
         # classification by quoteId when possible, else positionally.
@@ -213,7 +213,7 @@ def _analyze_routed(query: str) -> dict:
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "routed", "quotes": quotes}
 
 
-def analyze_query(query: str, pipeline: str = "routed") -> dict:
+def analyze_query(query: str, pipeline: str = "routed", reasoning_mode: Optional[str] = None) -> dict:
     if pipeline == "single":
-        return _analyze_single(query)
-    return _analyze_routed(query)
+        return _analyze_single(query, reasoning_mode)
+    return _analyze_routed(query, reasoning_mode)

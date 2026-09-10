@@ -40,6 +40,13 @@ LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai_compatible")
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "http://localhost:8001/v1")
 LLM_MODEL = os.environ.get("LLM_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
 LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.1"))
+# Reasoning / "thinking" mode for the chat model, when it supports one:
+#   "auto"     — send nothing, let the model / endpoint use its own default
+#   "fast"     — ask the model to skip extended reasoning (Qwen3 via vLLM:
+#                chat_template_kwargs.enable_thinking=false ; Gemini: thinkingBudget=0)
+#   "thinking" — ask for extended reasoning (enable_thinking=true / thinkingBudget=-1)
+# Configurable from the admin UI, and overridable per /api/analyze request.
+LLM_REASONING_MODE = os.environ.get("LLM_REASONING_MODE", "auto")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip() or None
 EMBEDDING_BASE_URL = os.environ.get("EMBEDDING_BASE_URL", "http://localhost:8002/v1")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "Qwen/Qwen3-Embedding-0.6B")

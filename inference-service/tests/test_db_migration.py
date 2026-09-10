@@ -55,7 +55,7 @@ def test_legacy_llm_settings_table_is_migrated_in_place(tmp_path, monkeypatch):
     db_module = _fresh_db_module(monkeypatch, db_path)
 
     cols = {row["name"] for row in db_module.db.execute("PRAGMA table_info(llm_settings)").fetchall()}
-    assert {"provider", "api_key"}.issubset(cols)
+    assert {"provider", "api_key", "reasoning_mode"}.issubset(cols)
 
     settings = db_module.get_llm_settings()
     # Pre-existing values survive the migration untouched...
@@ -65,6 +65,7 @@ def test_legacy_llm_settings_table_is_migrated_in_place(tmp_path, monkeypatch):
     # ...and the new columns get sane, backward-compatible defaults.
     assert settings["provider"] == "openai_compatible"
     assert settings["apiKey"] is None
+    assert settings["reasoningMode"] == "auto"
 
 
 def test_prompts_table_is_created_and_seeded_on_a_db_that_predates_it(tmp_path, monkeypatch):

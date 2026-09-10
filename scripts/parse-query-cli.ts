@@ -23,7 +23,7 @@ const INFERENCE_SERVICE_API_KEY = process.env.INFERENCE_SERVICE_API_KEY || '';
 // Single query processor function — delegates the actual NLP analysis to
 // inference-service's POST /api/analyze (same call server.ts's /api/parse-query
 // makes), then builds & prices the spec locally exactly like the main app does.
-async function processSingleQuery(query: string): Promise<CliParseResult> {
+async function processSingleQuery(query: string, opts: { pipeline?: string; reasoningMode?: string } = {}): Promise<CliParseResult> {
   if (!INFERENCE_SERVICE_API_KEY) {
     return {
       query,
@@ -38,7 +38,11 @@ async function processSingleQuery(query: string): Promise<CliParseResult> {
     const analyzeRes = await fetch(`${INFERENCE_SERVICE_URL}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${INFERENCE_SERVICE_API_KEY}` },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        query,
+        ...(opts.pipeline ? { pipeline: opts.pipeline } : {}),
+        ...(opts.reasoningMode ? { reasoningMode: opts.reasoningMode } : {}),
+      }),
     });
     const analyzeData: any = await analyzeRes.json();
     if (!analyzeRes.ok || !analyzeData.success) {
@@ -78,6 +82,8 @@ async function main() {
   let outputFile: string | null = null;
   let includePricing = false;
   let directQuery = '';
+  let pipeline: string | undefined;
+  let reasoningMode: string | undefined;
 
   // Parse command line options
   for (let i = 0; i < args.length; i++) {
@@ -94,6 +100,14 @@ async function main() {
       outputFile = arg.split('=')[1];
     } else if (arg === '--pricing') {
       includePricing = true;
+    } else if (arg === '--pipeline' && args[i + 1]) {
+      pipeline = args[i + 1]; i++;
+    } else if (arg.startsWith('--pipeline=')) {
+      pipeline = arg.split('=')[1];
+    } else if (arg === '--reasoning' && args[i + 1]) {
+      reasoningMode = args[i + 1]; i++;
+    } else if (arg.startsWith('--reasoning=')) {
+      reasoningMode = arg.split('=')[1];
     } else if (!arg.startsWith('--')) {
       directQuery = arg;
     }
@@ -133,6 +147,8 @@ Options:
   --reqs <filename>       Fichier contenant la liste des requêtes (séparées par une ligne vide)
   --output <filename>     Fichier où stocker les résultats JSON (affichage écran par défaut)
   --pricing               Inclut les résultats de pricing (calculs Monte Carlo, grecques) dans le JSON (exclu par défaut)
+  --pipeline <mode>       "routed" (défaut) ou "single" (ancien schéma plat)
+  --reasoning <mode>     "auto" | "fast" | "thinking" — surcharge le mode de raisonnement configuré dans inference-service
 
 Prérequis : inference-service doit tourner (npm run dev dans inference-service/,
 avec ses deux sidecars vLLM démarrés séparément — voir inference-service/README.md)
@@ -152,7 +168,7 @@ Exemples:
   for (let i = 0; i < queriesToProcess.length; i++) {
     const query = queriesToProcess[i];
     console.error(`[CLI Exec] [${i + 1}/${queriesToProcess.length}] Parsing : "${query.slice(0, 60)}..."`);
-    const res = await processSingleQuery(query);
+    const res = await processSingleQuery(query, { pipeline, reasoningMode });
 
     // Sanitize pricing output based on --pricing flag
     if (!includePricing) {
