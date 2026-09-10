@@ -1,0 +1,5270 @@
+[
+ {
+  "assetClass": "EQUITY",
+  "code": "SX5E Index",
+  "name": "EURO STOXX 50",
+  "description": "Indice phare de la zone euro : 50 plus grandes capitalisations de 8 pays. Sous-jacent de reference dominant des autocalls et Athena distribues en Europe. Dividendes eleves (~3%), volatilite moderee.",
+  "tags": [
+   "indice",
+   "europe",
+   "zone euro",
+   "blue chip",
+   "autocall"
+  ],
+  "metadata": {
+   "isin": "EU0009658145",
+   "sector": "Indice actions",
+   "region": "Europe (zone euro)",
+   "spotPrice": 6400.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.15,
+   "dividendYield": 0.031,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice EURO STOXX 50 (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CAC Index",
+  "name": "CAC 40",
+  "description": "Indice de reference de la Bourse de Paris : 40 plus grandes valeurs francaises (luxe, banques, energie, industrie). Tres utilise en produits structures pour la clientele francaise.",
+  "tags": [
+   "indice",
+   "france",
+   "paris",
+   "blue chip"
+  ],
+  "metadata": {
+   "isin": "FR0003500008",
+   "sector": "Indice actions",
+   "region": "France",
+   "spotPrice": 8300.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice CAC 40 (France) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SX5T Index",
+  "name": "EURO STOXX 50 Net Return",
+  "description": "Version total return net de l'EURO STOXX 50 (dividendes nets reinvestis). Base des swaps sur indice et de certaines notes.",
+  "tags": [
+   "indice",
+   "total return",
+   "europe"
+  ],
+  "metadata": {
+   "isin": "EU0009658160",
+   "sector": "Indice actions",
+   "region": "Europe (zone euro)",
+   "spotPrice": 13800.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.15,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice EURO STOXX 50 Net Return (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SX5ED Index",
+  "name": "EURO STOXX 50 Decrement 50 Points",
+  "description": "Indice decrement : EURO STOXX 50 total return duquel est retranche un dividende synthetique forfaitaire de 50 points d'indice par an. Support quasi systematique des Athena et Phoenix francais (barrieres plus basses, coupons plus eleves).",
+  "tags": [
+   "indice",
+   "decrement",
+   "autocall",
+   "athena",
+   "phoenix",
+   "france"
+  ],
+  "metadata": {
+   "isin": "DE000SLA9GX0",
+   "sector": "Indice actions",
+   "region": "Europe (zone euro)",
+   "spotPrice": 5900.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.15,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice EURO STOXX 50 Decrement 50 Points (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CACD Index",
+  "name": "CAC 40 Decrement 5%",
+  "description": "Indice decrement : CAC 40 total return moins un dividende synthetique forfaitaire de 5% par an. Frequent en autocalls retail francais.",
+  "tags": [
+   "indice",
+   "decrement",
+   "cac",
+   "autocall",
+   "france"
+  ],
+  "metadata": {
+   "isin": "FR0013410476",
+   "sector": "Indice actions",
+   "region": "France",
+   "spotPrice": 7100.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice CAC 40 Decrement 5% (France) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DAX Index",
+  "name": "DAX 40",
+  "description": "Indice de reference allemand : 40 plus grandes valeurs (industrie, chimie, auto, tech, assurance). Indice total return par construction (dividendes reinvestis).",
+  "tags": [
+   "indice",
+   "allemagne",
+   "total return",
+   "blue chip"
+  ],
+  "metadata": {
+   "isin": "DE0008469008",
+   "sector": "Indice actions",
+   "region": "Allemagne",
+   "spotPrice": 26000.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.026,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice DAX 40 (Allemagne) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "UKX Index",
+  "name": "FTSE 100",
+  "description": "Indice des 100 premieres capitalisations de Londres. Forte pondaration energie, matieres premieres, banques, pharma. Rendement du dividende eleve (~3.7%).",
+  "tags": [
+   "indice",
+   "royaume-uni",
+   "londres",
+   "dividende eleve"
+  ],
+  "metadata": {
+   "isin": "GB0001383545",
+   "sector": "Indice actions",
+   "region": "Royaume-Uni",
+   "spotPrice": 10420.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.14,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice FTSE 100 (Royaume-Uni) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SMI Index",
+  "name": "Swiss Market Index",
+  "description": "Indice des 20 blue chips suisses, tres concentre (Nestle, Novartis, Roche). Profil defensif, faible volatilite, devise refuge. Populaire en Barrier Reverse Convertible.",
+  "tags": [
+   "indice",
+   "suisse",
+   "defensif",
+   "brc"
+  ],
+  "metadata": {
+   "isin": "CH0009980894",
+   "sector": "Indice actions",
+   "region": "Suisse",
+   "spotPrice": 12800.0,
+   "currency": "CHF",
+   "impliedVol3m": 0.13,
+   "dividendYield": 0.029,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice Swiss Market Index (Suisse) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "IBEX Index",
+  "name": "IBEX 35",
+  "description": "Indice des 35 principales valeurs espagnoles (banques, utilities, telecoms). Rendement du dividende parmi les plus eleves d'Europe.",
+  "tags": [
+   "indice",
+   "espagne",
+   "madrid",
+   "dividende eleve"
+  ],
+  "metadata": {
+   "isin": "ES0SI0000005",
+   "sector": "Indice actions",
+   "region": "Espagne",
+   "spotPrice": 15600.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.038,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice IBEX 35 (Espagne) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "FTSEMIB Index",
+  "name": "FTSE MIB",
+  "description": "Indice des 40 principales valeurs italiennes, forte pondaration bancaire et energie. Volatilite et rendement superieurs a la moyenne europeenne.",
+  "tags": [
+   "indice",
+   "italie",
+   "milan",
+   "banques"
+  ],
+  "metadata": {
+   "isin": "IT0003465736",
+   "sector": "Indice actions",
+   "region": "Italie",
+   "spotPrice": 44000.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.045,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice FTSE MIB (Italie) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AEX Index",
+  "name": "AEX",
+  "description": "Indice des 25 principales valeurs neerlandaises, dominae par ASML, Shell, Prosus, ING.",
+  "tags": [
+   "indice",
+   "pays-bas",
+   "amsterdam",
+   "tech"
+  ],
+  "metadata": {
+   "isin": "NL0000000107",
+   "sector": "Indice actions",
+   "region": "Pays-Bas",
+   "spotPrice": 1000.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.024,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice AEX (Pays-Bas) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "OMX Index",
+  "name": "OMX Stockholm 30",
+  "description": "Indice des 30 valeurs suedoises les plus echangees (industrie, banques, telecoms).",
+  "tags": [
+   "indice",
+   "suede",
+   "stockholm"
+  ],
+  "metadata": {
+   "isin": "SE0000337842",
+   "sector": "Indice actions",
+   "region": "Suede",
+   "spotPrice": 2900.0,
+   "currency": "SEK",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice OMX Stockholm 30 (Suede) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SXXP Index",
+  "name": "STOXX Europe 600",
+  "description": "Indice large de 600 valeurs europeennes (17 pays, toutes tailles de capitalisation). Reference de la performance actions Europe.",
+  "tags": [
+   "indice",
+   "europe",
+   "large",
+   "benchmark"
+  ],
+  "metadata": {
+   "isin": "EU0009658202",
+   "sector": "Indice actions",
+   "region": "Europe",
+   "spotPrice": 580.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.14,
+   "dividendYield": 0.032,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice STOXX Europe 600 (Europe) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SX7E Index",
+  "name": "EURO STOXX Banks",
+  "description": "Indice sectoriel des banques de la zone euro. Tres sensible aux taux et au risque de credit ; volatilite et dividende eleves.",
+  "tags": [
+   "indice",
+   "secteur",
+   "banques",
+   "taux"
+  ],
+  "metadata": {
+   "isin": "EU0009658426",
+   "sector": "Indice actions",
+   "region": "Europe (zone euro)",
+   "spotPrice": 210.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.058,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice EURO STOXX Banks (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SX8P Index",
+  "name": "STOXX Europe 600 Technology",
+  "description": "Indice sectoriel technologie europeenne (ASML, SAP, Infineon, ...). Volatilite elevee, faible dividende.",
+  "tags": [
+   "indice",
+   "secteur",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "EU0009658855",
+   "sector": "Indice actions",
+   "region": "Europe",
+   "spotPrice": 1050.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.01,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice STOXX Europe 600 Technology (Europe) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SPX Index",
+  "name": "S&P 500",
+  "description": "Indice de reference du marche actions americain : 500 grandes capitalisations, forte pondaration technologie (Nvidia, Apple, Microsoft). Faible dividende, volatilite implicite basse (VIX ~16).",
+  "tags": [
+   "indice",
+   "etats-unis",
+   "benchmark",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US78378X1072",
+   "sector": "Indice actions",
+   "region": "Etats-Unis",
+   "spotPrice": 7630.0,
+   "currency": "USD",
+   "impliedVol3m": 0.14,
+   "dividendYield": 0.013,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice S&P 500 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NDX Index",
+  "name": "Nasdaq 100",
+  "description": "Indice des 100 plus grandes valeurs non financieres du Nasdaq. Tres concentre sur la megacap technologie ; beta eleve, dividende quasi nul.",
+  "tags": [
+   "indice",
+   "etats-unis",
+   "technologie",
+   "croissance"
+  ],
+  "metadata": {
+   "isin": "US6311011026",
+   "sector": "Indice actions",
+   "region": "Etats-Unis",
+   "spotPrice": 24700.0,
+   "currency": "USD",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.007,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice Nasdaq 100 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "INDU Index",
+  "name": "Dow Jones Industrial Average",
+  "description": "Indice price-weighted de 30 grandes valeurs industrielles et de services americaines. Profil plus defensif que le S&P 500.",
+  "tags": [
+   "indice",
+   "etats-unis",
+   "blue chip",
+   "defensif"
+  ],
+  "metadata": {
+   "isin": "US2605661048",
+   "sector": "Indice actions",
+   "region": "Etats-Unis",
+   "spotPrice": 52400.0,
+   "currency": "USD",
+   "impliedVol3m": 0.13,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice Dow Jones Industrial Average (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "RTY Index",
+  "name": "Russell 2000",
+  "description": "Indice des petites capitalisations americaines (small caps). Beta domestique eleve, sensible aux taux et au cycle, volatilite superieure aux large caps.",
+  "tags": [
+   "indice",
+   "etats-unis",
+   "small cap",
+   "cyclique"
+  ],
+  "metadata": {
+   "isin": "US7838221094",
+   "sector": "Indice actions",
+   "region": "Etats-Unis",
+   "spotPrice": 2920.0,
+   "currency": "USD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.014,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice Russell 2000 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NKY Index",
+  "name": "Nikkei 225",
+  "description": "Indice price-weighted de 225 valeurs japonaises. Sensible au yen (correlation negative JPY/actions) et au cycle exportateur. Marche haussier soutenu en 2025-2026.",
+  "tags": [
+   "indice",
+   "japon",
+   "tokyo",
+   "yen",
+   "exportateur"
+  ],
+  "metadata": {
+   "isin": "JP9010C00002",
+   "sector": "Indice actions",
+   "region": "Japon",
+   "spotPrice": 64500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice Nikkei 225 (Japon) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "TPX Index",
+  "name": "TOPIX",
+  "description": "Indice large ponadere par la capitalisation de toutes les valeurs de la section Prime de la Bourse de Tokyo (~1700 titres). Plus representatif que le Nikkei.",
+  "tags": [
+   "indice",
+   "japon",
+   "large",
+   "benchmark"
+  ],
+  "metadata": {
+   "isin": "JP9999K90005",
+   "sector": "Indice actions",
+   "region": "Japon",
+   "spotPrice": 3720.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.021,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice TOPIX (Japon) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HSI Index",
+  "name": "Hang Seng Index",
+  "description": "Indice de reference de Hong Kong : grandes valeurs chinoises et hongkongaises (tech, banques, immobilier). Volatilite elevee, sensible au risque reglementaire chinois.",
+  "tags": [
+   "indice",
+   "hong kong",
+   "chine",
+   "tech chinoise"
+  ],
+  "metadata": {
+   "isin": "HK0000004322",
+   "sector": "Indice actions",
+   "region": "Hong Kong",
+   "spotPrice": 26000.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.036,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice Hang Seng Index (Hong Kong) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HSCEI Index",
+  "name": "Hang Seng China Enterprises",
+  "description": "Indice des principales entreprises chinoises cotees a Hong Kong (H-shares). Proxy actions Chine offshore, tres volatil.",
+  "tags": [
+   "indice",
+   "chine",
+   "h-shares",
+   "volatil"
+  ],
+  "metadata": {
+   "isin": "HK0000015542",
+   "sector": "Indice actions",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 9300.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.038,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice Hang Seng China Enterprises (Hong Kong / Chine) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "KOSPI2 Index",
+  "name": "KOSPI 200",
+  "description": "Indice des 200 principales valeurs coreennes (Samsung Electronics ~30% du poids, SK Hynix). Tres expose au cycle des semi-conducteurs.",
+  "tags": [
+   "indice",
+   "coree",
+   "semi-conducteurs",
+   "samsung"
+  ],
+  "metadata": {
+   "isin": "KR7069500007",
+   "sector": "Indice actions",
+   "region": "Coree du Sud",
+   "spotPrice": 860.0,
+   "currency": "KRW",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.019,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice KOSPI 200 (Coree du Sud) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "TWSE Index",
+  "name": "TAIEX (Taiwan Weighted)",
+  "description": "Indice ponadere de la Bourse de Taiwan, domina par TSMC. Coeur de la chaine de valeur mondiale des semi-conducteurs.",
+  "tags": [
+   "indice",
+   "taiwan",
+   "tsmc",
+   "semi-conducteurs"
+  ],
+  "metadata": {
+   "isin": "TW0000001007",
+   "sector": "Indice actions",
+   "region": "Taiwan",
+   "spotPrice": 24500.0,
+   "currency": "TWD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Indice TAIEX (Taiwan Weighted) (Taiwan) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NIFTY Index",
+  "name": "NIFTY 50",
+  "description": "Indice des 50 principales valeurs indiennes. Croissance structurelle forte, volatilite contenue, marche domestique.",
+  "tags": [
+   "indice",
+   "inde",
+   "croissance",
+   "emergent"
+  ],
+  "metadata": {
+   "sector": "Indice actions",
+   "region": "Inde",
+   "spotPrice": 25200.0,
+   "currency": "INR",
+   "impliedVol3m": 0.13,
+   "dividendYield": 0.013,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice NIFTY 50 (Inde) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SENSEX Index",
+  "name": "BSE SENSEX",
+  "description": "Indice des 30 valeurs les plus etablies de la Bourse de Bombay.",
+  "tags": [
+   "indice",
+   "inde",
+   "blue chip"
+  ],
+  "metadata": {
+   "sector": "Indice actions",
+   "region": "Inde",
+   "spotPrice": 82500.0,
+   "currency": "INR",
+   "impliedVol3m": 0.13,
+   "dividendYield": 0.012,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice BSE SENSEX (Inde) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AS51 Index",
+  "name": "S&P/ASX 200",
+  "description": "Indice des 200 principales valeurs australiennes (banques, mineurs). Rendement du dividende eleve (franking credits).",
+  "tags": [
+   "indice",
+   "australie",
+   "mines",
+   "dividende eleve"
+  ],
+  "metadata": {
+   "isin": "AU000000XJO2",
+   "sector": "Indice actions",
+   "region": "Australie",
+   "spotPrice": 8900.0,
+   "currency": "AUD",
+   "impliedVol3m": 0.13,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice S&P/ASX 200 (Australie) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ASML NA",
+  "name": "ASML Holding NV",
+  "description": "Fournisseur quasi-monopolistique des machines de lithographie EUV pour la fabrication de puces. Premiere capitalisation technologique europeenne, +50% en 2026. Forte volatilite, faible dividende.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "NL0010273215",
+   "sector": "Technologie / Semi-conducteurs",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 1050.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.01,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MC FP",
+  "name": "LVMH Moet Hennessy Louis Vuitton SE",
+  "description": "Leader mondial du luxe (mode, maroquinerie, vins & spiritueux, cosmetiques). Annee 2026 difficile (-30%) sur ralentissement de la demande chinoise. Volatilite elevee, sous-jacent d'autocall tres frequent.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "FR0000121014",
+   "sector": "Consommation discretionnaire / Luxe",
+   "region": "Europe (France)",
+   "spotPrice": 470.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "RMS FP",
+  "name": "Hermes International",
+  "description": "Maison de luxe francaise ultra-premium (Birkin, Kelly). Pricing power exceptionnel, marges records, faible volatilite pour le secteur. Titre defensif du luxe.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "FR0000052292",
+   "sector": "Consommation discretionnaire / Luxe",
+   "region": "Europe (France)",
+   "spotPrice": 2050.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.007,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "OR FP",
+  "name": "L'Oreal SA",
+  "description": "Numero un mondial des cosmetiques. Croissance reguliere, profil qualite/defensif, volatilite moderee.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "FR0000120321",
+   "sector": "Consommation de base / Cosmetiques",
+   "region": "Europe (France)",
+   "spotPrice": 350.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.023,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SAP GR",
+  "name": "SAP SE",
+  "description": "Editeur de logiciels de gestion d'entreprise (ERP, cloud). Premiere capitalisation logicielle europeenne. Transition cloud, croissance des revenus recurrents.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "DE0007164600",
+   "sector": "Technologie / Logiciels",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 250.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.011,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SIE GR",
+  "name": "Siemens AG",
+  "description": "Conglomerat industriel allemand (automatisation, mobilite, sante via Siemens Healthineers). Cyclique industriel diversifie.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "DE0007236101",
+   "sector": "Industrie / Biens d'equipement",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 235.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.25,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "TTE FP",
+  "name": "TotalEnergies SE",
+  "description": "Major petro-gaziere francaise en transition vers l'electricite et les renouvelables. Rendement du dividende tres eleve (~5%), rachats d'actions. Tres utilise en Reverse Convertible et Phoenix.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "energie"
+  ],
+  "metadata": {
+   "isin": "FR0000120271",
+   "sector": "Energie",
+   "region": "Europe (France)",
+   "spotPrice": 62.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.052,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SU FP",
+  "name": "Schneider Electric SE",
+  "description": "Leader mondial de la gestion de l'energie et de l'automatisation. Beneficiaire de l'electrification et des datacenters.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0000121972",
+   "sector": "Industrie / Gestion de l'energie",
+   "region": "Europe (France)",
+   "spotPrice": 240.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AIR FP",
+  "name": "Airbus SE",
+  "description": "Avionneur (duopole avec Boeing). Carnet de commandes pluri-decennal ; sensible aux cadences de production et a la chaine d'approvisionnement.",
+  "tags": [
+   "action",
+   "europe",
+   "france / pays-bas",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "NL0000235190",
+   "sector": "Industrie / Aerospatiale",
+   "region": "Europe (France / Pays-Bas)",
+   "spotPrice": 200.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.014,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ALV GR",
+  "name": "Allianz SE",
+  "description": "Premier assureur europeen (dommages, vie, gestion d'actifs via PIMCO). Rendement du dividende eleve, profil defensif financier.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "DE0008404005",
+   "sector": "Finance / Assurance",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 370.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.045,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DTE GR",
+  "name": "Deutsche Telekom AG",
+  "description": "Operateur telecom allemand, actionnaire majoritaire de T-Mobile US (moteur de croissance). Defensif, dividende regulier.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "telecoms"
+  ],
+  "metadata": {
+   "isin": "DE0005557508",
+   "sector": "Telecoms",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 33.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.19,
+   "dividendYield": 0.032,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BNP FP",
+  "name": "BNP Paribas SA",
+  "description": "Premiere banque de la zone euro par les actifs. Banque universelle diversifiee. Rendement eleve, sensible aux taux et au credit.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "FR0000131104",
+   "sector": "Finance / Banque",
+   "region": "Europe (France)",
+   "spotPrice": 78.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.062,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SAN FP",
+  "name": "Sanofi SA",
+  "description": "Laboratoire pharmaceutique francais (Dupixent, vaccins). Profil defensif, dividende regulier, pipeline immunologie.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "FR0000120578",
+   "sector": "Sante / Pharmacie",
+   "region": "Europe (France)",
+   "spotPrice": 95.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.041,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "IBE SM",
+  "name": "Iberdrola SA",
+  "description": "Utility electrique espagnole, leader mondial de l'eolien. Actifs regules, dividende eleve, defensif sensible aux taux.",
+  "tags": [
+   "action",
+   "europe",
+   "espagne",
+   "euro stoxx 50",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "ES0144580Y14",
+   "sector": "Utilities / Electricite",
+   "region": "Europe (Espagne)",
+   "spotPrice": 16.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.04,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ENEL IM",
+  "name": "Enel SpA",
+  "description": "Premiere utility electrique europeenne par la clientele. Fort endettement, dividende tres eleve, sensible aux taux.",
+  "tags": [
+   "action",
+   "europe",
+   "italie",
+   "euro stoxx 50",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "IT0003128367",
+   "sector": "Utilities / Electricite",
+   "region": "Europe (Italie)",
+   "spotPrice": 8.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.19,
+   "dividendYield": 0.058,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ITX SM",
+  "name": "Industria de Diseno Textil (Inditex)",
+  "description": "Maison mere de Zara. Modele de fast-fashion integre, tresorerie nette, croissance reguliere.",
+  "tags": [
+   "action",
+   "europe",
+   "espagne",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "ES0148396007",
+   "sector": "Consommation discretionnaire / Distribution",
+   "region": "Europe (Espagne)",
+   "spotPrice": 50.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.036,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BAS GR",
+  "name": "BASF SE",
+  "description": "Premier chimiste mondial. Tres cyclique et energo-intensif (couts du gaz europeen), dividende eleve mais sous surveillance.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "DE000BASF111",
+   "sector": "Materiaux / Chimie",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 48.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.07,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BAYN GR",
+  "name": "Bayer AG",
+  "description": "Groupe pharma et agrochimie allemand. Litiges Roundup, endettement eleve, dividende reduit ; volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "DE000BAY0017",
+   "sector": "Sante / Pharmacie & Agrochimie",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 28.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.014,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MUV2 GR",
+  "name": "Muenchener Rueckversicherung (Munich Re)",
+  "description": "Premier reassureur mondial. Tarification en hausse, profil defensif financier, dividende regulier.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "DE0008430026",
+   "sector": "Finance / Reassurance",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 520.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.19,
+   "dividendYield": 0.033,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SAF FP",
+  "name": "Safran SA",
+  "description": "Motoriste aeronautique (co-entreprise CFM avec GE) et equipementier. Forte visibilite via l'apres-vente (services moteurs).",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0000073272",
+   "sector": "Industrie / Aerospatiale",
+   "region": "Europe (France)",
+   "spotPrice": 250.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.011,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "EL FP",
+  "name": "EssilorLuxottica SA",
+  "description": "Leader mondial de l'optique (verres Essilor, montures Ray-Ban/Oakley). Quasi-monopole, marges elevees, lunettes connectees.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "FR0000121667",
+   "sector": "Sante / Optique",
+   "region": "Europe (France)",
+   "spotPrice": 250.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BBVA SM",
+  "name": "Banco Bilbao Vizcaya Argentaria",
+  "description": "Banque espagnole a forte exposition Mexique et Turquie. Rentabilite elevee, sensible aux devises emergentes.",
+  "tags": [
+   "action",
+   "europe",
+   "espagne",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "ES0113211835",
+   "sector": "Finance / Banque",
+   "region": "Europe (Espagne)",
+   "spotPrice": 13.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.058,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SAN SM",
+  "name": "Banco Santander SA",
+  "description": "Premiere banque de la zone euro par la capitalisation, tres diversifiee geographiquement (Bresil, Espagne, Royaume-Uni, USA).",
+  "tags": [
+   "action",
+   "europe",
+   "espagne",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "ES0113900J37",
+   "sector": "Finance / Banque",
+   "region": "Europe (Espagne)",
+   "spotPrice": 6.5,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.045,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "INGA NA",
+  "name": "ING Groep NV",
+  "description": "Banque de detail neerlandaise, pionniere de la banque en ligne. Rendement du capital eleve (dividende + rachats).",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "NL0011821202",
+   "sector": "Finance / Banque",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 20.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.27,
+   "dividendYield": 0.07,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ISP IM",
+  "name": "Intesa Sanpaolo SpA",
+  "description": "Premiere banque de detail italienne. Rendement du dividende parmi les plus eleves du STOXX 50.",
+  "tags": [
+   "action",
+   "europe",
+   "italie",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "IT0000072618",
+   "sector": "Finance / Banque",
+   "region": "Europe (Italie)",
+   "spotPrice": 5.5,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.085,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "UCG IM",
+  "name": "UniCredit SpA",
+  "description": "Banque paneuropeenne (Italie, Allemagne, Europe centrale). Forte remontee de capital, M&A (Commerzbank, BPM).",
+  "tags": [
+   "action",
+   "europe",
+   "italie",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "IT0005239360",
+   "sector": "Finance / Banque",
+   "region": "Europe (Italie)",
+   "spotPrice": 65.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "STLAM IM",
+  "name": "Stellantis NV",
+  "description": "Constructeur automobile ne de la fusion PSA-FCA (14 marques). Marges sous forte pression en 2025-2026, dividende tres eleve, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "multi (fr/it/us)",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "NL00150001Q9",
+   "sector": "Consommation discretionnaire / Automobile",
+   "region": "Europe (Multi (FR/IT/US))",
+   "spotPrice": 9.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.09,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Multi (FR/IT/US). Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DB1 GR",
+  "name": "Deutsche Boerse AG",
+  "description": "Operateur boursier et de chambre de compensation (Eurex, Clearstream). Beneficiaire de la volatilite et des taux, profil qualite.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "DE0005810055",
+   "sector": "Finance / Infrastructure de marche",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 240.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.19,
+   "dividendYield": 0.02,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ADYEN NA",
+  "name": "Adyen NV",
+  "description": "Plateforme de paiement pour grands comptes (croissance forte). Valorisation elevee, pas de dividende, tres volatile.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "NL0012969182",
+   "sector": "Technologie / Paiements",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 1600.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.38,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PRX NA",
+  "name": "Prosus NV",
+  "description": "Holding technologique (participation majeure dans Tencent, actifs e-commerce). Decote de holding, proxy tech chinoise.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "NL0013654783",
+   "sector": "Technologie / Holding internet",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 55.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.004,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "WKL NA",
+  "name": "Wolters Kluwer NV",
+  "description": "Editeur d'information et de logiciels pour les professionnels (sante, droit, fiscalite). Revenus recurrents, defensif de croissance.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "NL0000395903",
+   "sector": "Technologie / Information professionnelle",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 160.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PHIA NA",
+  "name": "Koninklijke Philips NV",
+  "description": "Groupe de technologie medicale (imagerie, soins connectes). Sortie de crise (rappel respirateurs), redressement des marges.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "NL0000009538",
+   "sector": "Sante / Technologie medicale",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 28.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AD NA",
+  "name": "Koninklijke Ahold Delhaize NV",
+  "description": "Distributeur alimentaire (Albert Heijn, Food Lion, Stop & Shop). Tres defensif, dividende regulier, forte exposition USA.",
+  "tags": [
+   "action",
+   "europe",
+   "pays-bas",
+   "euro stoxx 50",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "NL0011794037",
+   "sector": "Consommation de base / Distribution alimentaire",
+   "region": "Europe (Pays-Bas)",
+   "spotPrice": 34.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "KER FP",
+  "name": "Kering SA",
+  "description": "Groupe de luxe (Gucci, Saint Laurent, Bottega Veneta). Redressement de Gucci en cours, forte volatilite implicite, coupon autocall parmi les plus eleves du secteur.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "FR0000121485",
+   "sector": "Consommation discretionnaire / Luxe",
+   "region": "Europe (France)",
+   "spotPrice": 240.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.37,
+   "dividendYield": 0.038,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DG FP",
+  "name": "Vinci SA",
+  "description": "Concessions autoroutieres et aeroportuaires + construction. Cash-flows previsibles indexes a l'inflation, dividende regulier.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0000125486",
+   "sector": "Industrie / Concessions & Construction",
+   "region": "Europe (France)",
+   "spotPrice": 120.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BN FP",
+  "name": "Danone SA",
+  "description": "Groupe agroalimentaire (produits laitiers, eaux, nutrition). Defensif, redressement des volumes, dividende regulier.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "FR0000120644",
+   "sector": "Consommation de base / Agroalimentaire",
+   "region": "Europe (France)",
+   "spotPrice": 70.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.033,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "RI FP",
+  "name": "Pernod Ricard SA",
+  "description": "Numero deux mondial des spiritueux (Absolut, Jameson, Martell). Destockage post-Covid, exposition Chine/USA, volatilite remontee.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "FR0000120693",
+   "sector": "Consommation de base / Spiritueux",
+   "region": "Europe (France)",
+   "spotPrice": 95.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.043,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CS FP",
+  "name": "AXA SA",
+  "description": "Assureur multiligne francais (dommages, sante, gestion d'actifs). Rendement du dividende eleve, profil defensif financier.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "FR0000120628",
+   "sector": "Finance / Assurance",
+   "region": "Europe (France)",
+   "spotPrice": 40.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.058,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ENGI FP",
+  "name": "Engie SA",
+  "description": "Utility francaise (renouvelables, reseaux, infrastructures). Dividende eleve, sensible aux prix de l'energie et aux taux.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "FR0010208488",
+   "sector": "Utilities / Energie",
+   "region": "Europe (France)",
+   "spotPrice": 18.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AI FP",
+  "name": "Air Liquide SA",
+  "description": "Numero un mondial des gaz industriels et medicaux. Contrats long terme take-or-pay, croissance reguliere, faible volatilite.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "euro stoxx 50",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "FR0000120073",
+   "sector": "Materiaux / Gaz industriels",
+   "region": "Europe (France)",
+   "spotPrice": 190.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.019,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DHL GR",
+  "name": "DHL Group (Deutsche Post)",
+  "description": "Leader mondial de la logistique et du courrier express. Cyclique commerce mondial, dividende eleve.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "DE0005552004",
+   "sector": "Industrie / Logistique",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 42.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.045,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "IFX GR",
+  "name": "Infineon Technologies AG",
+  "description": "Numero un mondial des semi-conducteurs pour l'automobile et l'energie. Cyclique, beneficiaire electrification, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "DE0006231004",
+   "sector": "Technologie / Semi-conducteurs",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 40.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.36,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "VOW3 GR",
+  "name": "Volkswagen AG (pref.)",
+  "description": "Constructeur automobile (VW, Audi, Porsche, Skoda). Transition electrique couteuse, marges Chine sous pression, dividende tres eleve, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "DE0007664039",
+   "sector": "Consommation discretionnaire / Automobile",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 95.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.32,
+   "dividendYield": 0.09,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BMW GR",
+  "name": "Bayerische Motoren Werke AG",
+  "description": "Constructeur automobile premium allemand. Meilleure discipline que ses pairs sur l'electrique, rendement du dividende eleve.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "euro stoxx 50",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "DE0005190003",
+   "sector": "Consommation discretionnaire / Automobile",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 85.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.075,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NOKIA FH",
+  "name": "Nokia Oyj",
+  "description": "Equipementier reseaux (5G, infrastructures optiques). Concurrence Ericsson/Huawei, redressement des marges, exposition datacenters.",
+  "tags": [
+   "action",
+   "europe",
+   "finlande",
+   "euro stoxx 50",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "FI0009000681",
+   "sector": "Technologie / Equipements telecoms",
+   "region": "Europe (Finlande)",
+   "spotPrice": 4.5,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Finlande. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NDA FH",
+  "name": "Nordea Bank Abp",
+  "description": "Premiere banque nordique. Rentabilite elevee, rendement du capital tres eleve.",
+  "tags": [
+   "action",
+   "europe",
+   "finlande / nordics",
+   "euro stoxx 50",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "FI4000297767",
+   "sector": "Finance / Banque",
+   "region": "Europe (Finlande / Nordics)",
+   "spotPrice": 12.5,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.075,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Finlande / Nordics. Prix indicatif ~sept. 2026, a rafraichir."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ACA FP",
+  "name": "Credit Agricole SA",
+  "description": "Vehicule cote du groupe Credit Agricole (banque de detail, gestion d'actifs Amundi, assurance). Rendement du dividende eleve. NB : le mot Credit dans le nom ne fait pas de ce titre un sous-jacent credit.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "FR0000045072",
+   "sector": "Finance / Banque",
+   "region": "Europe (France)",
+   "spotPrice": 16.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.27,
+   "dividendYield": 0.07,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "GLE FP",
+  "name": "Societe Generale SA",
+  "description": "Troisieme banque francaise. Decote de valorisation, plan de restructuration, rendement du capital en hausse, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "FR0000130809",
+   "sector": "Finance / Banque",
+   "region": "Europe (France)",
+   "spotPrice": 45.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.32,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CAP FP",
+  "name": "Capgemini SE",
+  "description": "SSII mondiale (conseil, integration, infogerance). Sensible aux budgets IT des entreprises, exposition IA generative.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "FR0000125338",
+   "sector": "Technologie / Services informatiques",
+   "region": "Europe (France)",
+   "spotPrice": 150.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.024,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "STMPA FP",
+  "name": "STMicroelectronics NV",
+  "description": "Fabricant de semi-conducteurs (automobile, industriel, MEMS). Cyclique, creux de cycle 2025-2026, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "france / italie",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "NL0000226223",
+   "sector": "Technologie / Semi-conducteurs",
+   "region": "Europe (France / Italie)",
+   "spotPrice": 28.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.38,
+   "dividendYield": 0.015,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France / Italie). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SGO FP",
+  "name": "Compagnie de Saint-Gobain",
+  "description": "Leader mondial des materiaux de construction et de la renovation energetique. Cyclique batiment, marges ameliorees.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "FR0000125007",
+   "sector": "Materiaux / Construction",
+   "region": "Europe (France)",
+   "spotPrice": 95.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.026,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "LR FP",
+  "name": "Legrand SA",
+  "description": "Specialiste des infrastructures electriques et numeriques du batiment. Croissance datacenters, marges elevees.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0010307819",
+   "sector": "Industrie / Equipements electriques",
+   "region": "Europe (France)",
+   "spotPrice": 115.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PUB FP",
+  "name": "Publicis Groupe SA",
+  "description": "Premier groupe publicitaire mondial (data, digital via Epsilon/Sapient). Croissance organique superieure aux pairs.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "FR0000130577",
+   "sector": "Communication / Publicite",
+   "region": "Europe (France)",
+   "spotPrice": 95.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HO FP",
+  "name": "Thales SA",
+  "description": "Groupe de defense, aeronautique et cybersecurite. Beneficiaire de la hausse des budgets militaires europeens.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0000121329",
+   "sector": "Industrie / Defense & Aerospatiale",
+   "region": "Europe (France)",
+   "spotPrice": 250.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SW FP",
+  "name": "Sodexo SA",
+  "description": "Numero deux mondial de la restauration collective et des services. Defensif de croissance, marges en redressement.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "consommation"
+  ],
+  "metadata": {
+   "isin": "FR0000121220",
+   "sector": "Consommation / Services aux collectivites",
+   "region": "Europe (France)",
+   "spotPrice": 70.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.035,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ORA FP",
+  "name": "Orange SA",
+  "description": "Operateur telecom francais. Tres defensif, rendement du dividende tres eleve, faible croissance.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "telecoms"
+  ],
+  "metadata": {
+   "isin": "FR0000133308",
+   "sector": "Telecoms",
+   "region": "Europe (France)",
+   "spotPrice": 12.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.062,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "VIE FP",
+  "name": "Veolia Environnement SA",
+  "description": "Leader mondial de l'eau, des dechets et de l'energie. Contrats long terme indexes inflation, defensif.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "FR0000124141",
+   "sector": "Utilities / Environnement",
+   "region": "Europe (France)",
+   "spotPrice": 30.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.04,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "EN FP",
+  "name": "Bouygues SA",
+  "description": "Conglomerat francais (construction Colas, telecoms Bouygues Telecom, medias TF1, Equans). Dividende eleve, decote de holding.",
+  "tags": [
+   "action",
+   "europe",
+   "france",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "FR0000120503",
+   "sector": "Industrie / Conglomerat",
+   "region": "Europe (France)",
+   "spotPrice": 35.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MT NA",
+  "name": "ArcelorMittal SA",
+  "description": "Premier siderurgiste mondial hors Chine. Tres cyclique, sensible aux prix de l'acier et aux droits de douane, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "luxembourg",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "LU1598757687",
+   "sector": "Materiaux / Acier",
+   "region": "Europe (Luxembourg)",
+   "spotPrice": 28.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.02,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Luxembourg). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ADS GR",
+  "name": "adidas AG",
+  "description": "Equipementier sportif allemand. Redressement post-Yeezy, exposition Chine/USA, marges en amelioration.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "DE000A1EWWW0",
+   "sector": "Consommation discretionnaire / Equipement sportif",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 190.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.012,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "RWE GR",
+  "name": "RWE AG",
+  "description": "Producteur d'electricite allemand en bascule vers les renouvelables. Sensible aux prix de gros et a la reglementation.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "DE0007037129",
+   "sector": "Utilities / Electricite",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 34.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HEN3 GR",
+  "name": "Henkel AG & Co. KGaA (pref.)",
+  "description": "Adhesifs (leader mondial) et produits de grande consommation (lessives, cosmetiques). Defensif, marges en hausse.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "DE0006048432",
+   "sector": "Consommation de base / Chimie de specialite",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 78.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MRK GR",
+  "name": "Merck KGaA",
+  "description": "Groupe familial allemand : medicaments, outils de laboratoire, materiaux pour semi-conducteurs. Diversifie, defensif de croissance.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "DE0006599905",
+   "sector": "Sante / Pharma, Sciences de la vie & Electronique",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 130.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DTG GR",
+  "name": "Daimler Truck Holding AG",
+  "description": "Premier constructeur mondial de camions. Cyclique fret, marges resilientes, dividende eleve.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "DE000DTR0CK8",
+   "sector": "Industrie / Poids lourds",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 42.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ZAL GR",
+  "name": "Zalando SE",
+  "description": "Plateforme europeenne de mode en ligne. Retour a la croissance rentable, pas de dividende, volatilite elevee.",
+  "tags": [
+   "action",
+   "europe",
+   "allemagne",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "DE000ZAL1111",
+   "sector": "Consommation discretionnaire / E-commerce",
+   "region": "Europe (Allemagne)",
+   "spotPrice": 34.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.36,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AZN LN",
+  "name": "AstraZeneca PLC",
+  "description": "Premier laboratoire pharmaceutique britannique (oncologie, maladies rares). Pipeline dense, croissance soutenue.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "GB0009895292",
+   "sector": "Sante / Pharmacie",
+   "region": "Royaume-Uni",
+   "spotPrice": 120.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.021,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "SHEL LN",
+  "name": "Shell PLC",
+  "description": "Major petro-gaziere. GNL leader mondial, discipline capital, rachats d'actions massifs, dividende progressif.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "energie"
+  ],
+  "metadata": {
+   "isin": "GB00BP6MXD84",
+   "sector": "Energie",
+   "region": "Royaume-Uni",
+   "spotPrice": 29.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.038,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HSBA LN",
+  "name": "HSBC Holdings PLC",
+  "description": "Banque internationale centree sur l'Asie (Hong Kong, Chine). Rendement du capital tres eleve, sensible aux taux et a la Chine.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "GB0005405286",
+   "sector": "Finance / Banque",
+   "region": "Royaume-Uni",
+   "spotPrice": 10.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.07,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "ULVR LN",
+  "name": "Unilever PLC",
+  "description": "Geant des produits de grande consommation (alimentaire, hygiene, beaute). Tres defensif, plan de simplification du portefeuille.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "GB00B10RZP78",
+   "sector": "Consommation de base",
+   "region": "Royaume-Uni",
+   "spotPrice": 48.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.033,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BP/ LN",
+  "name": "BP PLC",
+  "description": "Major petro-gaziere britannique. Recentrage sur les hydrocarbures, rendement eleve, volatilite superieure a Shell.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "energie"
+  ],
+  "metadata": {
+   "isin": "GB0007980591",
+   "sector": "Energie",
+   "region": "Royaume-Uni",
+   "spotPrice": 4.5,
+   "currency": "GBP",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.055,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "RIO LN",
+  "name": "Rio Tinto PLC",
+  "description": "Numero deux minier mondial (fer, cuivre, aluminium, lithium). Tres expose a la demande chinoise, dividende eleve mais variable.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "GB0007188757",
+   "sector": "Materiaux / Mines",
+   "region": "Royaume-Uni",
+   "spotPrice": 50.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.065,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "GSK LN",
+  "name": "GSK PLC",
+  "description": "Laboratoire pharmaceutique et vaccins britannique. Litiges Zantac en voie de reglement, pipeline VIH/respiratoire.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "GB00BN7SWP63",
+   "sector": "Sante / Pharmacie",
+   "region": "Royaume-Uni",
+   "spotPrice": 15.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DGE LN",
+  "name": "Diageo PLC",
+  "description": "Numero un mondial des spiritueux (Johnnie Walker, Guinness, Don Julio). Destockage en cours, marque premium.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "GB0002374006",
+   "sector": "Consommation de base / Spiritueux",
+   "region": "Royaume-Uni",
+   "spotPrice": 20.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.038,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BATS LN",
+  "name": "British American Tobacco PLC",
+  "description": "Cigarettier mondial en transition vers les produits sans combustion (Vuse, Velo). Rendement du dividende parmi les plus eleves du marche.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "GB0002875804",
+   "sector": "Consommation de base / Tabac",
+   "region": "Royaume-Uni",
+   "spotPrice": 35.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.075,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "REL LN",
+  "name": "RELX PLC",
+  "description": "Analytique de donnees et outils decisionnels (juridique, scientifique, risque). Revenus recurrents, croissance IA, profil qualite.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "GB00B2B0DG97",
+   "sector": "Technologie / Information professionnelle",
+   "region": "Royaume-Uni",
+   "spotPrice": 38.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.017,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "LSEG LN",
+  "name": "London Stock Exchange Group PLC",
+  "description": "Groupe de donnees et d'infrastructures de marche (Refinitiv, LCH). Partenariat Microsoft, revenus d'abonnement.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "GB00B0SWJX34",
+   "sector": "Finance / Infrastructure de marche",
+   "region": "Royaume-Uni",
+   "spotPrice": 110.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.011,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BARC LN",
+  "name": "Barclays PLC",
+  "description": "Banque universelle britannique avec forte banque d'investissement. Decote de valorisation, rendement du capital en hausse.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "GB0031348658",
+   "sector": "Finance / Banque",
+   "region": "Royaume-Uni",
+   "spotPrice": 3.5,
+   "currency": "GBP",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NG/ LN",
+  "name": "National Grid PLC",
+  "description": "Operateur regule des reseaux de transport d'electricite (Royaume-Uni, nord-est des USA). Tres defensif, sensible aux taux.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "utilities"
+  ],
+  "metadata": {
+   "isin": "GB00BDR05C01",
+   "sector": "Utilities / Reseaux electriques",
+   "region": "Royaume-Uni",
+   "spotPrice": 10.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.05,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "VOD LN",
+  "name": "Vodafone Group PLC",
+  "description": "Operateur telecom paneuropeen et africain. Restructuration profonde, dividende reduit puis stabilise.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "telecoms"
+  ],
+  "metadata": {
+   "isin": "GB00BH4HKS39",
+   "sector": "Telecoms",
+   "region": "Royaume-Uni",
+   "spotPrice": 0.85,
+   "currency": "GBP",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.07,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PRU LN",
+  "name": "Prudential PLC",
+  "description": "Assureur-vie et gestionnaire d'actifs centre sur l'Asie et l'Afrique. Proxy classe moyenne asiatique, volatile.",
+  "tags": [
+   "action",
+   "royaume-uni",
+   "ftse 100",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "GB0007099541",
+   "sector": "Finance / Assurance-vie",
+   "region": "Royaume-Uni",
+   "spotPrice": 9.0,
+   "currency": "GBP",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AAPL US",
+  "name": "Apple Inc.",
+  "description": "Concepteur d'iPhone, Mac, services. Capitalisation > 3 000 Mds USD. +23% en 2026 malgre des tensions sur l'approvisionnement en memoire. Volatilite implicite moderee, faible dividende.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US0378331005",
+   "sector": "Technologie / Materiel",
+   "region": "Etats-Unis",
+   "spotPrice": 255.0,
+   "currency": "USD",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.004,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MSFT US",
+  "name": "Microsoft Corp.",
+  "description": "Editeur Windows/Office, cloud Azure, participation OpenAI. Un des quatre au-dessus de 3 000 Mds USD. Croissance cloud et IA.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US5949181045",
+   "sector": "Technologie / Logiciels & Cloud",
+   "region": "Etats-Unis",
+   "spotPrice": 520.0,
+   "currency": "USD",
+   "impliedVol3m": 0.23,
+   "dividendYield": 0.007,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NVDA US",
+  "name": "NVIDIA Corp.",
+  "description": "Concepteur des GPU qui equipent l'entrainement de l'IA. Premiere capitalisation mondiale. Volatilite implicite tres elevee, marges records, sous-jacent d'autocall prise pour son coupon.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US67066G1040",
+   "sector": "Technologie / Semi-conducteurs",
+   "region": "Etats-Unis",
+   "spotPrice": 180.0,
+   "currency": "USD",
+   "impliedVol3m": 0.4,
+   "dividendYield": 0.001,
+   "repoRate": 0.0,
+   "volatilityScore": "HIGH",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "GOOGL US",
+  "name": "Alphabet Inc. (classe A)",
+  "description": "Maison mere de Google (recherche, YouTube, cloud, Waymo). Au-dessus de 3 000 Mds USD, monetisation de l'IA Gemini.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "US02079K3059",
+   "sector": "Communication / Internet",
+   "region": "Etats-Unis",
+   "spotPrice": 210.0,
+   "currency": "USD",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.005,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AMZN US",
+  "name": "Amazon.com Inc.",
+  "description": "E-commerce, cloud AWS (moteur de marge), publicite. Retardataire en 2026 (+4%), pas de dividende.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "US0231351067",
+   "sector": "Consommation discretionnaire / E-commerce & Cloud",
+   "region": "Etats-Unis",
+   "spotPrice": 235.0,
+   "currency": "USD",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "META US",
+  "name": "Meta Platforms Inc.",
+  "description": "Facebook, Instagram, WhatsApp. Depenses IA et Reality Labs elevees, publicite tres rentable, volatilite implicite elevee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "US30303M1027",
+   "sector": "Communication / Reseaux sociaux",
+   "region": "Etats-Unis",
+   "spotPrice": 760.0,
+   "currency": "USD",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.003,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "TSLA US",
+  "name": "Tesla Inc.",
+  "description": "Constructeur de vehicules electriques, stockage d'energie, robotaxi/robotique. Volatilite implicite parmi les plus elevees du S&P 500, pas de dividende.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "US88160R1014",
+   "sector": "Consommation discretionnaire / Automobile & Energie",
+   "region": "Etats-Unis",
+   "spotPrice": 340.0,
+   "currency": "USD",
+   "impliedVol3m": 0.5,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "HIGH",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AVGO US",
+  "name": "Broadcom Inc.",
+  "description": "Semi-conducteurs (ASIC IA, reseau) et logiciels d'infrastructure (VMware). Croissance IA, dividende en forte hausse.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US11135F1012",
+   "sector": "Technologie / Semi-conducteurs & Logiciels",
+   "region": "Etats-Unis",
+   "spotPrice": 340.0,
+   "currency": "USD",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.011,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "JPM US",
+  "name": "JPMorgan Chase & Co.",
+  "description": "Premiere banque americaine par les actifs. Rentabilite de reference du secteur, sensible aux taux et au credit.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "US46625H1005",
+   "sector": "Finance / Banque",
+   "region": "Etats-Unis",
+   "spotPrice": 300.0,
+   "currency": "USD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.02,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "V US",
+  "name": "Visa Inc. (classe A)",
+  "description": "Reseau de paiement mondial. Modele a peage sur la consommation, marges tres elevees, croissance reguliere.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "US92826C8394",
+   "sector": "Finance / Paiements",
+   "region": "Etats-Unis",
+   "spotPrice": 360.0,
+   "currency": "USD",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.008,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MA US",
+  "name": "Mastercard Inc. (classe A)",
+  "description": "Reseau de paiement mondial (numero deux). Meme modele que Visa, legerement plus volatil et plus international.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "US57636Q1040",
+   "sector": "Finance / Paiements",
+   "region": "Etats-Unis",
+   "spotPrice": 580.0,
+   "currency": "USD",
+   "impliedVol3m": 0.21,
+   "dividendYield": 0.006,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "LLY US",
+  "name": "Eli Lilly & Co.",
+  "description": "Laboratoire pharmaceutique, leader des traitements de l'obesite et du diabete (GLP-1). Croissance des ventes exceptionnelle, valorisation elevee, volatilite remontee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "US5324571083",
+   "sector": "Sante / Pharmacie",
+   "region": "Etats-Unis",
+   "spotPrice": 800.0,
+   "currency": "USD",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.007,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "UNH US",
+  "name": "UnitedHealth Group Inc.",
+  "description": "Premier assureur sante americain (UnitedHealthcare, Optum). Annee 2025-2026 difficile (couts medicaux, enquetes), volatilite elevee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "US91324P1021",
+   "sector": "Sante / Assurance & Services",
+   "region": "Etats-Unis",
+   "spotPrice": 330.0,
+   "currency": "USD",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.021,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "JNJ US",
+  "name": "Johnson & Johnson",
+  "description": "Groupe de sante diversifie (medicaments, dispositifs medicaux). Tres defensif, dividende croissant depuis 60 ans.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "US4781601046",
+   "sector": "Sante / Pharma & Dispositifs medicaux",
+   "region": "Etats-Unis",
+   "spotPrice": 180.0,
+   "currency": "USD",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "XOM US",
+  "name": "Exxon Mobil Corp.",
+  "description": "Premiere major petroliere occidentale. Integration amont-aval, discipline capital, dividende de reference du secteur.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "energie"
+  ],
+  "metadata": {
+   "isin": "US30231G1022",
+   "sector": "Energie",
+   "region": "Etats-Unis",
+   "spotPrice": 115.0,
+   "currency": "USD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.033,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CVX US",
+  "name": "Chevron Corp.",
+  "description": "Major petroliere americaine. Acquisition Hess, bilan solide, rendement du dividende eleve.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "energie"
+  ],
+  "metadata": {
+   "isin": "US1667641005",
+   "sector": "Energie",
+   "region": "Etats-Unis",
+   "spotPrice": 160.0,
+   "currency": "USD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.043,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "WMT US",
+  "name": "Walmart Inc.",
+  "description": "Premier distributeur mondial. Gains de parts (e-commerce, publicite retail media), tres defensif.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "US9311421039",
+   "sector": "Consommation de base / Distribution",
+   "region": "Etats-Unis",
+   "spotPrice": 100.0,
+   "currency": "USD",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.009,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "HD US",
+  "name": "Home Depot Inc.",
+  "description": "Numero un du bricolage aux USA. Sensible au marche immobilier et aux taux hypothecaires, dividende regulier.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "US4370761029",
+   "sector": "Consommation discretionnaire / Distribution bricolage",
+   "region": "Etats-Unis",
+   "spotPrice": 400.0,
+   "currency": "USD",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.024,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PG US",
+  "name": "Procter & Gamble Co.",
+  "description": "Geant des produits d'hygiene et d'entretien (Pampers, Gillette, Ariel). Tres defensif, pricing power, dividende aristocrate.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "US7427181091",
+   "sector": "Consommation de base",
+   "region": "Etats-Unis",
+   "spotPrice": 160.0,
+   "currency": "USD",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.026,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "KO US",
+  "name": "Coca-Cola Co.",
+  "description": "Numero un mondial des boissons non alcoolisees. Tres defensif, dividende croissant, faible volatilite.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "US1912161007",
+   "sector": "Consommation de base / Boissons",
+   "region": "Etats-Unis",
+   "spotPrice": 70.0,
+   "currency": "USD",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "PEP US",
+  "name": "PepsiCo Inc.",
+  "description": "Boissons et snacks (Frito-Lay). Defensif, redressement des volumes, dividende eleve.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "US7134481081",
+   "sector": "Consommation de base / Boissons & Snacks",
+   "region": "Etats-Unis",
+   "spotPrice": 150.0,
+   "currency": "USD",
+   "impliedVol3m": 0.17,
+   "dividendYield": 0.037,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "MCD US",
+  "name": "McDonald's Corp.",
+  "description": "Premier reseau mondial de restauration rapide. Modele de franchise/immobilier, defensif de croissance.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "US5801351017",
+   "sector": "Consommation discretionnaire / Restauration",
+   "region": "Etats-Unis",
+   "spotPrice": 320.0,
+   "currency": "USD",
+   "impliedVol3m": 0.18,
+   "dividendYield": 0.024,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "DIS US",
+  "name": "Walt Disney Co.",
+  "description": "Studios, parcs a themes, streaming Disney+. Redressement de la rentabilite du streaming, parcs resilients.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "US2546871060",
+   "sector": "Communication / Medias & Loisirs",
+   "region": "Etats-Unis",
+   "spotPrice": 115.0,
+   "currency": "USD",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.009,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "NFLX US",
+  "name": "Netflix Inc.",
+  "description": "Leader mondial du streaming video. Croissance des abonnes et de la publicite, marges en forte hausse, pas de dividende, volatilite elevee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "US64110L1061",
+   "sector": "Communication / Streaming",
+   "region": "Etats-Unis",
+   "spotPrice": 1200.0,
+   "currency": "USD",
+   "impliedVol3m": 0.32,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "AMD US",
+  "name": "Advanced Micro Devices Inc.",
+  "description": "Concepteur de processeurs (CPU, GPU IA MI300). Challenger de Nvidia et Intel, volatilite implicite tres elevee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US0079031078",
+   "sector": "Technologie / Semi-conducteurs",
+   "region": "Etats-Unis",
+   "spotPrice": 170.0,
+   "currency": "USD",
+   "impliedVol3m": 0.42,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "HIGH",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CRM US",
+  "name": "Salesforce Inc.",
+  "description": "Numero un mondial du CRM. Bascule vers la discipline de marge et les agents IA (Agentforce).",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "US79466L3024",
+   "sector": "Technologie / Logiciels CRM",
+   "region": "Etats-Unis",
+   "spotPrice": 260.0,
+   "currency": "USD",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.006,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BAC US",
+  "name": "Bank of America Corp.",
+  "description": "Deuxieme banque de detail americaine. Tres sensible a la pente des taux, rendement du capital regulier.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "US0605051046",
+   "sector": "Finance / Banque",
+   "region": "Etats-Unis",
+   "spotPrice": 50.0,
+   "currency": "USD",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.024,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BRK/B US",
+  "name": "Berkshire Hathaway Inc. (classe B)",
+  "description": "Holding de Warren Buffett (assurance, energie, rail BNSF, participations Apple/AmEx). Tres defensif, tresorerie record, pas de dividende.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "US0846707026",
+   "sector": "Finance / Conglomerat",
+   "region": "Etats-Unis",
+   "spotPrice": 500.0,
+   "currency": "USD",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "COST US",
+  "name": "Costco Wholesale Corp.",
+  "description": "Distributeur a adhesion. Fidelite exceptionnelle, revenus d'abonnement, valorisation elevee, defensif de croissance.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "consommation de base"
+  ],
+  "metadata": {
+   "isin": "US22160K1051",
+   "sector": "Consommation de base / Distribution",
+   "region": "Etats-Unis",
+   "spotPrice": 950.0,
+   "currency": "USD",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.005,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "BA US",
+  "name": "Boeing Co.",
+  "description": "Avionneur americain (duopole avec Airbus). Sortie de crise qualite/production, pas de dividende, volatilite elevee.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "US0970231058",
+   "sector": "Industrie / Aerospatiale & Defense",
+   "region": "Etats-Unis",
+   "spotPrice": 210.0,
+   "currency": "USD",
+   "impliedVol3m": 0.36,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "CAT US",
+  "name": "Caterpillar Inc.",
+  "description": "Numero un mondial des engins de chantier et miniers. Cyclique infrastructure/minier, dividende regulier.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "US1491231015",
+   "sector": "Industrie / Machines",
+   "region": "Etats-Unis",
+   "spotPrice": 420.0,
+   "currency": "USD",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.014,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "GE US",
+  "name": "GE Aerospace",
+  "description": "Motoriste aeronautique (apres la scission de GE). Forte visibilite services moteurs, cycle aeronautique porteur.",
+  "tags": [
+   "action",
+   "etats-unis",
+   "s&p 500",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "US3696043013",
+   "sector": "Industrie / Aerospatiale",
+   "region": "Etats-Unis",
+   "spotPrice": 280.0,
+   "currency": "USD",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.006,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "7203 JP",
+  "name": "Toyota Motor Corp.",
+  "description": "Premier constructeur automobile mondial. Strategie hybride payante, bilan solide, exposition USD.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "JP3633400001",
+   "sector": "Consommation discretionnaire / Automobile",
+   "region": "Japon",
+   "spotPrice": 3200.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.028,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "6758 JP",
+  "name": "Sony Group Corp.",
+  "description": "Jeux video (PlayStation), capteurs d'image, musique et cinema, services financiers. Diversifie, contenus premium.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "JP3435000009",
+   "sector": "Technologie / Electronique & Divertissement",
+   "region": "Japon",
+   "spotPrice": 4100.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.006,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "9984 JP",
+  "name": "SoftBank Group Corp.",
+  "description": "Holding technologique (participation Arm, Vision Fund, pari IA). Decote de holding, tres volatil, effet de levier.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "JP3436100006",
+   "sector": "Technologie / Holding d'investissement",
+   "region": "Japon",
+   "spotPrice": 13500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.38,
+   "dividendYield": 0.004,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "6861 JP",
+  "name": "Keyence Corp.",
+  "description": "Capteurs et systemes de vision industrielle. Marges d'exploitation > 50%, modele sans usine, croissance reguliere.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "JP3236200006",
+   "sector": "Industrie / Automatisation & Capteurs",
+   "region": "Japon",
+   "spotPrice": 62000.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.005,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "8035 JP",
+  "name": "Tokyo Electron Ltd.",
+  "description": "Numero deux mondial des equipements de fabrication de puces. Cyclique, beneficiaire de l'investissement IA.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "JP3571400005",
+   "sector": "Technologie / Equipements semi-conducteurs",
+   "region": "Japon",
+   "spotPrice": 30000.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.015,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "6501 JP",
+  "name": "Hitachi Ltd.",
+  "description": "Conglomerat en pleine transformation (Lumada digital, reseaux electriques via Hitachi Energy). Fort momentum benefices.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "industrie"
+  ],
+  "metadata": {
+   "isin": "JP3788600009",
+   "sector": "Industrie / Conglomerat & Digital",
+   "region": "Japon",
+   "spotPrice": 4500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.012,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "9983 JP",
+  "name": "Fast Retailing Co. Ltd.",
+  "description": "Maison mere d'Uniqlo. Expansion en Asie et en Occident, pricing power, poids important dans le Nikkei price-weighted.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "JP3802300008",
+   "sector": "Consommation discretionnaire / Distribution habillement",
+   "region": "Japon",
+   "spotPrice": 50000.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.014,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "8306 JP",
+  "name": "Mitsubishi UFJ Financial Group",
+  "description": "Premiere banque japonaise. Beneficiaire de la fin des taux negatifs au Japon, rendement du capital en hausse.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "JP3902900004",
+   "sector": "Finance / Banque",
+   "region": "Japon",
+   "spotPrice": 2200.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.033,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "6098 JP",
+  "name": "Recruit Holdings Co. Ltd.",
+  "description": "Proprietaire d'Indeed et Glassdoor (recrutement en ligne mondial). Sensible au marche de l'emploi americain.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "JP3970300004",
+   "sector": "Technologie / RH & Plateformes",
+   "region": "Japon",
+   "spotPrice": 9500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.3,
+   "dividendYield": 0.01,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "7974 JP",
+  "name": "Nintendo Co. Ltd.",
+  "description": "Editeur et fabricant de consoles (Switch 2). Franchises proprietaires fortes, tresorerie nette massive, cycle produit.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "communication"
+  ],
+  "metadata": {
+   "isin": "JP3756600007",
+   "sector": "Communication / Jeux video",
+   "region": "Japon",
+   "spotPrice": 12000.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.03,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "4063 JP",
+  "name": "Shin-Etsu Chemical Co. Ltd.",
+  "description": "Leader mondial du PVC et des plaquettes de silicium pour semi-conducteurs. Marges elevees, bilan solide.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "materiaux"
+  ],
+  "metadata": {
+   "isin": "JP3371200001",
+   "sector": "Materiaux / Chimie & Silicium",
+   "region": "Japon",
+   "spotPrice": 5500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.02,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "6857 JP",
+  "name": "Advantest Corp.",
+  "description": "Numero un mondial des testeurs de puces memoire et logiques. Tres cyclique, beta IA eleve, volatilite implicite tres elevee.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "JP3122400009",
+   "sector": "Technologie / Test de semi-conducteurs",
+   "region": "Japon",
+   "spotPrice": 11000.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.42,
+   "dividendYield": 0.008,
+   "repoRate": 0.0,
+   "volatilityScore": "HIGH",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "4568 JP",
+  "name": "Daiichi Sankyo Co. Ltd.",
+  "description": "Laboratoire japonais, leader des anticorps conjugues en oncologie (Enhertu, partenariat AstraZeneca).",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "sante"
+  ],
+  "metadata": {
+   "isin": "JP3475350009",
+   "sector": "Sante / Pharmacie",
+   "region": "Japon",
+   "spotPrice": 6500.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.012,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "9433 JP",
+  "name": "KDDI Corp.",
+  "description": "Deuxieme operateur telecom japonais. Tres defensif, dividende croissant, diversification finance/energie.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "telecoms"
+  ],
+  "metadata": {
+   "isin": "JP3496400007",
+   "sector": "Telecoms",
+   "region": "Japon",
+   "spotPrice": 5200.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.032,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "7267 JP",
+  "name": "Honda Motor Co. Ltd.",
+  "description": "Constructeur automobile et numero un mondial de la moto. Rendement du dividende eleve, exposition USD, discipline capital.",
+  "tags": [
+   "action",
+   "japon",
+   "nikkei 225",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "JP3854600008",
+   "sector": "Consommation discretionnaire / Automobile & Moto",
+   "region": "Japon",
+   "spotPrice": 1700.0,
+   "currency": "JPY",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.045,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "700 HK",
+  "name": "Tencent Holdings Ltd.",
+  "description": "Geant internet chinois (WeChat, jeux video, cloud, fintech). Plus gros poids du Hang Seng, rachats d'actions massifs.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "KYG875721634",
+   "sector": "Technologie / Internet & Jeux",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 620.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.008,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "9988 HK",
+  "name": "Alibaba Group Holding Ltd.",
+  "description": "E-commerce chinois (Taobao, Tmall), cloud leader en Chine, IA (Qwen). Redressement de la croissance, decote de valorisation.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "KYG017191142",
+   "sector": "Consommation discretionnaire / E-commerce & Cloud",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 130.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.34,
+   "dividendYield": 0.01,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "1299 HK",
+  "name": "AIA Group Ltd.",
+  "description": "Premier assureur-vie pan-asiatique. Croissance structurelle de la prevoyance en Asie, bilan solide.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "HK0000069689",
+   "sector": "Finance / Assurance-vie",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 70.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.24,
+   "dividendYield": 0.025,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "3690 HK",
+  "name": "Meituan",
+  "description": "Super-app chinoise de livraison de repas et services locaux. Guerre des prix avec Alibaba/JD, forte volatilite.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "KYG596691041",
+   "sector": "Consommation discretionnaire / Livraison & Services locaux",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 120.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.38,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "939 HK",
+  "name": "China Construction Bank Corp.",
+  "description": "Une des quatre grandes banques d'Etat chinoises. Rendement du dividende tres eleve, exposition immobilier chinois.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "CNE1000002H1",
+   "sector": "Finance / Banque",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 8.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.075,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "1398 HK",
+  "name": "ICBC",
+  "description": "Premiere banque chinoise (et mondiale) par les actifs. Dividende tres eleve, valorisation tres basse.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "CNE1000003G1",
+   "sector": "Finance / Banque",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 6.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.2,
+   "dividendYield": 0.075,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "941 HK",
+  "name": "China Mobile Ltd.",
+  "description": "Premier operateur telecom mondial par les abonnes. Tres defensif, dividende tres eleve, generation de cash massive.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "telecoms"
+  ],
+  "metadata": {
+   "isin": "HK0941009539",
+   "sector": "Telecoms",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 90.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.16,
+   "dividendYield": 0.065,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "2318 HK",
+  "name": "Ping An Insurance Group",
+  "description": "Groupe financier chinois diversifie (assurance, banque, sante, techfin). Sensible a l'immobilier et aux marches actions chinois.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "CNE1000003X6",
+   "sector": "Finance / Assurance & Banque",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 55.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.28,
+   "dividendYield": 0.06,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "1810 HK",
+  "name": "Xiaomi Corp.",
+  "description": "Smartphones, objets connectes et desormais vehicules electriques (SU7). Montee en gamme, volatilite implicite tres elevee.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "technologie"
+  ],
+  "metadata": {
+   "isin": "KYG9830T1067",
+   "sector": "Technologie / Electronique & Automobile",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 50.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.4,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "HIGH",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "1211 HK",
+  "name": "BYD Co. Ltd.",
+  "description": "Premier constructeur mondial de vehicules electriques et hybrides rechargeables, integre verticalement (batteries).",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "CNE100000296",
+   "sector": "Consommation discretionnaire / Vehicules electriques & Batteries",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 100.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.38,
+   "dividendYield": 0.015,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "9618 HK",
+  "name": "JD.com Inc.",
+  "description": "E-commerce chinois specialise dans l'electronique et la logistique proprietaire. Guerre des prix de la livraison, decote.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "consommation discretionnaire"
+  ],
+  "metadata": {
+   "isin": "KYG8208B1014",
+   "sector": "Consommation discretionnaire / E-commerce",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 130.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.36,
+   "dividendYield": 0.025,
+   "repoRate": 0.0,
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "EQUITY",
+  "code": "388 HK",
+  "name": "Hong Kong Exchanges and Clearing Ltd.",
+  "description": "Operateur de la Bourse de Hong Kong. Beneficiaire des introductions en bourse chinoises et des flux Southbound.",
+  "tags": [
+   "action",
+   "hong kong",
+   "chine",
+   "hang seng",
+   "finance"
+  ],
+  "metadata": {
+   "isin": "HK0388045442",
+   "sector": "Finance / Infrastructure de marche",
+   "region": "Hong Kong / Chine",
+   "spotPrice": 420.0,
+   "currency": "HKD",
+   "impliedVol3m": 0.26,
+   "dividendYield": 0.035,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "ESTRON Index",
+  "name": "Euro Short-Term Rate (ESTR)",
+  "description": "Taux au jour le jour de reference de la zone euro (moyenne des transactions non garanties des banques). Proche du taux de depot BCE. Base des OIS EUR et des swaps ESTR.",
+  "tags": [
+   "taux",
+   "overnight",
+   "zone euro",
+   "bce",
+   "ois"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 1.93,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUR001W Index",
+  "name": "Euribor 1 semaine",
+  "description": "Taux interbancaire de la zone euro a 1 semaine (~sept. 2026).",
+  "tags": [
+   "taux",
+   "euribor",
+   "court terme",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.18,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUR001M Index",
+  "name": "Euribor 1 mois",
+  "description": "Taux Euribor 1 mois (~sept. 2026). Indice de reference de nombreux financements a taux variable.",
+  "tags": [
+   "taux",
+   "euribor",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.37,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUR003M Index",
+  "name": "Euribor 3 mois",
+  "description": "Taux Euribor 3 mois (~sept. 2026). Indice de reference dominant des Range Accrual EUR, des jambes flottantes de swaps et des credits immobiliers a taux revisable en Europe continentale.",
+  "tags": [
+   "taux",
+   "euribor",
+   "3 mois",
+   "range accrual",
+   "swap",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.63,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUR006M Index",
+  "name": "Euribor 6 mois",
+  "description": "Taux Euribor 6 mois (~sept. 2026). Frequent pour les jambes flottantes semestrielles et les credits immobiliers.",
+  "tags": [
+   "taux",
+   "euribor",
+   "6 mois",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.8,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUR012M Index",
+  "name": "Euribor 12 mois",
+  "description": "Taux Euribor 12 mois (~sept. 2026). Courbe monetaire EUR pentifiee (anticipation de hausse ou de fin de baisse des taux).",
+  "tags": [
+   "taux",
+   "euribor",
+   "1 an",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 3.14,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUSA2 Index",
+  "name": "CMS EUR 2 ans (taux swap ESTR 2Y)",
+  "description": "Taux du swap de taux EUR a maturite constante 2 ans. Point court de la courbe des swaps, tres sensible a la politique de la BCE.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "2 ans",
+   "zone euro",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.55,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUSA5 Index",
+  "name": "CMS EUR 5 ans",
+  "description": "Taux du swap EUR a maturite constante 5 ans. Point median de la courbe.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "5 ans",
+   "zone euro",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.85,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUSA10 Index",
+  "name": "CMS EUR 10 ans",
+  "description": "Taux du swap EUR a maturite constante 10 ans. Reference des produits de pente de courbe (steepeners), des CMS Spread et des autocalls de taux EUR.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "10 ans",
+   "zone euro",
+   "steepener",
+   "cms spread",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 3.15,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUSA30 Index",
+  "name": "CMS EUR 30 ans",
+  "description": "Taux du swap EUR a maturite constante 30 ans. Point long de la courbe, sensible aux flux d'assureurs et de fonds de pension.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "30 ans",
+   "zone euro",
+   "long terme",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 3.35,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "EUSA10-EUSA2",
+  "name": "Spread de courbe EUR (CMS 10 ans - 2 ans)",
+  "description": "Ecart entre le taux swap EUR 10 ans et 2 ans (~+60 bps, courbe pentifiee). Sous-jacent des steepeners / flatteners et des CMS Spread EUR.",
+  "tags": [
+   "taux",
+   "spread de courbe",
+   "steepener",
+   "flattener",
+   "cms spread",
+   "zone euro"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 0.6,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "GDBR10 Index",
+  "name": "Bund 10 ans (rendement de l'obligation d'Etat allemande)",
+  "description": "Rendement de l'emprunt d'Etat allemand a 10 ans, actif sans risque de reference de la zone euro.",
+  "tags": [
+   "taux",
+   "obligation d'etat",
+   "bund",
+   "allemagne",
+   "10 ans",
+   "sans risque"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 2.95,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "OATA10 Index",
+  "name": "OAT 10 ans (rendement de l'obligation d'Etat francaise)",
+  "description": "Rendement de l'emprunt d'Etat francais a 10 ans. Spread OAT-Bund elargi (~50 bps) sur incertitude budgetaire francaise.",
+  "tags": [
+   "taux",
+   "obligation d'etat",
+   "oat",
+   "france",
+   "10 ans",
+   "spread souverain"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Zone euro",
+   "spotPrice": 3.45,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "SOFRRATE Index",
+  "name": "SOFR (Secured Overnight Financing Rate)",
+  "description": "Taux au jour le jour garanti de reference du dollar (repo Treasuries), successeur du LIBOR USD. Base des OIS USD et des swaps SOFR.",
+  "tags": [
+   "taux",
+   "overnight",
+   "dollar",
+   "sofr",
+   "repo",
+   "ois"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 3.55,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "FEDL01 Index",
+  "name": "Taux effectif des Fed Funds",
+  "description": "Taux effectif des fonds federaux americains (~sept. 2026). Fourchette cible de la Fed apres son cycle de baisses.",
+  "tags": [
+   "taux",
+   "fed",
+   "politique monetaire",
+   "dollar",
+   "court terme"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 3.63,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "USSW2 Index",
+  "name": "CMS USD 2 ans (taux swap SOFR 2Y)",
+  "description": "Taux du swap USD a maturite constante 2 ans.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "2 ans",
+   "dollar",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 4.35,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "USSW5 Index",
+  "name": "CMS USD 5 ans",
+  "description": "Taux du swap USD a maturite constante 5 ans.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "5 ans",
+   "dollar",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 4.5,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "USSW10 Index",
+  "name": "CMS USD 10 ans",
+  "description": "Taux du swap USD a maturite constante 10 ans. Reference des CMS Spread USD et des autocalls de taux dollar.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "10 ans",
+   "dollar",
+   "cms spread",
+   "courbe"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 4.7,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "USSW30 Index",
+  "name": "CMS USD 30 ans",
+  "description": "Taux du swap USD a maturite constante 30 ans.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "30 ans",
+   "dollar",
+   "long terme"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 5.05,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "USGG10YR Index",
+  "name": "Treasury 10 ans (rendement de l'obligation d'Etat americaine)",
+  "description": "Rendement du bon du Tresor americain a 10 ans, actif sans risque de reference mondial. Courbe US repentifiee (2s10s positive).",
+  "tags": [
+   "taux",
+   "obligation d'etat",
+   "treasury",
+   "etats-unis",
+   "10 ans",
+   "sans risque"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Etats-Unis",
+   "spotPrice": 4.8,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "SONIO Index",
+  "name": "SONIA (Sterling Overnight Index Average)",
+  "description": "Taux au jour le jour de reference de la livre sterling. Base des OIS et swaps GBP.",
+  "tags": [
+   "taux",
+   "overnight",
+   "livre sterling",
+   "sonia",
+   "ois"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Royaume-Uni",
+   "spotPrice": 3.75,
+   "currency": "GBP",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference GBP. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "BPSW10 Index",
+  "name": "CMS GBP 10 ans",
+  "description": "Taux du swap GBP a maturite constante 10 ans.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "10 ans",
+   "livre sterling"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Royaume-Uni",
+   "spotPrice": 4.35,
+   "currency": "GBP",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference GBP. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "RATE_INDEX",
+  "code": "JYSW10 Index",
+  "name": "CMS JPY 10 ans",
+  "description": "Taux du swap JPY a maturite constante 10 ans. Normalisation de la politique de la Banque du Japon apres des annees de taux nuls/negatifs.",
+  "tags": [
+   "taux",
+   "cms",
+   "swap",
+   "10 ans",
+   "yen",
+   "boj",
+   "normalisation"
+  ],
+  "metadata": {
+   "sector": "Taux d'interet",
+   "region": "Japon",
+   "spotPrice": 1.75,
+   "currency": "JPY",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Taux de reference JPY. Niveau indicatif en pourcentage (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURUSD",
+  "name": "EUR/USD",
+  "description": "Couple de change le plus echange au monde. Spot ~1.16 (~sept. 2026). Sous-jacent de reference des TARF, dual currency et FX linked notes euro-dollar.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "euro",
+   "dollar",
+   "tarf"
+  ],
+  "metadata": {
+   "sector": "Change EUR/USD",
+   "region": "International",
+   "spotPrice": 1.162,
+   "currency": "EUR",
+   "impliedVol3m": 0.075,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURGBP",
+  "name": "EUR/GBP",
+  "description": "Euro contre livre sterling. Spot ~0.86. Volatilite contenue, tres liquide.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "euro",
+   "livre sterling"
+  ],
+  "metadata": {
+   "sector": "Change EUR/GBP",
+   "region": "International",
+   "spotPrice": 0.859,
+   "currency": "EUR",
+   "impliedVol3m": 0.07,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/GBP. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURJPY",
+  "name": "EUR/JPY",
+  "description": "Euro contre yen. Spot ~178. Couple de portage (carry) classique, sensible a la Banque du Japon et a l'aversion au risque.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "euro",
+   "yen",
+   "carry"
+  ],
+  "metadata": {
+   "sector": "Change EUR/JPY",
+   "region": "International",
+   "spotPrice": 178.5,
+   "currency": "EUR",
+   "impliedVol3m": 0.09,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/JPY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURCHF",
+  "name": "EUR/CHF",
+  "description": "Euro contre franc suisse. Spot ~0.92. Franc refuge, interventions possibles de la BNS, faible volatilite.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "euro",
+   "franc suisse",
+   "refuge"
+  ],
+  "metadata": {
+   "sector": "Change EUR/CHF",
+   "region": "International",
+   "spotPrice": 0.924,
+   "currency": "EUR",
+   "impliedVol3m": 0.055,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/CHF. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "GBPUSD",
+  "name": "GBP/USD",
+  "description": "Livre sterling contre dollar (cable). Spot ~1.35. Sensible a la Banque d'Angleterre et au risque budgetaire britannique.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "livre sterling",
+   "dollar"
+  ],
+  "metadata": {
+   "sector": "Change GBP/USD",
+   "region": "International",
+   "spotPrice": 1.354,
+   "currency": "GBP",
+   "impliedVol3m": 0.085,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change GBP/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDJPY",
+  "name": "USD/JPY",
+  "description": "Dollar contre yen. Spot ~153.5. Couple de portage majeur, tres sensible a l'ecart de taux US-Japon.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "dollar",
+   "yen",
+   "carry",
+   "taux"
+  ],
+  "metadata": {
+   "sector": "Change USD/JPY",
+   "region": "International",
+   "spotPrice": 153.5,
+   "currency": "USD",
+   "impliedVol3m": 0.095,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/JPY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDCHF",
+  "name": "USD/CHF",
+  "description": "Dollar contre franc suisse. Spot ~0.795. Franc fort, dollar sous pression en 2026.",
+  "tags": [
+   "change",
+   "fx",
+   "majeur",
+   "dollar",
+   "franc suisse"
+  ],
+  "metadata": {
+   "sector": "Change USD/CHF",
+   "region": "International",
+   "spotPrice": 0.795,
+   "currency": "USD",
+   "impliedVol3m": 0.075,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/CHF. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "AUDUSD",
+  "name": "AUD/USD",
+  "description": "Dollar australien contre dollar US. Proxy des matieres premieres et de la demande chinoise, volatilite elevee.",
+  "tags": [
+   "change",
+   "fx",
+   "matieres premieres",
+   "chine",
+   "dollar australien"
+  ],
+  "metadata": {
+   "sector": "Change AUD/USD",
+   "region": "International",
+   "spotPrice": 0.665,
+   "currency": "AUD",
+   "impliedVol3m": 0.1,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change AUD/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "NZDUSD",
+  "name": "NZD/USD",
+  "description": "Dollar neo-zelandais contre dollar US. Proxy agricole et taux, tres volatil.",
+  "tags": [
+   "change",
+   "fx",
+   "dollar neo-zelandais",
+   "matieres premieres"
+  ],
+  "metadata": {
+   "sector": "Change NZD/USD",
+   "region": "International",
+   "spotPrice": 0.605,
+   "currency": "NZD",
+   "impliedVol3m": 0.105,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change NZD/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDCAD",
+  "name": "USD/CAD",
+  "description": "Dollar US contre dollar canadien. Sensible au petrole (WTI) et aux droits de douane US.",
+  "tags": [
+   "change",
+   "fx",
+   "dollar canadien",
+   "petrole"
+  ],
+  "metadata": {
+   "sector": "Change USD/CAD",
+   "region": "International",
+   "spotPrice": 1.365,
+   "currency": "USD",
+   "impliedVol3m": 0.07,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/CAD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURSEK",
+  "name": "EUR/SEK",
+  "description": "Euro contre couronne suedoise. Sensible au cycle industriel europeen et a la Riksbank.",
+  "tags": [
+   "change",
+   "fx",
+   "couronne suedoise",
+   "nordics"
+  ],
+  "metadata": {
+   "sector": "Change EUR/SEK",
+   "region": "International",
+   "spotPrice": 10.85,
+   "currency": "EUR",
+   "impliedVol3m": 0.08,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/SEK. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURNOK",
+  "name": "EUR/NOK",
+  "description": "Euro contre couronne norvegienne. Proxy petrole (Brent) et fonds souverain norvegien.",
+  "tags": [
+   "change",
+   "fx",
+   "couronne norvegienne",
+   "petrole"
+  ],
+  "metadata": {
+   "sector": "Change EUR/NOK",
+   "region": "International",
+   "spotPrice": 11.4,
+   "currency": "EUR",
+   "impliedVol3m": 0.09,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/NOK. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDCNH",
+  "name": "USD/CNH",
+  "description": "Dollar contre yuan chinois offshore. Gere par la PBoC (fixing quotidien), volatilite volontairement contenue. Sous-jacent frequent de TARF pour les entreprises importatrices/exportatrices.",
+  "tags": [
+   "change",
+   "fx",
+   "yuan",
+   "chine",
+   "tarf",
+   "gere"
+  ],
+  "metadata": {
+   "sector": "Change USD/CNH",
+   "region": "International",
+   "spotPrice": 7.1,
+   "currency": "USD",
+   "impliedVol3m": 0.055,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/CNH. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDBRL",
+  "name": "USD/BRL",
+  "description": "Dollar contre real bresilien. Devise emergente a haut rendement, tres volatile, sensible aux matieres premieres et a la politique interieure.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent",
+   "real bresilien",
+   "haut rendement",
+   "volatil"
+  ],
+  "metadata": {
+   "sector": "Change USD/BRL",
+   "region": "International",
+   "spotPrice": 5.3,
+   "currency": "USD",
+   "impliedVol3m": 0.15,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/BRL. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDMXN",
+  "name": "USD/MXN",
+  "description": "Dollar contre peso mexicain. Nearshoring vs risque de droits de douane US, carry attractif, volatilite elevee.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent",
+   "peso mexicain",
+   "nearshoring",
+   "carry"
+  ],
+  "metadata": {
+   "sector": "Change USD/MXN",
+   "region": "International",
+   "spotPrice": 18.5,
+   "currency": "USD",
+   "impliedVol3m": 0.135,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/MXN. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDTRY",
+  "name": "USD/TRY",
+  "description": "Dollar contre livre turque. Depreciation structurelle, taux tres eleves, volatilite extreme.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent",
+   "livre turque",
+   "depreciation",
+   "volatil"
+  ],
+  "metadata": {
+   "sector": "Change USD/TRY",
+   "region": "International",
+   "spotPrice": 42.0,
+   "currency": "USD",
+   "impliedVol3m": 0.22,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "MEDIUM",
+   "reasoningForRecommendation": "Couple de change USD/TRY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDINR",
+  "name": "USD/INR",
+  "description": "Dollar contre roupie indienne. Depreciation graduelle geree par la RBI, faible volatilite implicite.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent",
+   "roupie indienne",
+   "gere"
+  ],
+  "metadata": {
+   "sector": "Change USD/INR",
+   "region": "International",
+   "spotPrice": 88.5,
+   "currency": "USD",
+   "impliedVol3m": 0.05,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/INR. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDKRW",
+  "name": "USD/KRW",
+  "description": "Dollar contre won coreen. Proxy du cycle des semi-conducteurs et du commerce asiatique.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent",
+   "won coreen",
+   "semi-conducteurs"
+  ],
+  "metadata": {
+   "sector": "Change USD/KRW",
+   "region": "International",
+   "spotPrice": 1360.0,
+   "currency": "USD",
+   "impliedVol3m": 0.09,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/KRW. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "USDSGD",
+  "name": "USD/SGD",
+  "description": "Dollar contre dollar de Singapour. Gere en panier par la MAS, tres faible volatilite.",
+  "tags": [
+   "change",
+   "fx",
+   "dollar de singapour",
+   "gere",
+   "asie"
+  ],
+  "metadata": {
+   "sector": "Change USD/SGD",
+   "region": "International",
+   "spotPrice": 1.285,
+   "currency": "USD",
+   "impliedVol3m": 0.05,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change USD/SGD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "FX",
+  "code": "EURPLN",
+  "name": "EUR/PLN",
+  "description": "Euro contre zloty polonais. Convergence europeenne, sensible a la NBP et aux flux de l'UE.",
+  "tags": [
+   "change",
+   "fx",
+   "emergent europe",
+   "zloty",
+   "pologne"
+  ],
+  "metadata": {
+   "sector": "Change EUR/PLN",
+   "region": "International",
+   "spotPrice": 4.25,
+   "currency": "EUR",
+   "impliedVol3m": 0.075,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Couple de change EUR/PLN. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "ITRX EUR CDSI GEN 5Y Corp",
+  "name": "iTraxx Europe Main (5 ans)",
+  "description": "Indice des CDS a 5 ans sur 125 emetteurs europeens investment grade. Reference du risque de credit corporate europeen ; spread ~58 bps (marche resserre).",
+  "tags": [
+   "credit",
+   "cds",
+   "itraxx",
+   "investment grade",
+   "europe",
+   "5 ans"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Europe",
+   "spotPrice": 58.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "ITRX XOVER CDSI GEN 5Y Corp",
+  "name": "iTraxx Europe Crossover (5 ans)",
+  "description": "Indice des CDS a 5 ans sur ~75 emetteurs europeens haut rendement (sub-investment grade). Beta credit eleve, sous-jacent des tranches et CLN haut rendement.",
+  "tags": [
+   "credit",
+   "cds",
+   "itraxx",
+   "crossover",
+   "haut rendement",
+   "high yield",
+   "europe"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Europe",
+   "spotPrice": 290.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "ITRX EUR SNRFIN CDSI GEN 5Y Corp",
+  "name": "iTraxx Europe Senior Financials (5 ans)",
+  "description": "Indice des CDS a 5 ans sur la dette senior de 30 institutions financieres europeennes. Proxy du risque bancaire systemique.",
+  "tags": [
+   "credit",
+   "cds",
+   "itraxx",
+   "financieres",
+   "senior",
+   "banques"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Europe",
+   "spotPrice": 70.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "ITRX EUR SUBFIN CDSI GEN 5Y Corp",
+  "name": "iTraxx Europe Subordinated Financials (5 ans)",
+  "description": "Indice des CDS a 5 ans sur la dette subordonnee des financieres europeennes. Plus risque que le senior (bail-in).",
+  "tags": [
+   "credit",
+   "cds",
+   "itraxx",
+   "financieres",
+   "subordonne",
+   "bail-in"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Europe",
+   "spotPrice": 130.0,
+   "currency": "EUR",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "CDX IG CDSI GEN 5Y Corp",
+  "name": "CDX North America Investment Grade (5 ans)",
+  "description": "Indice des CDS a 5 ans sur 125 emetteurs nord-americains investment grade. Equivalent US de l'iTraxx Main.",
+  "tags": [
+   "credit",
+   "cds",
+   "cdx",
+   "investment grade",
+   "etats-unis",
+   "5 ans"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Etats-Unis",
+   "spotPrice": 50.0,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ },
+ {
+  "assetClass": "CREDIT",
+  "code": "CDX HY CDSI GEN 5Y Corp",
+  "name": "CDX North America High Yield (5 ans)",
+  "description": "Indice des CDS a 5 ans sur 100 emetteurs nord-americains haut rendement. Reference du risque high yield US.",
+  "tags": [
+   "credit",
+   "cds",
+   "cdx",
+   "haut rendement",
+   "high yield",
+   "etats-unis"
+  ],
+  "metadata": {
+   "sector": "Indice de credit (CDS)",
+   "region": "Etats-Unis",
+   "spotPrice": 320.0,
+   "currency": "USD",
+   "impliedVol3m": 0.0,
+   "dividendYield": 0.0,
+   "repoRate": 0.0,
+   "volatilityScore": "LOW",
+   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+  }
+ }
+]

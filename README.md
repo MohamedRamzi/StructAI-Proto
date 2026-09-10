@@ -22,7 +22,7 @@
    - Il n'y a plus de base d'instruments locale dans l'app principale. Les sous-jacents vivent uniquement dans le **corpus d'instruments d'`inference-service`** (SQLite + index ChromaDB), géré depuis son admin (onglet *Instruments* : CRUD, import/export CSV/JSON, ré-indexation).
    - `/api/parse-query` résout chaque sous-jacent extrait via la **recherche sémantique** (`POST /api/instruments/search` → embeddings Qwen3 via vLLM). Un sous-jacent absent du corpus conserve son nom extrait avec des **données de marché indicatives** (placeholders), signalé dans les hypothèses.
    - Les données de marché (spot, vol, dividende) proviennent du champ `metadata` de chaque instrument en attendant un service de données de marché dédié (`src/services/market-data.ts`).
-   - Amorçage initial : `npm run seed:vector` (pousse `scripts/seed-data/equities.json` dans le corpus).
+   - Amorçage initial : `npm run seed:vector` (pousse `scripts/seed-data/instruments.json` — ~215 instruments : indices Europe/US/Asie + constituants, taux, FX, crédit — dans le corpus). Même jeu en `scripts/seed-data/instruments.csv` pour l'import CSV de l'admin. **Données de marché indicatives** (~sept. 2026) en attendant le service de données de marché.
 
 4. **Moteur Quantitatif de Pricing & Simulation Monte Carlo Interférente** :
    - **Axe des Temps Cohérent & Adaptatif** : L'axe des abscisses s'ajuste dynamiquement sur la maturité exacte du produit ($[0, \text{maturityMonths}]$) et occupe 100% de la largeur d'affichage réservée.

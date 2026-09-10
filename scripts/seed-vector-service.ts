@@ -1,14 +1,19 @@
 #!/usr/bin/env tsx
 /**
- * One-time seeding script: pushes a starter set of equities
- * (scripts/seed-data/equities.json) into inference-service's instrument corpus
- * — now the SINGLE source of underlyings — via POST /api/instruments/import/json
+ * One-time seeding script: pushes a starter set of ~215 instruments
+ * (`scripts/seed-data/instruments.json` — main indices Europe/US/Asia + their
+ * constituents, rates, FX, credit) into inference-service's instrument corpus —
+ * now the SINGLE source of underlyings — via POST /api/instruments/import/json
  * (the same route the admin UI's "Importer JSON" button uses). Also doubles as
  * an end-to-end smoke test of the pipeline (embedding call -> Chroma index).
  *
+ * Market data in each instrument's `metadata` (spotPrice, impliedVol3m, ...) is
+ * INDICATIVE, calibrated to ~September 2026 — a stand-in until a dedicated
+ * market-data service exists. `scripts/seed-data/instruments.csv` is the same
+ * data for the admin UI's "Importer un CSV" button.
+ *
  * The corpus is managed from inference-service's admin UI (onglet Instruments)
- * thereafter; this script is just a convenience for a fresh install. Edit
- * scripts/seed-data/equities.json to change the starter set.
+ * thereafter; this script is just a convenience for a fresh install.
  *
  * Authenticates as an admin (JWT login), NOT the INFERENCE_SERVICE_API_KEY.
  *
@@ -23,7 +28,7 @@ const INFERENCE_SERVICE_URL = (process.env.INFERENCE_SERVICE_URL || 'http://loca
 const ADMIN_EMAIL = process.env.INFERENCE_SERVICE_ADMIN_EMAIL || '';
 const ADMIN_PASSWORD = process.env.INFERENCE_SERVICE_ADMIN_PASSWORD || '';
 
-const SEED_FILE = join(dirname(fileURLToPath(import.meta.url)), 'seed-data', 'equities.json');
+const SEED_FILE = join(dirname(fileURLToPath(import.meta.url)), 'seed-data', 'instruments.json');
 const SEED_INSTRUMENTS: any[] = JSON.parse(readFileSync(SEED_FILE, 'utf-8'));
 
 async function main() {

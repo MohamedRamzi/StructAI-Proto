@@ -23,6 +23,16 @@ function looksLikeExplicitTicker(s: string): boolean {
 
 const normalize = (s: string) => s.trim().toUpperCase().replace(/\s+/g, '');
 
+/** The routed-analyze pipeline emits "RATES"; the instrument corpus schema uses
+ * "RATE_INDEX". Map it so an asset-class filter on the search actually matches. */
+function corpusAssetClass(assetClass: string | null | undefined): string | undefined {
+  if (!assetClass) return undefined;
+  const ac = assetClass.toUpperCase();
+  if (ac === 'RATES' || ac === 'RATE') return 'RATE_INDEX';
+  if (['EQUITY', 'RATE_INDEX', 'FX', 'CREDIT'].includes(ac)) return ac;
+  return undefined;
+}
+
 export async function searchInstrument(
   queryText: string,
   assetClass: string | null | undefined,
@@ -37,7 +47,7 @@ export async function searchInstrument(
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.apiKey}` },
       body: JSON.stringify({
         query: queryText,
-        assetClass: assetClass || undefined,
+        assetClass: corpusAssetClass(assetClass),
         limit: 1,
       }),
     });
