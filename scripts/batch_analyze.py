@@ -53,18 +53,24 @@ class AnalyzeResult:
     response: dict
 
 
-def call_analyze(base_url: str, token: str, query: str, timeout: float) -> tuple[Optional[int], dict, float]:
+def call_analyze(base_url: str, token: str, query: str, timeout: float, pipeline: Optional[str] = None) -> tuple[Optional[int], dict, float]:
     """Calls POST {base_url}/api/analyze. Never raises — network/timeout errors
     are captured into the same {"success": false, "error": ...} envelope the
     service itself uses on failure, so callers always get a uniform,
     inspectable result instead of a crashed batch (no silent fallback: the
-    error is always visible in the saved JSON, just never fatal to the run)."""
+    error is always visible in the saved JSON, just never fatal to the run).
+
+    `pipeline` is forwarded as-is when given ("routed" — the default the
+    service applies — or "single" for the legacy flat-schema single call)."""
     url = f"{base_url.rstrip('/')}/api/analyze"
+    payload: dict = {"query": query}
+    if pipeline:
+        payload["pipeline"] = pipeline
     started = time.perf_counter()
     try:
         resp = httpx.post(
             url,
-            json={"query": query},
+            json=payload,
             headers={"Authorization": f"Bearer {token}"} if token else {},
             timeout=timeout,
         )
@@ -112,9 +118,25 @@ def make_envelope(result: AnalyzeResult) -> dict:
     }
 
 
-def run_single(base_url: str, token: str, query: str, timeout: float, output_dir: Optional[Path]) -> None:
+def _routing_summary(body: dict) -> str:
+    """One-line recap of how the routed pipeline classified each quote, for the
+    console. Empty string when the response carries no routing info (e.g.
+    pipeline=single or an error envelope)."""
+    quotes = body.get("quotes") if isinstance(body, dict) else None
+    if not isinstance(quotes, list):
+        return ""
+    parts = []
+    for q in quotes:
+        routing = (q or {}).get("routing") or {}
+        prompt_key = routing.get("promptKey")
+        if prompt_key:
+            parts.append(f"#{q.get('quoteId', '?')}->{prompt_key}(p{routing.get('scopePrecision', '?')})")
+    return ("  [" + ", ".join(parts) + "]") if parts else ""
+
+
+def run_single(base_url: str, token: str, query: str, timeout: float, output_dir: Optional[Path], pipeline: Optional[str]) -> None:
     wall_start = time.perf_counter()
-    status, body, duration = call_analyze(base_url, token, query, timeout)
+    status, body, duration = call_analyze(base_url, token, query, timeout, pipeline)
     wall_clock = time.perf_counter() - wall_start
 
     result = AnalyzeResult(id="single", query=query, duration_seconds=duration, http_status=status, response=body)
@@ -150,7 +172,7 @@ def load_csv_rows(csv_path: Path) -> list[dict]:
         return [{normalized[k]: v for k, v in raw_row.items() if k in normalized} for raw_row in reader]
 
 
-def run_batch(base_url: str, token: str, csv_path: Path, output_dir: Path, timeout: float) -> None:
+def run_batch(base_url: str, token: str, csv_path: Path, output_dir: Path, timeout: float, pipeline: Optional[str]) -> None:
     rows = load_csv_rows(csv_path)
     if not rows:
         print(f"[Erreur] Aucune ligne dans {csv_path}.", file=sys.stderr)
@@ -178,7 +200,7 @@ def run_batch(base_url: str, token: str, csv_path: Path, output_dir: Path, timeo
         if not query:
             status, body, duration = None, {"success": False, "error": "query vide ou manquante pour cet id."}, 0.0
         else:
-            status, body, duration = call_analyze(base_url, token, query, timeout)
+            status, body, duration = call_analyze(base_url, token, query, timeout, pipeline)
 
         result = AnalyzeResult(id=row_id, query=query, duration_seconds=duration, http_status=status, response=body)
         results.append(result)
@@ -187,7 +209,7 @@ def run_batch(base_url: str, token: str, csv_path: Path, output_dir: Path, timeo
         out_path.write_text(json.dumps(make_envelope(result), indent=2, ensure_ascii=False), encoding="utf-8")
 
         status_label = "OK" if body.get("success") else "ÉCHEC"
-        print(f"    -> {status_label} en {duration:.2f}s -> {out_path.name}", file=sys.stderr)
+        print(f"    -> {status_label} en {duration:.2f}s -> {out_path.name}{_routing_summary(body)}", file=sys.stderr)
 
     wall_clock = time.perf_counter() - wall_start
     print_stats(results, wall_clock)
@@ -214,6 +236,11 @@ def main() -> None:
     parser.add_argument("--token", help="Jeton d'authentification — clé API isk_... ou JWT (défaut : $INFERENCE_SERVICE_API_KEY).")
     parser.add_argument("--timeout", type=float, default=120.0, help="Timeout HTTP par requête, en secondes (défaut : 120).")
     parser.add_argument(
+        "--pipeline", choices=("routed", "single"),
+        help="Pipeline d'analyse : 'routed' (défaut du service — routeur + pré-prompt par scope + schéma riche) "
+             "ou 'single' (un seul appel, pré-prompt 'default', schéma plat generic/v1). Omis = laisser le service décider.",
+    )
+    parser.add_argument(
         "--env-file", type=Path, default=REPO_ROOT / ".env",
         help="Fichier .env à charger pour INFERENCE_SERVICE_URL / INFERENCE_SERVICE_API_KEY (défaut : .env à la racine du repo).",
     )
@@ -235,9 +262,9 @@ def main() -> None:
         )
 
     if args.query:
-        run_single(base_url, token, args.query, args.timeout, args.output_dir)
+        run_single(base_url, token, args.query, args.timeout, args.output_dir, args.pipeline)
     else:
-        run_batch(base_url, token, args.csv, args.output_dir, args.timeout)
+        run_batch(base_url, token, args.csv, args.output_dir, args.timeout, args.pipeline)
 
 
 if __name__ == "__main__":

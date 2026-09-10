@@ -104,3 +104,61 @@ class TestDetectMissingFields:
             "pdiBarrierPct": 70,
         })
         assert flags == []
+
+    def test_non_dict_extraction_yields_no_flags(self):
+        assert detect_missing_fields(None) == []
+        assert detect_missing_fields("nope") == []
+
+    def test_an_explicit_generic_schema_version_uses_the_flat_validator(self):
+        flags = detect_missing_fields(
+            {"schemaVersion": "generic/v1", "underlyingQueryOrTicker": "MC FP", "targetToSolve": "COUPON_RATE"}
+        )
+        assert any(f["field"] == "maturityMonths" for f in flags)
+
+
+class TestDetectMissingFieldsAutocallV1:
+    FULL = {
+        "schemaVersion": "autocall/v1",
+        "underlying": {"components": [{"name": "LVMH"}]},
+        "dates": {"finalValuationDate": "2036-09-22"},
+        "coupon": {"rate": 0.08},
+        "finalRedemption": {"protectionType": "CONDITIONAL_PDI", "knockIn": {"barrier": 0.6}},
+    }
+
+    def test_a_fully_specified_autocall_v1_has_no_flags(self):
+        assert detect_missing_fields(self.FULL) == []
+
+    def test_flags_a_missing_pdi_barrier_on_a_conditional_protection(self):
+        broken = {**self.FULL, "finalRedemption": {"protectionType": "CONDITIONAL_PDI", "knockIn": {"barrier": None}}}
+        flags = detect_missing_fields(broken)
+        assert any(f["field"] == "finalRedemption.knockIn.barrier" for f in flags)
+
+    def test_flags_a_missing_coupon_rate(self):
+        broken = {**self.FULL, "coupon": {"rate": None}}
+        flags = detect_missing_fields(broken)
+        assert any(f["field"] == "coupon.rate" for f in flags)
+
+    def test_flags_missing_underlying_and_maturity(self):
+        flags = detect_missing_fields({"schemaVersion": "autocall/v1"})
+        fields = {f["field"] for f in flags}
+        assert "underlying.components" in fields
+        assert "dates.finalValuationDate" in fields
+
+    def test_the_schema_version_argument_overrides_the_payload(self):
+        # payload says generic, caller forces autocall/v1
+        flags = detect_missing_fields({"schemaVersion": "generic/v1"}, "autocall/v1")
+        assert any(f["field"] == "coupon.rate" for f in flags)
+
+
+class TestDetectMissingFieldsUnknownRichSchema:
+    def test_rates_v1_falls_back_to_the_minimal_validator(self):
+        flags = detect_missing_fields({"schemaVersion": "rates/v1"})
+        fields = {f["field"] for f in flags}
+        assert "underlying" in fields
+        assert "maturity" in fields
+
+    def test_minimal_validator_is_satisfied_by_any_underlying_and_maturity_key(self):
+        flags = detect_missing_fields(
+            {"schemaVersion": "rates/v1", "underlying": "EURIBOR 3M", "maturity_date": "2031-01-01"}
+        )
+        assert flags == []
