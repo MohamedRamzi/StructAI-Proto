@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from .routers import analyze, api_keys, auth, embedding_config, instruments, llm_config, status, users
+from .routers import analyze, api_keys, auth, embedding_config, instruments, llm_config, prompts, status, users
 
 CURRENT_DIR = Path(__file__).resolve().parent
 
@@ -33,6 +33,7 @@ app.include_router(llm_config.router)
 app.include_router(embedding_config.router)
 app.include_router(api_keys.router)
 app.include_router(analyze.router)
+app.include_router(prompts.router)
 app.include_router(instruments.router)
 
 # Static admin UI (plain HTML/CSS/JS, no build step) — served at /admin/*.

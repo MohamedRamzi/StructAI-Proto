@@ -18,6 +18,7 @@
 
     <nav class="tabs">
       <button data-tab="instruments" class="active">Instruments</button>
+      <button data-tab="prompts">Pré-prompts</button>
       <button data-tab="analyze">Tester l'analyse</button>
       <button data-tab="llm">Config. Chat (vLLM)</button>
       <button data-tab="embedding">Config. Embedding (vLLM)</button>
@@ -103,6 +104,63 @@
       </div>
     </section>
 
+    <!-- Pré-prompts (routed-analyze pipeline) -->
+    <section id="tab-prompts" class="card hidden">
+      <h2>Pré-prompts du pipeline d'analyse</h2>
+      <p class="subtitle" style="margin-bottom:14px">
+        Le pipeline <span class="mono">routed</span> enchaîne : (1) le <strong>routeur</strong> classe chaque cotation
+        (classe d'actif + famille), (2) une cascade déterministe choisit le pré-prompt de domaine le plus précis
+        (<span class="mono">{famille}-{classe}</span> → <span class="mono">{classe}</span> → <span class="mono">default</span>),
+        (3) l'extraction est faite avec ce pré-prompt + les règles transverses (<span class="mono">_common</span>).
+        Les lignes <span class="badge admin">protégé</span> (router, _common, default) sont modifiables mais non supprimables.
+      </p>
+      <div id="prompts-msg"></div>
+      <table>
+        <thead><tr><th>Clé</th><th>Type</th><th>Classe</th><th>Famille</th><th>Nom / portée</th><th></th></tr></thead>
+        <tbody id="prompts-tbody"></tbody>
+      </table>
+
+      <h3 style="margin-top:24px" id="prompt-form-title">Ajouter un pré-prompt de domaine</h3>
+      <form id="prompt-form">
+        <input type="hidden" id="prompt-editing-key" value="" />
+        <div class="row">
+          <div style="flex:1"><label for="prompt-key">Clé (identifiant unique, ex: <span class="mono">equity-vanilla</span>)</label>
+            <input id="prompt-key" type="text" required placeholder="equity-vanilla" />
+          </div>
+          <div style="flex:1"><label for="prompt-name">Nom</label><input id="prompt-name" type="text" required /></div>
+        </div>
+        <div class="row">
+          <div style="flex:1"><label for="prompt-kind">Type</label>
+            <select id="prompt-kind">
+              <option value="domain">domain (pré-prompt de scope)</option>
+              <option value="router">router</option>
+              <option value="common">common</option>
+            </select>
+          </div>
+          <div style="flex:1"><label for="prompt-asset-class">Classe d'actif</label>
+            <select id="prompt-asset-class">
+              <option value="">— (aucune / générique)</option>
+              <option value="EQUITY">EQUITY</option>
+              <option value="RATES">RATES</option>
+              <option value="FX">FX</option>
+              <option value="CREDIT">CREDIT</option>
+            </select>
+          </div>
+          <div style="flex:1"><label for="prompt-product-family">Famille de produit (clé canonique, ex: <span class="mono">autocall</span>)</label>
+            <input id="prompt-product-family" type="text" placeholder="autocall" />
+          </div>
+        </div>
+        <label for="prompt-scope-description">Description de la portée (affichée ici, non envoyée au modèle)</label>
+        <input id="prompt-scope-description" type="text" placeholder="ex: Calls/puts vanille sur sous-jacent actions." />
+        <label for="prompt-body">Corps du pré-prompt (envoyé comme system prompt)</label>
+        <textarea id="prompt-body" rows="16" class="mono" style="font-size:12px" required></textarea>
+        <div class="row" style="margin-top:14px">
+          <button type="submit" id="prompt-save-btn">Enregistrer</button>
+          <button type="button" class="secondary hidden" id="prompt-cancel-edit-btn">Annuler la modification</button>
+        </div>
+      </form>
+    </section>
+
     <!-- Analyze tester -->
     <section id="tab-analyze" class="card hidden">
       <h2>Tester l'analyse NLP</h2>
@@ -110,9 +168,17 @@
       <div id="analyze-msg"></div>
       <label for="analyze-query">Demande client</label>
       <textarea id="analyze-query" rows="6" placeholder="ex: Autocall LVMH 3 ans PDI 70% NC 1y fwd 3m&#10;(les demandes réelles tiennent souvent sur plusieurs lignes — les sauts de ligne sont conservés et transmis tels quels à l'analyse)"></textarea>
-      <div class="row" style="margin-top:14px">
+      <div class="row" style="margin-top:14px; align-items:flex-end">
+        <div>
+          <label for="analyze-pipeline">Pipeline</label>
+          <select id="analyze-pipeline" style="max-width:260px">
+            <option value="routed">routed (routeur + pré-prompt par scope)</option>
+            <option value="single">single (default + _common, schéma plat)</option>
+          </select>
+        </div>
         <button id="analyze-run-btn">Analyser</button>
       </div>
+      <div id="analyze-routing" style="margin-top:16px; display:none"></div>
       <pre id="analyze-result" class="mono" style="white-space:pre-wrap; margin-top:16px; display:none; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:12px;"></pre>
     </section>
 
@@ -221,6 +287,7 @@
     var tabs = document.querySelectorAll('nav.tabs button');
     var sections = {
       instruments: document.getElementById('tab-instruments'),
+      prompts: document.getElementById('tab-prompts'),
       analyze: document.getElementById('tab-analyze'),
       llm: document.getElementById('tab-llm'),
       embedding: document.getElementById('tab-embedding'),
@@ -238,6 +305,8 @@
       ['users', 'keys'].forEach(function (t) { document.querySelector('nav.tabs button[data-tab="' + t + '"]').classList.add('hidden'); });
       document.getElementById('instrument-form').classList.add('hidden');
       document.querySelector('#tab-instruments h3').classList.add('hidden');
+      document.getElementById('prompt-form').classList.add('hidden');
+      document.getElementById('prompt-form-title').classList.add('hidden');
     }
 
     // --- Instruments ---
@@ -439,14 +508,134 @@
       }
     });
 
+    // --- Pré-prompts ---
+    async function loadPrompts() {
+      var msg = document.getElementById('prompts-msg');
+      try {
+        var data = await Api.get('/api/prompts');
+        var tbody = document.getElementById('prompts-tbody');
+        tbody.innerHTML = data.prompts.map(function (p) {
+          return '<tr>' +
+            '<td class="mono">' + escapeHtml(p.key) + (p.isProtected ? ' <span class="badge admin">protégé</span>' : '') + '</td>' +
+            '<td class="muted">' + escapeHtml(p.kind) + '</td>' +
+            '<td class="mono">' + escapeHtml(p.assetClass || '—') + '</td>' +
+            '<td class="mono">' + escapeHtml(p.productFamily || '—') + '</td>' +
+            '<td>' + escapeHtml(p.name) + '<br><span class="muted" style="font-size:11px">' + escapeHtml(p.scopeDescription || '') + '</span></td>' +
+            '<td>' + (isAdmin ? (
+              '<button class="secondary" data-edit-prompt="' + escapeHtml(p.key) + '">Éditer</button> ' +
+              (p.isProtected ? '' : '<button class="danger" data-del-prompt="' + escapeHtml(p.key) + '">Suppr.</button>')
+            ) : '<button class="secondary" data-edit-prompt="' + escapeHtml(p.key) + '">Voir</button>') + '</td>' +
+            '</tr>';
+        }).join('');
+        tbody.querySelectorAll('[data-edit-prompt]').forEach(function (btn) {
+          btn.addEventListener('click', function () { startEditPrompt(btn.dataset.editPrompt); });
+        });
+        tbody.querySelectorAll('[data-del-prompt]').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Supprimer le pré-prompt « ' + btn.dataset.delPrompt + ' » ?')) return;
+            try { await Api.del('/api/prompts/' + encodeURIComponent(btn.dataset.delPrompt)); resetPromptForm(); loadPrompts(); }
+            catch (err) { msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>'; }
+          });
+        });
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    }
+
+    async function startEditPrompt(key) {
+      var msg = document.getElementById('prompts-msg');
+      try {
+        var p = (await Api.get('/api/prompts/' + encodeURIComponent(key))).prompt;
+        document.getElementById('prompt-editing-key').value = p.key;
+        document.getElementById('prompt-key').value = p.key;
+        document.getElementById('prompt-key').disabled = true;
+        document.getElementById('prompt-name').value = p.name;
+        document.getElementById('prompt-kind').value = p.kind;
+        document.getElementById('prompt-kind').disabled = p.isProtected;
+        document.getElementById('prompt-asset-class').value = p.assetClass || '';
+        document.getElementById('prompt-product-family').value = p.productFamily || '';
+        document.getElementById('prompt-scope-description').value = p.scopeDescription || '';
+        document.getElementById('prompt-body').value = p.body;
+        document.getElementById('prompt-form-title').textContent = 'Modifier le pré-prompt « ' + p.key + ' »';
+        document.getElementById('prompt-save-btn').textContent = 'Enregistrer les modifications';
+        document.getElementById('prompt-cancel-edit-btn').classList.remove('hidden');
+        document.getElementById('tab-prompts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    }
+
+    function resetPromptForm() {
+      document.getElementById('prompt-form').reset();
+      document.getElementById('prompt-editing-key').value = '';
+      document.getElementById('prompt-key').disabled = false;
+      document.getElementById('prompt-kind').disabled = false;
+      document.getElementById('prompt-form-title').textContent = 'Ajouter un pré-prompt de domaine';
+      document.getElementById('prompt-save-btn').textContent = 'Enregistrer';
+      document.getElementById('prompt-cancel-edit-btn').classList.add('hidden');
+    }
+    document.getElementById('prompt-cancel-edit-btn').addEventListener('click', resetPromptForm);
+
+    document.getElementById('prompt-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var msg = document.getElementById('prompts-msg');
+      msg.innerHTML = '';
+      var key = document.getElementById('prompt-key').value.trim();
+      try {
+        await Api.put('/api/prompts/' + encodeURIComponent(key), {
+          name: document.getElementById('prompt-name').value.trim(),
+          kind: document.getElementById('prompt-kind').value,
+          assetClass: document.getElementById('prompt-asset-class').value || null,
+          productFamily: document.getElementById('prompt-product-family').value.trim() || null,
+          scopeDescription: document.getElementById('prompt-scope-description').value.trim(),
+          body: document.getElementById('prompt-body').value,
+        });
+        resetPromptForm();
+        msg.innerHTML = '<div class="msg success">Pré-prompt enregistré.</div>';
+        loadPrompts();
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    });
+
     // --- Analyze tester ---
+    function renderAnalyzeRouting(data) {
+      var box = document.getElementById('analyze-routing');
+      var quotes = (data && data.quotes) || [];
+      if (!quotes.length) { box.style.display = 'none'; return; }
+      var rows = quotes.map(function (q) {
+        var r = q.routing || {};
+        var missing = (q.missingFields || []).map(function (f) { return f.field; });
+        return '<tr>' +
+          '<td class="mono">' + escapeHtml(q.quoteId) + '</td>' +
+          '<td>' + escapeHtml(q.label || '') + '</td>' +
+          '<td class="mono">' + escapeHtml(r.assetClass || '—') + ' / ' + escapeHtml(r.productFamily || '—') + '</td>' +
+          '<td class="mono">' + escapeHtml(r.promptKey || '—') + '</td>' +
+          '<td class="mono">' + escapeHtml(r.scopePrecision != null ? r.scopePrecision : '—') + '</td>' +
+          '<td class="mono">' + escapeHtml(q.schemaVersion || '—') + '</td>' +
+          '<td class="mono">' + escapeHtml(q.extraction && q.extraction.confidenceScore != null ? q.extraction.confidenceScore : '—') + '</td>' +
+          '<td class="muted">' + (missing.length ? escapeHtml(missing.join(', ')) : '—') + '</td>' +
+          '</tr>';
+      }).join('');
+      box.innerHTML =
+        '<p class="subtitle" style="margin-bottom:8px">Pipeline : <span class="mono">' + escapeHtml(data.pipeline) +
+        '</span> · modèle : <span class="mono">' + escapeHtml(data.modelUsed || '?') + '</span></p>' +
+        '<table><thead><tr><th>#</th><th>Label</th><th>Classe / famille</th><th>Pré-prompt</th>' +
+        '<th>Précision</th><th>Schéma</th><th>Confiance</th><th>Champs manquants</th></tr></thead><tbody>' +
+        rows + '</tbody></table>';
+      box.style.display = 'block';
+    }
+
     document.getElementById('analyze-run-btn').addEventListener('click', async function () {
       var btn = this;
       var msg = document.getElementById('analyze-msg');
       var result = document.getElementById('analyze-result');
+      var routingBox = document.getElementById('analyze-routing');
       var query = document.getElementById('analyze-query').value.trim();
+      var pipeline = document.getElementById('analyze-pipeline').value;
       msg.innerHTML = '';
       result.style.display = 'none';
+      routingBox.style.display = 'none';
       if (!query) { msg.innerHTML = '<div class="msg error">Saisissez une demande client.</div>'; return; }
 
       var originalLabel = btn.textContent;
@@ -454,8 +643,9 @@
       btn.textContent = 'Analyse en cours…';
       msg.innerHTML = '<div class="msg info">Analyse en cours — le moteur LLM peut prendre plusieurs dizaines de secondes…</div>';
       try {
-        var data = await Api.post('/api/analyze', { query: query });
+        var data = await Api.post('/api/analyze', { query: query, pipeline: pipeline });
         msg.innerHTML = '';
+        renderAnalyzeRouting(data);
         result.textContent = JSON.stringify(data, null, 2);
         result.style.display = 'block';
       } catch (err) {
@@ -617,6 +807,7 @@
     }
 
     loadInstruments();
+    loadPrompts();
     loadLlmConfig();
     loadEmbeddingConfig();
     loadUsers();
