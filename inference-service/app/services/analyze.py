@@ -214,7 +214,37 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "routed", "quotes": quotes}
 
 
+def _analyze_route_only(query: str, reasoning_mode: Optional[str] = None) -> dict:
+    """Just step 1+2: the router LLM call + the deterministic pre-prompt cascade,
+    with NO extraction call. For iterating on the router prompt / asset-class
+    selection cheaply. Quotes carry only `routing` — no `extraction`, no schema,
+    no pricing."""
+    from . import prompt_resolver, routing as routing_svc
+
+    classifications = routing_svc.classify_request(query, reasoning_mode=reasoning_mode)
+    quotes = []
+    for cls in classifications:
+        resolution = prompt_resolver.resolve(cls["assetClass"], cls["productFamily"])
+        quotes.append({
+            "quoteId": cls["quoteId"],
+            "label": cls.get("label") or f"Cotation {cls['quoteId']}",
+            "routing": {
+                "assetClass": resolution["assetClass"],
+                "assetClassCorrectedFrom": cls.get("assetClassCorrectedFrom"),
+                "productFamily": resolution["productFamily"],           # canonical
+                "productFamilyRaw": cls.get("productFamily"),           # what the model said
+                "underlying": cls.get("underlying"),
+                "routerConfidence": cls.get("routerConfidence"),
+                "promptKey": resolution["promptKey"],
+                "scopePrecision": resolution["scopePrecision"],
+            },
+        })
+    return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "route", "quotes": quotes}
+
+
 def analyze_query(query: str, pipeline: str = "routed", reasoning_mode: Optional[str] = None) -> dict:
+    if pipeline == "route":
+        return _analyze_route_only(query, reasoning_mode)
     if pipeline == "single":
         return _analyze_single(query, reasoning_mode)
     return _analyze_routed(query, reasoning_mode)

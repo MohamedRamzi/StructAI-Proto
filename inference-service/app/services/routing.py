@@ -58,6 +58,7 @@ def classify_request(query: str, reasoning_mode: Optional[str] = None) -> list[d
 
         classifications.append({
             "quoteId": raw.get("quoteId", index + 1),
+            "label": raw.get("label") or raw.get("Label") or None,
             "assetClass": asset_class,
             "assetClassCorrectedFrom": corrected_from,
             "productFamily": product_family,

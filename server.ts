@@ -249,11 +249,13 @@ app.post('/api/parse-query', async (req, res) => {
     if (!query || typeof query !== 'string') {
       return res.status(400).json({ error: 'La requête en langage naturel est requise.' });
     }
-    // Optional per-request overrides forwarded verbatim to inference-service
-    // (it validates them; anything invalid falls back to the configured default).
+    // Optional per-request overrides forwarded to inference-service (it
+    // validates them; anything invalid falls back to the configured default).
+    // "route" (routing-only) is an inference-service admin/CLI mode — not
+    // forwarded here since /api/parse-query needs an extraction to price.
     const analyzeOverrides: Record<string, string> = {};
     if (reasoningMode) analyzeOverrides.reasoningMode = String(reasoningMode);
-    if (pipeline) analyzeOverrides.pipeline = String(pipeline);
+    if (pipeline === 'routed' || pipeline === 'single') analyzeOverrides.pipeline = pipeline;
 
     console.log(`[Parse Query] Processing query: "${query}"`);
     logServerLlmDebug('PARSE QUERY REQUEST RECEIVED', { query, body: req.body });

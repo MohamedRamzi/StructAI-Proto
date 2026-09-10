@@ -147,7 +147,7 @@ Options:
   --reqs <filename>       Fichier contenant la liste des requêtes (séparées par une ligne vide)
   --output <filename>     Fichier où stocker les résultats JSON (affichage écran par défaut)
   --pricing               Inclut les résultats de pricing (calculs Monte Carlo, grecques) dans le JSON (exclu par défaut)
-  --pipeline <mode>       "routed" (défaut) ou "single" (ancien schéma plat)
+  --pipeline <mode>       "routed" (défaut), "single" (ancien schéma plat), ou "route" (routage seul : classe d'actif + pré-prompt, sans extraction)
   --reasoning <mode>     "auto" | "fast" | "thinking" — surcharge le mode de raisonnement configuré dans inference-service
 
 Prérequis : inference-service doit tourner (npm run dev dans inference-service/,

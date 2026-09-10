@@ -145,6 +145,42 @@ def test_single_pipeline_skips_the_router(client, auth_headers, monkeypatch):
     assert body["quotes"][0]["routing"]["promptKey"] == "default"
 
 
+def test_route_pipeline_returns_routing_only_and_makes_no_extraction_call(client, auth_headers, monkeypatch):
+    from app.services import inference_client
+
+    calls = []
+
+    def fake(system, user, reasoning_mode=None):
+        calls.append(user)
+        # An Athena the model wrongly labels CREDIT — the guard must fix it.
+        return json.dumps({"quotes": [{
+            "quoteId": 1, "label": "Athena Crédit Agricole", "assetClass": "CREDIT",
+            "productFamily": "athena", "underlying": "Crédit Agricole", "routerConfidence": 0.6,
+        }]})
+
+    monkeypatch.setattr(inference_client, "chat_completion", fake)
+    token = _api_key(client, auth_headers, "k")
+
+    res = client.post("/api/analyze", json={"query": "Poche Athéna sur Crédit Agricole, airbag -30%", "pipeline": "route"},
+                      headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["pipeline"] == "route"
+    assert len(calls) == 1                       # router call only, no extraction
+    assert all("Classe la demande" in c for c in calls)
+
+    q = body["quotes"][0]
+    assert "extraction" not in q
+    assert "missingFields" not in q
+    r = q["routing"]
+    assert r["assetClass"] == "EQUITY"
+    assert r["assetClassCorrectedFrom"] == "CREDIT"
+    assert r["productFamily"] == "autocall"       # canonical
+    assert r["productFamilyRaw"] == "athena"      # what the model said
+    assert r["promptKey"] == "equity-autocall"
+    assert r["scopePrecision"] == 3
+
+
 def test_heterogeneous_request_routes_each_quote_and_merges(client, auth_headers, monkeypatch):
     from app.services import inference_client
 

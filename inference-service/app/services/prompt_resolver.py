@@ -61,10 +61,13 @@ _register("tranche", "tranchenote", "tranche", "cdo", "synthcdo")
 # to correct an obviously wrong router classification: an "autocall" / "athena"
 # on an equity issuer whose name contains "Crédit" (Crédit Agricole, ...) is
 # routinely mislabelled CREDIT, but no autocall is a credit derivative.
-# tarf / tarn are deliberately absent — they are genuinely RATES *or* FX.
+#
+# Only families that are genuinely single-class belong here. Deliberately absent:
+#   - `vanilla`  — calls/puts/tunnels/collars exist on every asset class
+#   - `tarf` / `tarn` — genuinely RATES *or* FX
+# (`autocall` = equity autocalls; rate autocalls normalise to `rate_autocall`.)
 _FAMILY_ASSET_CLASS: dict[str, str] = {
     "autocall": "EQUITY",
-    "vanilla": "EQUITY",
     "range_accrual": "RATES",
     "cms_spread": "RATES",
     "rate_autocall": "RATES",

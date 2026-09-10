@@ -84,10 +84,24 @@ export async function adaptAnalyzeResponse(opts: AdaptAnalyzeOptions): Promise<A
 
   return Promise.all(rawQuotes.map(async (quote: any, index: number): Promise<AdaptedQuote> => {
     const quoteId = quote.quoteId ?? index + 1;
-    const schemaVersion: string = (quote.schemaVersion || quote.extraction?.schemaVersion || 'generic/v1').toLowerCase();
     const routing: AnalyzeQuoteRouting | null = quote.routing || null;
-    const extraction = quote.extraction || {};
     const missingFields = quote.missingFields;
+
+    // Routing-only response (pipeline: "route") — no extraction to build a spec from.
+    if (!quote.extraction) {
+      return {
+        quoteId,
+        label: quote.label || `Cotation ${quoteId}`,
+        schemaVersion: 'route',
+        routing,
+        pricingAvailable: false,
+        degradationReason: "Routage seul (pipeline « route ») — classe d'actif et pré-prompt sélectionnés, pas d'extraction.",
+        missingFields,
+      };
+    }
+
+    const schemaVersion: string = (quote.schemaVersion || quote.extraction?.schemaVersion || 'generic/v1').toLowerCase();
+    const extraction = quote.extraction || {};
 
     const isAutocallV1 = schemaVersion.startsWith('autocall');
     const isGeneric = PRICEABLE_GENERIC.has(schemaVersion);

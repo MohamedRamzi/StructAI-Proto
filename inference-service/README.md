@@ -76,6 +76,10 @@ Réponse : `{ success, modelUsed, pipeline, quotes: [{ quoteId, label, schemaVer
 
 Un seul appel d'extraction avec le pré-prompt `default` + `_common`, sans routage — reproduit le comportement d'avant le refactor (schéma plat `generic/v1`). Conservé pour rollback / comparaison A-B.
 
+### `route`
+
+**Uniquement** l'étape de routage + la cascade de pré-prompt, **sans appel d'extraction** — pour itérer vite et à moindre coût sur le prompt `router` / la sélection de classe d'actif. Les cotations ne portent que `routing` (`assetClass`, `assetClassCorrectedFrom`, `productFamily` canonique, `productFamilyRaw` = ce que le modèle a dit, `promptKey`, `scopePrecision`, `routerConfidence`). Disponible dans « Tester l'analyse » (combo Pipeline) et au CLI (`--pipeline route`) ; non exposé par `/api/parse-query` (l'app a besoin d'une extraction pour pricer).
+
 ## Pré-prompts (table `prompts`)
 
 Le prompt de routage (`router`), les règles transverses (`_common`) et les pré-prompts de domaine par scope vivent tous dans la table SQLite `prompts`. Elle est **seedée une fois** depuis `inference-service/prompts/*.md` (frontmatter `---` + corps) au premier boot ; le seed est **idempotent** — il insère une `key` absente mais n'écrase jamais une ligne qu'un admin a éditée depuis.
@@ -86,11 +90,12 @@ Ensuite, la table est la source de vérité : édition / ajout / suppression dep
 
 **Garde-fou de classification** : après l'étape de routage, `routing.py` recroise la classe
 d'actif renvoyée par le modèle avec la **famille** qu'il a détectée. Si la famille n'appartient
-sans ambiguïté qu'à une classe (`autocall`/`vanilla` → EQUITY, `range_accrual`/`cms_spread`/… →
-RATES, `fx_swap`/… → FX, `credit_linked`/`tranche` → CREDIT) et que le modèle a nommé une autre
-classe, la famille l'emporte et la correction est signalée (`routing.assetClassCorrectedFrom`,
-badge dans « Tester l'analyse », entrée dans les hypothèses côté app). Corrige le cas
-« Autocall sur *Crédit Agricole* classé CREDIT ». `tarf`/`tarn` sont exclus (réellement RATES ou FX).
+sans ambiguïté qu'à une classe (`autocall` → EQUITY, `range_accrual`/`cms_spread`/`ir_swap`/… →
+RATES, `fx_swap`/`fx_option`/… → FX, `credit_linked`/`tranche` → CREDIT) et que le modèle a
+nommé une autre classe, la famille l'emporte et la correction est signalée
+(`routing.assetClassCorrectedFrom`, badge dans « Tester l'analyse », entrée dans les hypothèses
+côté app). Corrige le cas « Autocall sur *Crédit Agricole* classé CREDIT ». Exclus : `vanilla`
+(calls/puts existent sur toutes les classes) et `tarf`/`tarn` (réellement RATES ou FX).
 
 Les pré-prompts d'extraction sont **compacts** (`equity-autocall` ~3k tokens, `rates` ~1,8k) pour tenir dans le contexte des petits modèles locaux et rester rapides. Les documents de référence métier complets d'où ils sont dérivés vivent dans `inference-service/prompts/reference/` (non parcouru par le seed).
 

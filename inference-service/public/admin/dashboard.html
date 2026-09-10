@@ -172,9 +172,10 @@
       <div class="row" style="margin-top:14px; align-items:flex-end">
         <div>
           <label for="analyze-pipeline">Pipeline</label>
-          <select id="analyze-pipeline" style="max-width:260px">
+          <select id="analyze-pipeline" style="max-width:300px">
             <option value="routed">routed (routeur + pré-prompt par scope)</option>
             <option value="single">single (default + _common, schéma plat)</option>
+            <option value="route">route (routage seul — classe d'actif, pas d'extraction)</option>
           </select>
         </div>
         <div>
@@ -656,18 +657,25 @@
       var rows = quotes.map(function (q) {
         var r = q.routing || {};
         var missing = (q.missingFields || []).map(function (f) { return f.field; });
-        var classCell = escapeHtml(r.assetClass || '—') + ' / ' + escapeHtml(r.productFamily || '—');
+        var famDisplay = escapeHtml(r.productFamily || '—');
+        if (r.productFamilyRaw && r.productFamilyRaw.toLowerCase() !== String(r.productFamily || '').toLowerCase()) {
+          famDisplay += ' <span class="muted">(modèle : ' + escapeHtml(r.productFamilyRaw) + ')</span>';
+        }
+        var classCell = escapeHtml(r.assetClass || '—') + ' / ' + famDisplay;
         if (r.assetClassCorrectedFrom) {
           classCell += ' <span class="badge admin" title="Classe corrigée : le routeur avait répondu ' + escapeHtml(r.assetClassCorrectedFrom) + ', incohérent avec la famille détectée.">corr. ' + escapeHtml(r.assetClassCorrectedFrom) + '→</span>';
         }
+        var confidence = (q.extraction && q.extraction.confidenceScore != null)
+          ? q.extraction.confidenceScore
+          : (r.routerConfidence != null ? r.routerConfidence + ' (routeur)' : '—');
         return '<tr>' +
           '<td class="mono">' + escapeHtml(q.quoteId) + '</td>' +
           '<td>' + escapeHtml(q.label || '') + '</td>' +
           '<td class="mono">' + classCell + '</td>' +
           '<td class="mono">' + escapeHtml(r.promptKey || '—') + '</td>' +
           '<td class="mono">' + escapeHtml(r.scopePrecision != null ? r.scopePrecision : '—') + '</td>' +
-          '<td class="mono">' + escapeHtml(q.schemaVersion || '—') + '</td>' +
-          '<td class="mono">' + escapeHtml(q.extraction && q.extraction.confidenceScore != null ? q.extraction.confidenceScore : '—') + '</td>' +
+          '<td class="mono">' + escapeHtml(q.schemaVersion || (q.routing && !q.extraction ? 'routage seul' : '—')) + '</td>' +
+          '<td class="mono">' + escapeHtml(confidence) + '</td>' +
           '<td class="muted">' + (missing.length ? escapeHtml(missing.join(', ')) : '—') + '</td>' +
           '</tr>';
       }).join('');

@@ -31,7 +31,7 @@ def test_classifies_a_single_equity_autocall(routing):
     result = routing_module.classify_request("Autocall LVMH 3 ans PDI 70%")
     assert result == [
         {
-            "quoteId": 1, "assetClass": "EQUITY", "assetClassCorrectedFrom": None,
+            "quoteId": 1, "label": None, "assetClass": "EQUITY", "assetClassCorrectedFrom": None,
             "productFamily": "autocall", "underlying": "MC FP", "routerConfidence": 0.92,
         },
     ]

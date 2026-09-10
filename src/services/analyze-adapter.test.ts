@@ -186,6 +186,21 @@ describe('adaptAnalyzeResponse', () => {
     expect(q.spec?.assumedDefaults[0]).toMatchObject({ param: "Classe d'actif", value: 'CREDIT → EQUITY' });
   });
 
+  it('passes a routing-only (pipeline: route) quote through without a spec', async () => {
+    const analyzeData = {
+      success: true, pipeline: 'route', modelUsed: 'test',
+      quotes: [{
+        quoteId: 1, label: 'Athena Crédit Agricole',
+        routing: { assetClass: 'EQUITY', assetClassCorrectedFrom: 'CREDIT', productFamily: 'autocall', productFamilyRaw: 'athena', promptKey: 'equity-autocall', scopePrecision: 3, routerConfidence: 0.6 },
+      }],
+    };
+    const [q] = await adaptAnalyzeResponse({ query: 'Poche Athéna sur Crédit Agricole', analyzeData, referenceDate: REF });
+    expect(q.pricingAvailable).toBe(false);
+    expect(q.spec).toBeUndefined();
+    expect(q.routing?.assetClassCorrectedFrom).toBe('CREDIT');
+    expect(q.degradationReason).toMatch(/routage seul/i);
+  });
+
   it('uses the vector-resolved underlying when the callback returns one', async () => {
     const tsla = { ticker: 'TSLA US', name: 'Tesla', sector: 'Auto', region: 'US', spotPrice: 250, currency: 'USD', impliedVol3m: 0.5, dividendYield: 0, repoRate: 0, volatilityScore: 'HIGH' as const };
     const analyzeData = {

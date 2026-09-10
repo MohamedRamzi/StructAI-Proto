@@ -30,8 +30,9 @@ d'une **tranche** ou d'un **indice iTraxx / CDX**.
 - **`autocall`** (EQUITY) : Autocall, Athena, Phoenix, Airbag, Yeti, Himalaya, Magnet,
   Altiplano, Best-of / Worst-of, Reverse Convertible (ARC / BRC), Twin-Win, Booster,
   Express, snowball coupon, effet mémoire, PDI, barrière de rappel.
-- **`vanilla`** (EQUITY) : call / put simple, tunnel, collar actions, participation
-  linéaire sans rappel.
+- **`vanilla`** (toutes classes) : call / put simple, tunnel, collar, participation
+  linéaire sans rappel. La **classe** vient du sous-jacent (action → `EQUITY`, paire de
+  devises → `FX` via `fx_option`, taux → `RATES` via `ir_swap`), pas du mot « vanille ».
 - **`tarf`** / **`tarn`** (RATES ou FX) : Target Accrual Redemption Forward / Note,
   accumulation de gain avec cible et knock-out.
 - **`range_accrual`** (RATES) : Range Accrual, Dual Range Accrual, coupon qui s'accumule
