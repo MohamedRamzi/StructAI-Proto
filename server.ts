@@ -3,11 +3,10 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from './src/data/underlyings-db.js';
 import { PRODUCT_CATALOG } from './src/data/product-taxonomy.js';
 import { priceStructuredProduct } from './src/services/quant-pricer.js';
 import { adaptAnalyzeResponse } from './src/services/analyze-adapter.js';
-import { UnderlyingAsset } from './src/types/structured-product.js';
+import { searchInstrument } from './src/services/instrument-search.js';
 
 const currentFilePath = typeof import.meta !== 'undefined' && import.meta.url ? fileURLToPath(import.meta.url) : (typeof __filename !== 'undefined' ? __filename : process.cwd());
 const currentDirPath = path.dirname(currentFilePath);
@@ -154,98 +153,19 @@ app.post('/api/instruments/search', async (req, res) => {
   return res.json(searchData);
 });
 
-// Server-side in-memory underlyings database state (synced with client)
-let serverUnderlyingsDb = [...STOCK_DATABASE];
+// Underlyings now live in a single place — inference-service's instrument
+// corpus. There is no local instrument DB and no client<->server sync anymore;
+// /api/instruments/search (above) proxies the semantic search, and
+// /api/parse-query resolves underlyings through it.
 
-// API Endpoint 0.1: Sync Underlyings Database between Frontend and Server (Matches all /api/underlyings endpoints)
-app.all('/api/underlyings*', (req, res) => {
-  try {
-    const underlyings = req.body?.underlyings;
-    if (Array.isArray(underlyings) && underlyings.length > 0) {
-      serverUnderlyingsDb = underlyings;
-      console.log(`[Underlyings Sync] Backend database updated (${serverUnderlyingsDb.length} underlyings active).`);
-    }
-    return res.json({ success: true, count: serverUnderlyingsDb.length, underlyings: serverUnderlyingsDb });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-/**
- * Resolves an underlying via inference-service's real semantic search (embeddings +
- * ChromaDB) instead of the local deterministic ticker/keyword matcher — used by
- * POST /api/parse-query when the caller opts in via `useVectorSearchForUnderlying`
- * (see the checkbox in QueryParserWorkbench.tsx). Maps the top hit into the app's
- * UnderlyingAsset shape (same mapping as VectorUnderlyingSearchModal.tsx's client-side
- * searchInstruments, duplicated here since this call happens server-side).
- *
- * Deliberately returns null rather than throwing on any failure (service down,
- * no API key configured, no results, or a rejected mismatch — see below): this is
- * an optional resolution STRATEGY, not the core LLM extraction step the project's
- * "no silent fallback" rule targets — the caller falls back to the local matcher
- * and the response still succeeds, just without the vector-search-refined pick.
- * Every rejection is still logged server-side for visibility.
- */
-async function resolveUnderlyingViaVectorSearch(queryText: string): Promise<UnderlyingAsset | null> {
-  if (!queryText || !queryText.trim() || !INFERENCE_SERVICE_API_KEY) return null;
-
-  try {
-    const searchRes = await fetch(`${INFERENCE_SERVICE_URL}/api/instruments/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${INFERENCE_SERVICE_API_KEY}` },
-      body: JSON.stringify({ query: queryText, assetClass: 'EQUITY', limit: 1 }),
-    });
-    const searchData: any = await searchRes.json();
-    if (!searchRes.ok || !searchData.success || !searchData.results?.length) {
-      if (!searchData?.success) console.warn(`[Vector Underlying Resolution] Échec ou aucun résultat pour "${queryText}": ${searchData?.error || `HTTP ${searchRes.status}`}`);
-      return null;
-    }
-
-    const top = searchData.results[0];
-
-    // A vector search always returns its best-available match, even when nothing in
-    // the index is actually relevant (e.g. searching "FP FP" against an index that
-    // only contains "MC FP" still returns "MC FP", just with a mediocre score) — so
-    // when the query text itself looks like an explicit Bloomberg ticker (e.g. "MC FP",
-    // "TSLA US"), require the top hit's own code to actually match it before trusting
-    // it. Free-text / thematic queries ("un stock européen du luxe qui price bien")
-    // skip this check entirely: that fuzziness is exactly what semantic search is for.
-    const normalize = (s: string) => s.trim().toUpperCase().replace(/\s+/g, '');
-    const looksLikeExplicitTicker = /^[A-Z0-9]{1,6}\s+[A-Z]{2,6}(\s+INDEX)?$/i.test(queryText.trim());
-    if (looksLikeExplicitTicker && normalize(top.code) !== normalize(queryText)) {
-      console.warn(`[Vector Underlying Resolution] "${queryText}" ressemble à un ticker explicite mais le meilleur résultat vectoriel ("${top.code}") ne correspond pas — repli sur le matcher local.`);
-      return null;
-    }
-
-    const meta = top.metadata || {};
-    const resolved: UnderlyingAsset = {
-      ticker: top.code,
-      name: top.name,
-      sector: meta.sector || '',
-      region: meta.region || '',
-      spotPrice: meta.spotPrice ?? 0,
-      currency: meta.currency || 'EUR',
-      impliedVol3m: meta.impliedVol3m ?? 0,
-      dividendYield: meta.dividendYield ?? 0,
-      repoRate: meta.repoRate ?? 0,
-      volatilityScore: meta.volatilityScore || 'MEDIUM',
-      isin: meta.isin || undefined,
-      reasoningForRecommendation: meta.reasoningForRecommendation || undefined,
-    };
-    return resolved;
-  } catch (networkErr: any) {
-    console.warn(`[Vector Underlying Resolution] inference-service indisponible pour "${queryText}": ${networkErr.message}`);
-    return null;
-  }
-}
-
-// API Endpoint 1: Parse Natural Language Query — delegates the actual NLP analysis
-// (prompt + LLM call + missing-field detection) to inference-service's POST /api/analyze,
-// then builds the priced ExtractedProductSpec locally (underlying resolution + Monte
-// Carlo pricing stay app-side; see src/services/spec-builder.ts, quant-pricer.ts).
+// API Endpoint 1: Parse Natural Language Query — delegates the NLP analysis to
+// inference-service's POST /api/analyze, then builds the priced
+// ExtractedProductSpec locally. Underlyings are resolved against
+// inference-service's instrument corpus (searchInstrument); Monte Carlo pricing
+// stays app-side (src/services/quant-pricer.ts).
 app.post('/api/parse-query', async (req, res) => {
   try {
-    const { query, useVectorSearchForUnderlying, reasoningMode, pipeline } = req.body;
+    const { query, reasoningMode, pipeline } = req.body;
     if (!query || typeof query !== 'string') {
       return res.status(400).json({ error: 'La requête en langage naturel est requise.' });
     }
@@ -313,22 +233,15 @@ app.post('/api/parse-query', async (req, res) => {
     // src/services/analyze-adapter.ts — the single schema-version -> builder
     // mapping, shared with scripts/parse-query-cli.ts):
     //  - autocall/v1 / generic/v1 -> ExtractedProductSpec + Monte Carlo price
-    //  - rates/v1, fx/v1, credit/v1, ... -> parsed structure only, no local
-    //    pricer yet (pricingAvailable: false, richExtraction attached)
-    // Fields inference-service flagged as missing (quote.missingFields) are
-    // merged into spec.missingRequiredParams, reusing the UI's existing display.
-    //
-    // Underlying resolution: the local deterministic matcher by default; when
-    // `useVectorSearchForUnderlying` is on, the adapter calls back into
-    // inference-service's real semantic search (resolveUnderlyingViaVectorSearch).
-    const activeDb = req.body.underlyingsDb || req.body.underlyings || serverUnderlyingsDb;
+    //  - rates/v1, fx/v1, credit/v1, ... -> parsed structure only (no pricer yet)
+    // Every underlying is resolved against inference-service's instrument corpus
+    // (searchInstrument, with the quote's routed asset class); one not in the
+    // corpus keeps its extracted name with placeholder market data, flagged.
     const quotes = await adaptAnalyzeResponse({
       query,
       analyzeData,
-      underlyingsDb: activeDb,
-      resolveVectorUnderlying: useVectorSearchForUnderlying
-        ? (hint: string) => resolveUnderlyingViaVectorSearch(hint)
-        : undefined,
+      resolveInstrument: (name: string, assetClass: string | null) =>
+        searchInstrument(name, assetClass, { baseUrl: INFERENCE_SERVICE_URL, apiKey: INFERENCE_SERVICE_API_KEY }, (m) => console.warn(m)),
     });
 
     if (quotes.length === 0) {
@@ -375,12 +288,6 @@ app.post('/api/price-custom', (req, res) => {
   }
 });
 
-// API Endpoint 3: Underlying Stocks Search & Recommendation
-app.post('/api/underlyings/search', (req, res) => {
-  const { query } = req.body;
-  const result = findUnderlyingByTickerOrQuery(query || '');
-  return res.json(result);
-});
 
 // API Endpoint 4: Get 100+ Product Catalog
 app.get('/api/products/catalog', (req, res) => {

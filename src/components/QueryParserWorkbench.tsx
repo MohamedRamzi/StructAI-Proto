@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ExtractedProductSpec, PricingResult, UnderlyingAsset } from '../types/structured-product';
 import { PricingSimulationPanel } from './PricingSimulationPanel';
-import { STOCK_DATABASE } from '../data/underlyings-db';
-import { getStoredUnderlyings, findUnderlyingMultiStrategy, isPreciseUnderlyingMatch } from '../services/underlyings-storage';
 import { priceStructuredProduct } from '../services/quant-pricer';
 import { parseFinancialQuery, QuoteBundle } from '../services/llm-parser';
 import { VectorUnderlyingSearchModal } from './VectorUnderlyingSearchModal';
 import { RichExtractionPanel } from './RichExtractionPanel';
 import {
-  Search,
   Sparkles,
   Sliders,
   CheckCircle2,
@@ -102,15 +99,8 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
   // Overrides tracker
   const [overriddenFields, setOverriddenFields] = useState<Set<string>>(new Set());
 
-  // Search Modals
-  const [showUnderlyingModal, setShowUnderlyingModal] = useState<boolean>(false);
+  // Underlying-search modal (semantic search over inference-service's corpus).
   const [showVectorModal, setShowVectorModal] = useState<boolean>(false);
-  const [underlyingSearch, setUnderlyingSearch] = useState<string>('');
-
-  // When on, the sous-jacent identified by the parser is sent to inference-service's
-  // real vector search (embeddings + ChromaDB) to resolve the underlying, instead of
-  // the local deterministic ticker/keyword matcher — see handleParseQuery below.
-  const [useVectorSearchForUnderlying, setUseVectorSearchForUnderlying] = useState<boolean>(false);
 
   // Per-request override of inference-service's configured "thinking" mode.
   // "default" = don't send anything, let the service use its configured default.
@@ -145,45 +135,19 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
     setOverriddenFields(new Set());
     try {
       const result = await parseFinancialQuery(textToRun, {
-        useVectorSearchForUnderlying,
         ...(reasoningMode !== 'default' ? { reasoningMode } : {}),
       });
       const hasUsableResult = result.success && (!!result.spec || (result.quotes?.length ?? 0) > 0);
       if (hasUsableResult) {
-        const db = getStoredUnderlyings();
-
-        // Normalize to a quotes array — a single-quote response may omit `quotes`.
-        let quotes: QuoteBundle[] = (result.quotes && result.quotes.length > 0)
+        // Underlyings are already resolved server-side against inference-service's
+        // instrument corpus (the single source) — the workbench does no local
+        // re-matching. Normalize to a quotes array (a single-quote response may
+        // omit `quotes`).
+        const quotes: QuoteBundle[] = (result.quotes && result.quotes.length > 0)
           ? result.quotes
           : (result.spec && result.pricing
               ? [{ quoteId: 1, label: result.spec.productTypeName, spec: result.spec, pricing: result.pricing, pricingAvailable: true }]
               : []);
-
-        // Re-sync each PRICEABLE quote's underlying via the local deterministic
-        // matcher (skipped when useVectorSearchForUnderlying already resolved it
-        // server-side against inference-service's real semantic search). Only
-        // override on a CONFIDENT (name/ticker) match — never clobber the
-        // server's choice with a theme guess or a db[0] fallback (that's how an
-        // "Athena Crédit Agricole" ended up showing TotalEnergies). Rich
-        // parse-only quotes (rates/fx/credit — no spec) are passed through.
-        if (!useVectorSearchForUnderlying) {
-          quotes = quotes.map((q) => {
-            if (!isPriceable(q)) return q;
-            const hint = q.spec!.commonParams?.underlyings?.[0]?.ticker
-              || q.spec!.commonParams?.underlyings?.[0]?.name
-              || q.spec!.rawQuery
-              || textToRun;
-            const qRes = findUnderlyingMultiStrategy(hint, db);
-            if (!qRes.autoSelected || !isPreciseUnderlyingMatch(qRes)) return q;
-            const qMatch = qRes.autoSelected;
-            const updatedQSpec = {
-              ...q.spec!,
-              commonParams: { ...q.spec!.commonParams, underlyings: [qMatch] },
-              underlyingSelectionNote: qMatch.reasoningForRecommendation || `Sous-jacent ${qMatch.name} (${qMatch.ticker}) sélectionné.`,
-            };
-            return { ...q, spec: updatedQSpec, pricing: priceStructuredProduct(updatedQSpec) };
-          });
-        }
 
         setQuotesBundle(quotes.length > 1 ? quotes : []);
 
@@ -273,17 +237,9 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
         underlyings: [stock],
       },
     };
-    setShowUnderlyingModal(false);
+    setShowVectorModal(false);
     handleParamOverride(updatedSpec, 'underlyings');
   };
-
-  const storedStocks = getStoredUnderlyings();
-  const filteredStocks = storedStocks.filter(
-    (s) =>
-      s.name.toLowerCase().includes(underlyingSearch.toLowerCase()) ||
-      s.ticker.toLowerCase().includes(underlyingSearch.toLowerCase()) ||
-      s.sector.toLowerCase().includes(underlyingSearch.toLowerCase())
-  );
 
   return (
     <div className="space-y-8 pb-12">
@@ -384,20 +340,7 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
             </button>
           </div>
 
-          <label className="flex items-center gap-2 mt-3 text-xs text-slate-400 font-medium cursor-pointer select-none w-fit">
-            <input
-              type="checkbox"
-              checked={useVectorSearchForUnderlying}
-              onChange={(e) => setUseVectorSearchForUnderlying(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-950 accent-indigo-500"
-            />
-            <span>
-              Résoudre le sous-jacent via recherche vectorielle (embeddings)
-              <span className="text-slate-500"> — au lieu de la correspondance locale par ticker/mots-clés</span>
-            </span>
-          </label>
-
-          <label className="flex items-center gap-2 mt-2 text-xs text-slate-400 font-medium select-none w-fit">
+          <label className="flex items-center gap-2 mt-3 text-xs text-slate-400 font-medium select-none w-fit">
             <span>Raisonnement du modèle :</span>
             <select
               value={reasoningMode}
@@ -660,15 +603,7 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
                     className="px-3.5 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900/90 text-emerald-200 border border-emerald-700/60 text-xs font-bold transition-all flex items-center gap-1.5"
                   >
                     <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Recherche Vectorielle (RAG Qualitative)</span>
-                  </button>
-
-                  <button
-                    onClick={() => setShowUnderlyingModal(true)}
-                    className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all flex items-center gap-1.5"
-                  >
-                    <Search className="w-3.5 h-3.5 text-slate-300" />
-                    <span>Changer Stock</span>
+                    <span>Changer le sous-jacent (recherche)</span>
                   </button>
                 </div>
               </div>
@@ -1002,66 +937,6 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
         currentUnderlyingTicker={spec?.commonParams?.underlyings?.[0]?.ticker}
       />
 
-      {/* Standard Underlying Switch Modal */}
-      {showUnderlyingModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-lg font-bold text-white">
-                Sélectionner un Sous-jacent (Actions &amp; Indices)
-              </h3>
-              <button
-                onClick={() => setShowUnderlyingModal(false)}
-                className="text-slate-400 hover:text-white text-sm font-bold p-1 hover:bg-slate-800 rounded"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Rechercher par Ticker (ex: MC FP, KER FP, TSLA), nom ou secteur..."
-                value={underlyingSearch}
-                onChange={(e) => setUnderlyingSearch(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
-              {filteredStocks.map((stock) => (
-                <div
-                  key={stock.ticker}
-                  onClick={() => handleSelectUnderlying(stock)}
-                  className="p-3.5 rounded-xl bg-slate-950/60 hover:bg-indigo-950/60 border border-slate-800 cursor-pointer transition-all flex items-center justify-between group"
-                >
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-cyan-400 text-xs bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">
-                        {stock.ticker}
-                      </span>
-                      <span className="text-xs text-white font-bold group-hover:text-indigo-200">{stock.name}</span>
-                    </div>
-                    <span className="text-[11px] text-slate-400 block mt-1">
-                      {stock.sector} | {stock.region}
-                    </span>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-xs font-mono font-extrabold text-white block">
-                      {stock.spotPrice} {stock.currency}
-                    </span>
-                    <span className="text-[10px] text-amber-400 font-mono block">
-                      Vol 3m: {(stock.impliedVol3m * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

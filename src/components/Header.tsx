@@ -1,10 +1,10 @@
 import React from 'react';
-import { Cpu, FileText, Database, ShieldCheck, Sparkles, BookOpen, Activity, Zap } from 'lucide-react';
+import { Cpu, FileText, ShieldCheck, Sparkles, BookOpen, Activity, Zap } from 'lucide-react';
 import { LlmStatusBadge } from './LlmStatusBadge';
 
 interface HeaderProps {
-  activeTab: 'workbench' | 'termsheet' | 'analytics' | 'underlyings';
-  setActiveTab: (tab: 'workbench' | 'termsheet' | 'analytics' | 'underlyings') => void;
+  activeTab: 'workbench' | 'termsheet' | 'analytics';
+  setActiveTab: (tab: 'workbench' | 'termsheet' | 'analytics') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
@@ -90,20 +90,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Termsheet</span>
-            </button>
-
-            <button
-              id="nav-underlyings-btn"
-              onClick={() => setActiveTab('underlyings')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                activeTab === 'underlyings'
-                  ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/30 font-bold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-              }`}
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Gestion Sous-Jacents</span>
-              <span className="md:hidden font-mono">Base DB</span>
             </button>
 
             <button

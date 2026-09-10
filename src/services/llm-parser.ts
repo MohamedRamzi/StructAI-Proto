@@ -1,6 +1,5 @@
 import { ExtractedProductSpec, PricingResult } from '../types/structured-product';
 import { saveCalculationToHistory } from './history-storage';
-import { getStoredUnderlyings } from './underlyings-storage';
 
 export interface QuoteBundle {
   quoteId: number;
@@ -100,16 +99,12 @@ export async function sendLlmLogToServer(data: {
  * own POST /api/parse-query, which proxies to inference-service and then
  * resolves the underlying + prices the result (see server.ts, spec-builder.ts).
  * The LLM provider/model is configured centrally there (its admin UI), not
- * per-browser-session, so no config is passed here anymore.
- *
- * `options.useVectorSearchForUnderlying`: when true, the underlying is resolved
- * server-side via inference-service's real semantic search (embeddings + ChromaDB)
- * against the LLM-extracted ticker/description, instead of the local deterministic
- * matcher — see the corresponding checkbox in QueryParserWorkbench.tsx.
+ * per-browser-session. Underlyings are resolved server-side against
+ * inference-service's instrument corpus (semantic search) — the single source.
  */
 export async function parseFinancialQuery(
   query: string,
-  options?: { useVectorSearchForUnderlying?: boolean; reasoningMode?: 'auto' | 'fast' | 'thinking' }
+  options?: { reasoningMode?: 'auto' | 'fast' | 'thinking' }
 ): Promise<ParseQueryResult> {
   logLlmDebug('LLM PARSE QUERY STARTED', { query, options });
 
@@ -119,8 +114,6 @@ export async function parseFinancialQuery(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query,
-        underlyingsDb: getStoredUnderlyings(),
-        useVectorSearchForUnderlying: options?.useVectorSearchForUnderlying ?? false,
         ...(options?.reasoningMode ? { reasoningMode: options.reasoningMode } : {}),
       }),
     });

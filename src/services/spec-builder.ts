@@ -1,5 +1,3 @@
-import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from '../data/underlyings-db';
-import { isPreciseUnderlyingMatch } from './underlyings-storage';
 import { ExtractedProductSpec, SolverTargetVariable, UnderlyingAsset } from '../types/structured-product';
 import { parseFlexibleDate, monthsBetween, toIsoDateString } from './date-utils';
 
@@ -10,68 +8,66 @@ import { parseFlexibleDate, monthsBetween, toIsoDateString } from './date-utils'
  */
 export type RawExtractionJson = Record<string, any>;
 
-export interface BuildSpecInput {
+type MissingField = { field: string; label: string; message: string };
+
+interface CommonBuildInput {
   query: string;
-  parsedJson: RawExtractionJson;
-  /** Restrict underlying resolution to this database instead of the global default. */
-  underlyingsDb?: UnderlyingAsset[];
+  /**
+   * Underlying(s), ALREADY resolved against the single instrument corpus
+   * (inference-service semantic search) — see services/analyze-adapter.ts.
+   * spec-builder does no instrument lookup of its own; it only assembles the
+   * ExtractedProductSpec from the extraction + these underlyings.
+   */
+  underlyings: UnderlyingAsset[];
+  /** A note about the underlying resolution (e.g. "not in the corpus", "placeholder market data"). */
+  underlyingNote?: string | null;
+  /** A missing-field entry to add when the underlying couldn't be resolved. */
+  underlyingMissingField?: MissingField | null;
   /** e.g. "Ollama qwen3.6 (Local)" — adds a leading "Moteur LLM" entry to assumedDefaults. */
   engineDescription?: string;
-  /** Fallback aiExplanation used when parsedJson has none. */
+  /** Fallback aiExplanation used when the extraction has none. */
   fallbackAiExplanation?: string;
-  /** "Today" used to convert an absolute forwardStartDate into forwardStartMonths. Defaults to `new Date()`; override for deterministic tests. */
+  /** "Today" for converting an absolute forwardStartDate/strikeDate into a month count. Override for deterministic tests. */
   referenceDate?: Date;
-  /** Missing-field flags from inference-service's POST /api/analyze (see inference-service/app/services/validation.py), merged into missingRequiredParams. */
-  externalMissingFields?: { field: string; label: string; message: string }[];
-  /**
-   * When set, used directly as the resolved underlying instead of running the
-   * local deterministic matcher (findUnderlyingByTickerOrQuery) — the caller
-   * (server.ts's /api/parse-query, when `useVectorSearchForUnderlying` is on)
-   * has already resolved it via inference-service's real semantic search
-   * (embeddings + ChromaDB) against the LLM-extracted underlyingQueryOrTicker.
-   */
-  vectorResolvedUnderlying?: UnderlyingAsset;
+  /** Missing-field flags from inference-service's POST /api/analyze (validation.py), merged into missingRequiredParams. */
+  externalMissingFields?: MissingField[];
+}
+
+export interface BuildSpecInput extends CommonBuildInput {
+  parsedJson: RawExtractionJson;
 }
 
 export interface BuildSpecOutput {
   spec: ExtractedProductSpec;
-  underlyingMatches: UnderlyingAsset[];
+}
+
+function mergeExternalMissing(list: any[], externalMissingFields?: MissingField[], underlyingMissingField?: MissingField | null): void {
+  const has = (field: string) => list.some((p: any) => (typeof p === 'string' ? p : p.param) === field);
+  for (const flag of externalMissingFields || []) {
+    if (!has(flag.field)) list.push({ param: flag.field, label: flag.label, reason: flag.message });
+  }
+  if (underlyingMissingField && !has(underlyingMissingField.field)) {
+    list.push({ param: underlyingMissingField.field, label: underlyingMissingField.label, reason: underlyingMissingField.message });
+  }
 }
 
 /**
  * Builds a complete ExtractedProductSpec (ready to be priced by
- * priceStructuredProduct) from a raw parsed JSON extraction, resolving the
- * underlying asset and computing missing-params / assumed-defaults metadata.
- *
- * This is the single source of truth for that construction, shared by the
- * Gemini + local-LLM API endpoints in server.ts and by the CLI tool
- * (scripts/parse-query-cli.ts), which previously each re-implemented it with
- * small, easy-to-miss divergences.
+ * priceStructuredProduct) from a raw parsed JSON extraction (the flat
+ * `generic/v1` schema), using pre-resolved underlyings.
  */
 export function buildExtractedProductSpec({
   query,
   parsedJson,
-  underlyingsDb,
+  underlyings,
+  underlyingNote,
+  underlyingMissingField,
   engineDescription,
   fallbackAiExplanation,
   referenceDate,
   externalMissingFields,
-  vectorResolvedUnderlying,
 }: BuildSpecInput): BuildSpecOutput {
-  // Resolve the underlying: try the ticker/theme hint extracted by the parser first,
-  // then retry against the full raw query if that only fell back to the DB default.
-  // Skipped entirely when the caller already resolved it via real semantic search
-  // (vectorResolvedUnderlying) — that result wins outright, no local re-matching.
-  let underlyingResult = findUnderlyingByTickerOrQuery(parsedJson.underlyingQueryOrTicker || query || '', underlyingsDb);
-  const fallbackDb = (underlyingsDb && underlyingsDb.length > 0) ? underlyingsDb : STOCK_DATABASE;
-
-  if (!vectorResolvedUnderlying && (!underlyingResult.autoSelected || (underlyingResult.autoSelected === fallbackDb[0] && fallbackDb.length > 1))) {
-    const fullQueryMatch = findUnderlyingByTickerOrQuery(query, underlyingsDb);
-    if (fullQueryMatch.autoSelected && fullQueryMatch.autoSelected !== fallbackDb[0]) {
-      underlyingResult = fullQueryMatch;
-    }
-  }
-  const selectedUnderlying = vectorResolvedUnderlying || underlyingResult.autoSelected || fallbackDb[0] || STOCK_DATABASE[0];
+  const selectedUnderlying = underlyings[0];
 
   const parsedMaturity = (parsedJson.maturityMonths !== undefined && parsedJson.maturityMonths !== null && !isNaN(Number(parsedJson.maturityMonths)) && Number(parsedJson.maturityMonths) > 0)
     ? Number(parsedJson.maturityMonths)
@@ -85,24 +81,11 @@ export function buildExtractedProductSpec({
       reason: 'Maturité non spécifiée dans la demande client (À préciser / Unspecified)',
     });
   }
+  mergeExternalMissing(missingRequiredParams, externalMissingFields, underlyingMissingField);
 
-  // Merge in inference-service's own missing-field detection (validation.py there
-  // covers more than just maturity — e.g. missing underlying, missing target-to-solve,
-  // missing barrier for barrier-dependent products), deduped against what's already
-  // flagged above so the same field isn't listed twice.
-  if (Array.isArray(externalMissingFields)) {
-    for (const flag of externalMissingFields) {
-      if (!missingRequiredParams.some((p: any) => (typeof p === 'string' ? p : p.param) === flag.field)) {
-        missingRequiredParams.push({ param: flag.field, label: flag.label, reason: flag.message });
-      }
-    }
-  }
-
-  // Resolve forward-start: prefer an explicit ABSOLUTE date (forwardStartDate, e.g. from
-  // "première fixation le 01/12/2026") over a relative duration (forwardStartMonths, e.g.
-  // "fwd 3m"). The LLM reports the date verbatim (normalized to ISO) rather
-  // than computing the month count itself — date arithmetic against "today" is deterministic
-  // and belongs here, not in the model.
+  // Resolve forward-start: prefer an explicit ABSOLUTE date (forwardStartDate) over a
+  // relative duration (forwardStartMonths). Date arithmetic against "today" is
+  // deterministic and belongs here, not in the model.
   const rawForwardStartDate = typeof parsedJson.forwardStartDate === 'string' ? parsedJson.forwardStartDate.trim() : '';
   const parsedForwardStartDate = rawForwardStartDate ? parseFlexibleDate(rawForwardStartDate) : null;
 
@@ -150,7 +133,7 @@ export function buildExtractedProductSpec({
       forwardStartDate: forwardStartDateIso,
       observationFrequency: (parsedJson.observationFrequency as any) || 'QUARTERLY',
       nonCallMonths: parsedJson.nonCallMonths !== undefined ? Number(parsedJson.nonCallMonths) : 12,
-      currency: parsedJson.currency || 'EUR',
+      currency: parsedJson.currency || selectedUnderlying?.currency || 'EUR',
       denomination: 1000,
       issuerCreditRating: 'A+',
       fundingSpreadBps: 45,
@@ -166,23 +149,15 @@ export function buildExtractedProductSpec({
     missingRequiredParams,
     assumedDefaults,
     aiExplanation: parsedJson.aiExplanation || fallbackAiExplanation || 'Produit structuré Autocall avec départ différé de 3 mois et protection à maturité.',
-    underlyingSelectionNote: vectorResolvedUnderlying
-      ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${parsedJson.underlyingQueryOrTicker || query}".`
-      : parsedJson.underlyingSelectionNote || selectedUnderlying.reasoningForRecommendation,
+    underlyingSelectionNote: underlyingNote || parsedJson.underlyingSelectionNote || selectedUnderlying?.reasoningForRecommendation,
   };
 
-  return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };
+  return { spec };
 }
 
 // ---------------------------------------------------------------------------
 // autocall/v1 (the rich per-family envelope produced by inference-service's
-// routed pipeline for equity autocalls — Athena / Phoenix / Reverse
-// Convertible & co.) -> ExtractedProductSpec, so the existing Monte Carlo
-// engine (quant-pricer.ts) can price it unchanged.
-//
-// Only the fields the pricer and the workbench form actually consume are
-// mapped; the full rich structure is kept separately (server.ts attaches it
-// as `richExtraction`) for display and future pricers.
+// routed pipeline for equity autocalls) -> ExtractedProductSpec.
 // ---------------------------------------------------------------------------
 
 /** autocall/v1 `productFamily` -> (our ProductTypeId, human name, is-capital-protected). */
@@ -216,65 +191,24 @@ function ratioToPct(value: any): number | null {
   return n <= 1.5 && n >= -1.5 ? Math.round(n * 1000) / 10 : Math.round(n * 10) / 10;
 }
 
-/** An underlying the extraction named but that isn't in the instruments DB:
- * keep the name, use neutral placeholder market data, and make the gap obvious
- * (a real price needs the instrument added or the vector search used). */
-function syntheticUnderlying(name: string, currency: string): UnderlyingAsset {
-  return {
-    ticker: name.trim().toUpperCase().slice(0, 16) || 'INCONNU',
-    name: name.trim() || 'Sous-jacent inconnu',
-    sector: 'Non renseigné',
-    region: 'Non renseigné',
-    spotPrice: 100,
-    currency: currency || 'EUR',
-    impliedVol3m: 0.25,
-    dividendYield: 0.02,
-    repoRate: 0.001,
-    volatilityScore: 'MEDIUM',
-    reasoningForRecommendation:
-      `« ${name.trim()} » absent de la base d'instruments — données de marché indicatives (spot 100, vol 25 %). ` +
-      `Ajoutez l'instrument (onglet Instruments) ou activez la recherche vectorielle pour un pricing réaliste.`,
-  };
-}
-
-function firstComponentHint(underlying: any, query: string): string {
-  const c = Array.isArray(underlying?.components) ? underlying.components[0] : null;
-  return (
-    c?.name ||
-    c?.identifiers?.bloomberg ||
-    c?.identifiers?.isin ||
-    c?.ref ||
-    (typeof underlying === 'string' ? underlying : '') ||
-    query ||
-    ''
-  );
-}
-
-export interface BuildAutocallV1Input {
-  query: string;
+export interface BuildAutocallV1Input extends CommonBuildInput {
   /** The `autocall/v1` extraction object (quote.extraction from POST /api/analyze). */
   extraction: RawExtractionJson;
-  underlyingsDb?: UnderlyingAsset[];
-  engineDescription?: string;
-  referenceDate?: Date;
-  externalMissingFields?: { field: string; label: string; message: string }[];
-  vectorResolvedUnderlying?: UnderlyingAsset;
 }
 
 /**
- * Builds a priceable ExtractedProductSpec from an `autocall/v1` envelope.
- * Mirrors buildExtractedProductSpec's contract (same output shape, same
- * underlying-resolution + missing-field-merge behaviour) so callers can treat
- * the two interchangeably once they've branched on schemaVersion.
+ * Builds a priceable ExtractedProductSpec from an `autocall/v1` envelope, using
+ * pre-resolved underlyings.
  */
 export function buildSpecFromAutocallV1({
   query,
   extraction,
-  underlyingsDb,
+  underlyings,
+  underlyingNote,
+  underlyingMissingField,
   engineDescription,
   referenceDate,
   externalMissingFields,
-  vectorResolvedUnderlying,
 }: BuildAutocallV1Input): BuildSpecOutput {
   const ex = extraction || {};
   const dates = ex.dates || {};
@@ -284,36 +218,8 @@ export function buildSpecFromAutocallV1({
   const finalRedemption = ex.finalRedemption || {};
   const knockIn = finalRedemption.knockIn || {};
 
-  // --- Underlying(s) ---
-  // autocall/v1 gives a concrete underlying NAME (underlying.components[].name),
-  // never a vague theme. So resolve on the name ONLY — no fall back to matching
-  // the whole client query (a long proposal full of "rendement"/"dividende"
-  // wording would theme-match an unrelated stock). If the name isn't in the
-  // instruments DB, keep the extracted name with placeholder market data and
-  // flag it, rather than silently substituting another company.
-  const components: any[] = Array.isArray(ex.underlying?.components) ? ex.underlying.components : [];
-  const currency = ex.currency || 'EUR';
-  const unresolvedNames: string[] = [];
-
-  const resolveComponent = (name: string): UnderlyingAsset => {
-    if (!name.trim()) return syntheticUnderlying('Sous-jacent non spécifié', currency);
-    const res = findUnderlyingByTickerOrQuery(name, underlyingsDb);
-    if (res.autoSelected && isPreciseUnderlyingMatch(res)) return res.autoSelected;
-    unresolvedNames.push(name.trim());
-    return syntheticUnderlying(name.trim(), currency);
-  };
-
-  const hint = firstComponentHint(ex.underlying, query);
-  let resolvedUnderlyings: UnderlyingAsset[];
-  if (vectorResolvedUnderlying) {
-    resolvedUnderlyings = [vectorResolvedUnderlying];
-  } else if (components.length > 1) {
-    resolvedUnderlyings = components.map((c) => resolveComponent(c?.name || c?.identifiers?.bloomberg || c?.ref || ''));
-  } else {
-    resolvedUnderlyings = [resolveComponent(hint)];
-  }
+  const resolvedUnderlyings = underlyings.length > 0 ? underlyings : [];
   const primaryUnderlying = resolvedUnderlyings[0];
-  const underlyingResult = findUnderlyingByTickerOrQuery(hint, underlyingsDb); // kept for underlyingMatches (suggestions list)
 
   const basketTypeMap: Record<string, ExtractedProductSpec['commonParams']['basketType']> = {
     SINGLE: 'SINGLE', WORST_OF: 'WORST_OF', BEST_OF: 'BEST_OF', WEIGHTED_BASKET: 'BASKET_AVERAGE',
@@ -388,26 +294,14 @@ export function buildSpecFromAutocallV1({
   else if (ratioToPct(autocall.initialTrigger ?? scheduleFirst) === null) targetToSolve = 'CALL_BARRIER';
   else targetToSolve = 'COUPON_RATE';
 
-  // --- Missing fields (inference-service's autocall/v1 validator output + maturity guard) ---
+  // --- Missing fields (inference-service's autocall/v1 validator output + guards) ---
   const missingRequiredParams: any[] = [];
-  if (Array.isArray(externalMissingFields)) {
-    for (const flag of externalMissingFields) {
-      missingRequiredParams.push({ param: flag.field, label: flag.label, reason: flag.message });
-    }
-  }
+  mergeExternalMissing(missingRequiredParams, externalMissingFields, underlyingMissingField);
   if (maturityMonths === null && !missingRequiredParams.some((p) => p.param === 'maturityMonths' || p.param === 'dates.finalValuationDate')) {
     missingRequiredParams.push({
       param: 'maturityMonths',
       label: 'Maturité totale (mois)',
       reason: 'Ni date de constatation finale ni calendrier d\'observation exploitable dans la demande.',
-    });
-  }
-  if (!vectorResolvedUnderlying && unresolvedNames.length > 0) {
-    missingRequiredParams.push({
-      param: 'underlying',
-      label: 'Sous-jacent',
-      reason: `${unresolvedNames.map((n) => `« ${n} »`).join(', ')} absent(s) de la base d'instruments — pricing sur données indicatives. `
-        + `Ajoutez l'instrument (onglet Instruments) ou activez la recherche vectorielle.`,
     });
   }
 
@@ -440,7 +334,7 @@ export function buildSpecFromAutocallV1({
       forwardStartDate: forwardStartDateIso,
       observationFrequency: frequency,
       nonCallMonths,
-      currency: ex.currency || primaryUnderlying.currency || 'EUR',
+      currency: ex.currency || primaryUnderlying?.currency || 'EUR',
       denomination: Number(ex.notional?.denomination) > 0 ? Number(ex.notional.denomination) : 1000,
       issuerCreditRating: ex.issuer?.creditRating || 'A+',
       fundingSpreadBps: 45,
@@ -459,12 +353,8 @@ export function buildSpecFromAutocallV1({
     missingRequiredParams,
     assumedDefaults,
     aiExplanation: ex.aiExplanation || 'Produit à rappel automatique sur sous-jacent actions (schéma autocall/v1).',
-    underlyingSelectionNote: vectorResolvedUnderlying
-      ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${hint}".`
-      : unresolvedNames.length > 0
-        ? `⚠️ ${unresolvedNames.map((n) => `« ${n} »`).join(', ')} introuvable(s) dans la base d'instruments — pricing sur données de marché indicatives.`
-        : primaryUnderlying.reasoningForRecommendation,
+    underlyingSelectionNote: underlyingNote || primaryUnderlying?.reasoningForRecommendation,
   };
 
-  return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };
+  return { spec };
 }

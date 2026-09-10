@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { QueryParserWorkbench } from './components/QueryParserWorkbench';
 import { TermsheetPreview } from './components/TermsheetPreview';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
-import { UnderlyingsManagementDashboard } from './components/UnderlyingsManagementDashboard';
 import { ExtractedProductSpec, PricingResult, UnderlyingAsset } from './types/structured-product';
-import { STOCK_DATABASE } from './data/underlyings-db';
-import { priceStructuredProduct } from './services/quant-pricer';
-import { getStoredUnderlyings, syncUnderlyingsWithServer } from './services/underlyings-storage';
+
+/** Placeholder underlying for the pre-parse demo spec only. Real underlyings
+ * come from inference-service's instrument corpus once a query is parsed. */
+const DEMO_UNDERLYING: UnderlyingAsset = {
+  ticker: 'MC FP',
+  isin: 'FR0000121014',
+  name: 'LVMH Moët Hennessy Louis Vuitton SE',
+  sector: 'Consommation Discrétionnaire / Luxe',
+  region: 'Europe (France - CAC40)',
+  spotPrice: 685.4,
+  currency: 'EUR',
+  impliedVol3m: 0.285,
+  dividendYield: 0.021,
+  repoRate: 0.001,
+  volatilityScore: 'EXCELLENT_FOR_AUTOCALL',
+  reasoningForRecommendation: 'Exemple de démonstration — le sous-jacent réel est résolu depuis la base d\'instruments après analyse.',
+};
 
 // Default initial specification matching User Example 1
 const DEFAULT_INITIAL_SPEC: ExtractedProductSpec = {
@@ -17,7 +30,7 @@ const DEFAULT_INITIAL_SPEC: ExtractedProductSpec = {
   productFamily: 'YIELD_ENHANCEMENT',
   targetToSolve: 'COUPON_RATE',
   commonParams: {
-    underlyings: [STOCK_DATABASE[0]], // LVMH Moët Hennessy Louis Vuitton (MC FP)
+    underlyings: [DEMO_UNDERLYING],
     basketType: 'SINGLE',
     maturityMonths: 36,
     forwardStartMonths: 3,
@@ -54,35 +67,13 @@ const DEFAULT_INITIAL_SPEC: ExtractedProductSpec = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'workbench' | 'termsheet' | 'analytics' | 'underlyings'>('workbench');
+  const [activeTab, setActiveTab] = useState<'workbench' | 'termsheet' | 'analytics'>('workbench');
   const [spec, setSpec] = useState<ExtractedProductSpec | null>(null);
   const [pricing, setPricing] = useState<PricingResult | null>(null);
-
-  // Sync stored underlyings with backend server on mount
-  useEffect(() => {
-    syncUnderlyingsWithServer(getStoredUnderlyings());
-  }, []);
 
   const handleLoadHistoricalSpec = (historicalSpec: ExtractedProductSpec, historicalPricing: PricingResult) => {
     setSpec(historicalSpec);
     setPricing(historicalPricing);
-    setActiveTab('workbench');
-  };
-
-  const handleSelectStockForPricing = (stock: UnderlyingAsset) => {
-    const baseSpec: ExtractedProductSpec = spec || DEFAULT_INITIAL_SPEC;
-    const updatedSpec: ExtractedProductSpec = {
-      ...baseSpec,
-      rawQuery: `Autocall 3 ans sur ${stock.name} (${stock.ticker})`,
-      commonParams: {
-        ...baseSpec.commonParams,
-        underlyings: [stock],
-      },
-      underlyingSelectionNote: stock.reasoningForRecommendation || `Sous-jacent ${stock.name} sélectionné.`
-    };
-    const newPricing = priceStructuredProduct(updatedSpec);
-    setSpec(updatedSpec);
-    setPricing(newPricing);
     setActiveTab('workbench');
   };
 
@@ -116,8 +107,6 @@ export default function App() {
         {activeTab === 'analytics' && (
           <AnalyticsDashboard onLoadHistoricalSpec={handleLoadHistoricalSpec} />
         )}
-
-        {activeTab === 'underlyings' && <UnderlyingsManagementDashboard onSelectStockForPricing={handleSelectStockForPricing} />}
       </main>
     </div>
   );

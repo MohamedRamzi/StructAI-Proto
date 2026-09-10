@@ -1,0 +1,212 @@
+[
+  {
+    "assetClass": "EQUITY",
+    "code": "MC FP",
+    "name": "LVMH Moët Hennessy Louis Vuitton SE",
+    "description": "Titre phare du luxe européen. Volatilité implicite à 28.5% générant un niveau de coupon élevé (8.5%-9.5% p.a.) pour un barrière PDI 70%.",
+    "tags": [
+      "Consommation Discrétionnaire / Luxe",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000121014",
+      "sector": "Consommation Discrétionnaire / Luxe",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 685.4,
+      "currency": "EUR",
+      "impliedVol3m": 0.285,
+      "dividendYield": 0.021,
+      "repoRate": 0.001,
+      "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "KER FP",
+    "name": "Kering SA",
+    "description": "Forte volatilité implicite (36.5%) dans le luxe européen. Offre le coupon le plus agressif du secteur (11.5%+ p.a.).",
+    "tags": [
+      "Consommation Discrétionnaire / Luxe",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000121485",
+      "sector": "Consommation Discrétionnaire / Luxe",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 245.8,
+      "currency": "EUR",
+      "impliedVol3m": 0.365,
+      "dividendYield": 0.038,
+      "repoRate": 0.002,
+      "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "RMS FP",
+    "name": "Hermès International",
+    "description": "Profil très défensif du luxe. Volatilité plus contenue (22%), idéal pour un coupon sécurisé autour de 6.5%-7.2% p.a.",
+    "tags": [
+      "Consommation Discrétionnaire / Luxe",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000052292",
+      "sector": "Consommation Discrétionnaire / Luxe",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 2150,
+      "currency": "EUR",
+      "impliedVol3m": 0.22,
+      "dividendYield": 0.012,
+      "repoRate": 0.001,
+      "volatilityScore": "MEDIUM"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "MONC IM",
+    "name": "Moncler SpA",
+    "description": "Marque de luxe italienne premium. Excellente adéquation pour pricing Autocall avec coupon ~9.2% p.a.",
+    "tags": [
+      "Consommation Discrétionnaire / Luxe",
+      "Europe (Italie - FTSE MIB)"
+    ],
+    "metadata": {
+      "isin": "IT0004969338",
+      "sector": "Consommation Discrétionnaire / Luxe",
+      "region": "Europe (Italie - FTSE MIB)",
+      "spotPrice": 54.2,
+      "currency": "EUR",
+      "impliedVol3m": 0.31,
+      "dividendYield": 0.022,
+      "repoRate": 0.001,
+      "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "FP FP",
+    "name": "TotalEnergies SE",
+    "description": "Rendement dividende élevé (5.2%). Très populaire en Reverse Convertible et Phoenix.",
+    "tags": [
+      "Énergie",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000120271",
+      "sector": "Énergie",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 62.3,
+      "currency": "EUR",
+      "impliedVol3m": 0.24,
+      "dividendYield": 0.052,
+      "repoRate": 0.001,
+      "volatilityScore": "MEDIUM"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "OR FP",
+    "name": "L'Oréal SA",
+    "description": "Profil peu volatil, très prisé pour des structures à forte protection du capital.",
+    "tags": [
+      "Consommation de Base / Cosmétique",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000120321",
+      "sector": "Consommation de Base / Cosmétique",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 388.5,
+      "currency": "EUR",
+      "impliedVol3m": 0.215,
+      "dividendYield": 0.018,
+      "repoRate": 0.001,
+      "volatilityScore": "LOW"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "SAN FP",
+    "name": "Sanofi SA",
+    "description": "Grand titre pharmaceutique européen avec dividende stable.",
+    "tags": [
+      "Santé / Pharmacie",
+      "Europe (France - CAC40)"
+    ],
+    "metadata": {
+      "isin": "FR0000120578",
+      "sector": "Santé / Pharmacie",
+      "region": "Europe (France - CAC40)",
+      "spotPrice": 88.4,
+      "currency": "EUR",
+      "impliedVol3m": 0.205,
+      "dividendYield": 0.041,
+      "repoRate": 0.001,
+      "volatilityScore": "LOW"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "ASML NA",
+    "name": "ASML Holding NV",
+    "description": "Leader européen des semi-conducteurs. Volatilité élevée offrant un pricing coupon très attractif (10%+ p.a.).",
+    "tags": [
+      "Technologie / Semi-conducteurs",
+      "Europe (Pays-Bas - AEX)"
+    ],
+    "metadata": {
+      "isin": "NL0010273215",
+      "sector": "Technologie / Semi-conducteurs",
+      "region": "Europe (Pays-Bas - AEX)",
+      "spotPrice": 642.1,
+      "currency": "EUR",
+      "impliedVol3m": 0.34,
+      "dividendYield": 0.011,
+      "repoRate": 0.001,
+      "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "SX5E Index",
+    "name": "Euro Stoxx 50 Index",
+    "description": "Indice de référence européen. Volatilité faible (16.5%), coupons plus modérés mais grande diversification.",
+    "tags": [
+      "Indice Actions Broad",
+      "Europe (Eurozone)"
+    ],
+    "metadata": {
+      "isin": "EU0009658145",
+      "sector": "Indice Actions Broad",
+      "region": "Europe (Eurozone)",
+      "spotPrice": 4890.2,
+      "currency": "EUR",
+      "impliedVol3m": 0.165,
+      "dividendYield": 0.032,
+      "repoRate": 0.001,
+      "volatilityScore": "LOW"
+    }
+  },
+  {
+    "assetClass": "EQUITY",
+    "code": "TSLA US",
+    "name": "Tesla Inc.",
+    "description": "Volatilité extrême (48%). Permet des coupons géants (>15% p.a.) mais avec risque PDI accru.",
+    "tags": [
+      "Automobile / Tech",
+      "USA (Nasdaq)"
+    ],
+    "metadata": {
+      "isin": "US88160R1014",
+      "sector": "Automobile / Tech",
+      "region": "USA (Nasdaq)",
+      "spotPrice": 220.5,
+      "currency": "USD",
+      "impliedVol3m": 0.48,
+      "dividendYield": 0,
+      "repoRate": 0.001,
+      "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
+    }
+  }
+]

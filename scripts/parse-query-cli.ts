@@ -2,6 +2,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import { adaptAnalyzeResponse, AdaptedQuote } from '../src/services/analyze-adapter';
+import { searchInstrument } from '../src/services/instrument-search';
 import { ExtractedProductSpec, PricingResult } from '../src/types/structured-product';
 
 // Interface for parse result
@@ -49,8 +50,14 @@ async function processSingleQuery(query: string, opts: { pipeline?: string; reas
       throw new Error(analyzeData.error || `inference-service a répondu ${analyzeRes.status}`);
     }
 
-    // Same schema-version -> builder branching as server.ts's /api/parse-query.
-    const processedQuotes = await adaptAnalyzeResponse({ query, analyzeData });
+    // Same schema-version -> builder branching + corpus-based underlying
+    // resolution as server.ts's /api/parse-query.
+    const processedQuotes = await adaptAnalyzeResponse({
+      query,
+      analyzeData,
+      resolveInstrument: (name, assetClass) =>
+        searchInstrument(name, assetClass, { baseUrl: INFERENCE_SERVICE_URL, apiKey: INFERENCE_SERVICE_API_KEY }, (m) => console.error(m)),
+    });
     const firstPriceable = processedQuotes.find((q) => q.pricingAvailable) || processedQuotes[0];
 
     return {
