@@ -143,8 +143,8 @@ export const STOCK_DATABASE: UnderlyingAsset[] = [
   }
 ];
 
-import { findUnderlyingMultiStrategy } from '../services/underlyings-storage';
+import { findUnderlyingMultiStrategy, UnderlyingMatchResult } from '../services/underlyings-storage';
 
-export function findUnderlyingByTickerOrQuery(query: string, customDb?: UnderlyingAsset[]): { matches: UnderlyingAsset[]; autoSelected?: UnderlyingAsset } {
+export function findUnderlyingByTickerOrQuery(query: string, customDb?: UnderlyingAsset[]): UnderlyingMatchResult {
   return findUnderlyingMultiStrategy(query, customDb);
 }

@@ -94,6 +94,25 @@ describe('buildSpecFromAutocallV1', () => {
     expect((spec.specificParams as any).autocallBarrierPct).toBe(100);
   });
 
+  it('keeps an underlying that is not in the DB instead of substituting another company', () => {
+    // "Crédit Agricole" is not in STOCK_DATABASE. The old code fell back to
+    // matching the whole client query and theme-matched TotalEnergies.
+    const ex = autocallV1Extraction({
+      productName: 'Athena Crédit Agricole',
+      underlying: { basketType: 'SINGLE', components: [{ name: 'Crédit Agricole' }] },
+    });
+    const { spec } = buildSpecFromAutocallV1({
+      query: 'DUO MIX 60/40 — poche garantie, poche Athéna sur Crédit Agricole, rendement cible 6% par an, dividende fixe 1,10€',
+      extraction: ex,
+      referenceDate: REF,
+    });
+
+    expect(spec.commonParams.underlyings[0].name).toBe('Crédit Agricole');
+    expect(spec.commonParams.underlyings[0].name).not.toBe('TotalEnergies SE');
+    expect(spec.missingRequiredParams).toContainEqual(expect.objectContaining({ param: 'underlying' }));
+    expect(spec.underlyingSelectionNote).toMatch(/introuvable/i);
+  });
+
   it('merges inference-service missing-field flags into missingRequiredParams', () => {
     const { spec } = buildSpecFromAutocallV1({
       query: 'q',

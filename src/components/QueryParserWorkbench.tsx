@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ExtractedProductSpec, PricingResult, UnderlyingAsset } from '../types/structured-product';
 import { PricingSimulationPanel } from './PricingSimulationPanel';
 import { STOCK_DATABASE } from '../data/underlyings-db';
-import { getStoredUnderlyings, findUnderlyingMultiStrategy } from '../services/underlyings-storage';
+import { getStoredUnderlyings, findUnderlyingMultiStrategy, isPreciseUnderlyingMatch } from '../services/underlyings-storage';
 import { priceStructuredProduct } from '../services/quant-pricer';
 import { parseFinancialQuery, QuoteBundle } from '../services/llm-parser';
 import { VectorUnderlyingSearchModal } from './VectorUnderlyingSearchModal';
@@ -161,8 +161,11 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
 
         // Re-sync each PRICEABLE quote's underlying via the local deterministic
         // matcher (skipped when useVectorSearchForUnderlying already resolved it
-        // server-side against inference-service's real semantic search). Rich
-        // parse-only quotes (rates/fx/credit — no spec) are passed through as-is.
+        // server-side against inference-service's real semantic search). Only
+        // override on a CONFIDENT (name/ticker) match — never clobber the
+        // server's choice with a theme guess or a db[0] fallback (that's how an
+        // "Athena Crédit Agricole" ended up showing TotalEnergies). Rich
+        // parse-only quotes (rates/fx/credit — no spec) are passed through.
         if (!useVectorSearchForUnderlying) {
           quotes = quotes.map((q) => {
             if (!isPriceable(q)) return q;
@@ -170,8 +173,9 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
               || q.spec!.commonParams?.underlyings?.[0]?.name
               || q.spec!.rawQuery
               || textToRun;
-            const qMatch = findUnderlyingMultiStrategy(hint, db).autoSelected;
-            if (!qMatch) return q;
+            const qRes = findUnderlyingMultiStrategy(hint, db);
+            if (!qRes.autoSelected || !isPreciseUnderlyingMatch(qRes)) return q;
+            const qMatch = qRes.autoSelected;
             const updatedQSpec = {
               ...q.spec!,
               commonParams: { ...q.spec!.commonParams, underlyings: [qMatch] },

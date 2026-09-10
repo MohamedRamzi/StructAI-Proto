@@ -1,4 +1,5 @@
 import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from '../data/underlyings-db';
+import { isPreciseUnderlyingMatch } from './underlyings-storage';
 import { ExtractedProductSpec, SolverTargetVariable, UnderlyingAsset } from '../types/structured-product';
 import { parseFlexibleDate, monthsBetween, toIsoDateString } from './date-utils';
 
@@ -215,6 +216,27 @@ function ratioToPct(value: any): number | null {
   return n <= 1.5 && n >= -1.5 ? Math.round(n * 1000) / 10 : Math.round(n * 10) / 10;
 }
 
+/** An underlying the extraction named but that isn't in the instruments DB:
+ * keep the name, use neutral placeholder market data, and make the gap obvious
+ * (a real price needs the instrument added or the vector search used). */
+function syntheticUnderlying(name: string, currency: string): UnderlyingAsset {
+  return {
+    ticker: name.trim().toUpperCase().slice(0, 16) || 'INCONNU',
+    name: name.trim() || 'Sous-jacent inconnu',
+    sector: 'Non renseigné',
+    region: 'Non renseigné',
+    spotPrice: 100,
+    currency: currency || 'EUR',
+    impliedVol3m: 0.25,
+    dividendYield: 0.02,
+    repoRate: 0.001,
+    volatilityScore: 'MEDIUM',
+    reasoningForRecommendation:
+      `« ${name.trim()} » absent de la base d'instruments — données de marché indicatives (spot 100, vol 25 %). ` +
+      `Ajoutez l'instrument (onglet Instruments) ou activez la recherche vectorielle pour un pricing réaliste.`,
+  };
+}
+
 function firstComponentHint(underlying: any, query: string): string {
   const c = Array.isArray(underlying?.components) ? underlying.components[0] : null;
   return (
@@ -263,28 +285,35 @@ export function buildSpecFromAutocallV1({
   const knockIn = finalRedemption.knockIn || {};
 
   // --- Underlying(s) ---
-  const fallbackDb = underlyingsDb && underlyingsDb.length > 0 ? underlyingsDb : STOCK_DATABASE;
+  // autocall/v1 gives a concrete underlying NAME (underlying.components[].name),
+  // never a vague theme. So resolve on the name ONLY — no fall back to matching
+  // the whole client query (a long proposal full of "rendement"/"dividende"
+  // wording would theme-match an unrelated stock). If the name isn't in the
+  // instruments DB, keep the extracted name with placeholder market data and
+  // flag it, rather than silently substituting another company.
   const components: any[] = Array.isArray(ex.underlying?.components) ? ex.underlying.components : [];
+  const currency = ex.currency || 'EUR';
+  const unresolvedNames: string[] = [];
+
+  const resolveComponent = (name: string): UnderlyingAsset => {
+    if (!name.trim()) return syntheticUnderlying('Sous-jacent non spécifié', currency);
+    const res = findUnderlyingByTickerOrQuery(name, underlyingsDb);
+    if (res.autoSelected && isPreciseUnderlyingMatch(res)) return res.autoSelected;
+    unresolvedNames.push(name.trim());
+    return syntheticUnderlying(name.trim(), currency);
+  };
+
   const hint = firstComponentHint(ex.underlying, query);
-
-  let underlyingResult = findUnderlyingByTickerOrQuery(hint, underlyingsDb);
-  if (!vectorResolvedUnderlying && (!underlyingResult.autoSelected || (underlyingResult.autoSelected === fallbackDb[0] && fallbackDb.length > 1))) {
-    const fullQueryMatch = findUnderlyingByTickerOrQuery(query, underlyingsDb);
-    if (fullQueryMatch.autoSelected && fullQueryMatch.autoSelected !== fallbackDb[0]) {
-      underlyingResult = fullQueryMatch;
-    }
+  let resolvedUnderlyings: UnderlyingAsset[];
+  if (vectorResolvedUnderlying) {
+    resolvedUnderlyings = [vectorResolvedUnderlying];
+  } else if (components.length > 1) {
+    resolvedUnderlyings = components.map((c) => resolveComponent(c?.name || c?.identifiers?.bloomberg || c?.ref || ''));
+  } else {
+    resolvedUnderlyings = [resolveComponent(hint)];
   }
-  const primaryUnderlying = vectorResolvedUnderlying || underlyingResult.autoSelected || fallbackDb[0] || STOCK_DATABASE[0];
-
-  // Multi-component basket: resolve each named component; fall back to the primary.
-  let resolvedUnderlyings: UnderlyingAsset[] = [primaryUnderlying];
-  if (!vectorResolvedUnderlying && components.length > 1) {
-    resolvedUnderlyings = components.map((c) => {
-      const cHint = c?.name || c?.identifiers?.bloomberg || c?.ref || '';
-      const m = cHint ? findUnderlyingByTickerOrQuery(cHint, underlyingsDb).autoSelected : null;
-      return m || primaryUnderlying;
-    });
-  }
+  const primaryUnderlying = resolvedUnderlyings[0];
+  const underlyingResult = findUnderlyingByTickerOrQuery(hint, underlyingsDb); // kept for underlyingMatches (suggestions list)
 
   const basketTypeMap: Record<string, ExtractedProductSpec['commonParams']['basketType']> = {
     SINGLE: 'SINGLE', WORST_OF: 'WORST_OF', BEST_OF: 'BEST_OF', WEIGHTED_BASKET: 'BASKET_AVERAGE',
@@ -373,6 +402,14 @@ export function buildSpecFromAutocallV1({
       reason: 'Ni date de constatation finale ni calendrier d\'observation exploitable dans la demande.',
     });
   }
+  if (!vectorResolvedUnderlying && unresolvedNames.length > 0) {
+    missingRequiredParams.push({
+      param: 'underlying',
+      label: 'Sous-jacent',
+      reason: `${unresolvedNames.map((n) => `« ${n} »`).join(', ')} absent(s) de la base d'instruments — pricing sur données indicatives. `
+        + `Ajoutez l'instrument (onglet Instruments) ou activez la recherche vectorielle.`,
+    });
+  }
 
   const assumedDefaults: { param: string; value: any; reason: string }[] = [];
   if (engineDescription) {
@@ -424,7 +461,9 @@ export function buildSpecFromAutocallV1({
     aiExplanation: ex.aiExplanation || 'Produit à rappel automatique sur sous-jacent actions (schéma autocall/v1).',
     underlyingSelectionNote: vectorResolvedUnderlying
       ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${hint}".`
-      : primaryUnderlying.reasoningForRecommendation,
+      : unresolvedNames.length > 0
+        ? `⚠️ ${unresolvedNames.map((n) => `« ${n} »`).join(', ')} introuvable(s) dans la base d'instruments — pricing sur données de marché indicatives.`
+        : primaryUnderlying.reasoningForRecommendation,
   };
 
   return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };

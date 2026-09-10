@@ -198,17 +198,39 @@ export function importUnderlyingsFromCsv(csvText: string): { success: boolean; c
   }
 }
 
+/** How a result was reached — lets callers distinguish a real match from a
+ * best-effort guess:
+ *   'alias' | 'exact' | 'token'  -> a confident, name/ticker-based match
+ *   'theme'                       -> a loose keyword/theme score (fine for a
+ *                                    vague query like "luxe qui price bien",
+ *                                    NOT for a concrete name)
+ *   'none'                        -> nothing matched; autoSelected is db[0] as a
+ *                                    fallback only
+ */
+export type UnderlyingMatchStrategy = 'alias' | 'exact' | 'token' | 'theme' | 'none';
+
+export interface UnderlyingMatchResult {
+  matches: UnderlyingAsset[];
+  autoSelected?: UnderlyingAsset;
+  matchStrategy: UnderlyingMatchStrategy;
+}
+
+/** True when the match was reached by name/ticker/alias (not a theme score or a fallback). */
+export function isPreciseUnderlyingMatch(r: { matchStrategy: UnderlyingMatchStrategy }): boolean {
+  return r.matchStrategy === 'alias' || r.matchStrategy === 'exact' || r.matchStrategy === 'token';
+}
+
 /**
  * Multi-Strategy Dynamic Search Engine (No hardcoded rules!)
  * 1. Direct Ticker / ISIN / Synonym & Alias Match (e.g. Eurostoxx -> SX5E Index, TotalEnergies -> FP FP, LVMH -> MC FP)
  * 2. Space-Collapsed & Exact or Substring Company Name Match
  * 3. Vector Similarity & Keyword Theme Scoring (e.g. "luxe qui price bien", "bancaires résilientes", "énergie")
  */
-export function findUnderlyingMultiStrategy(query: string, customDb?: UnderlyingAsset[]): { matches: UnderlyingAsset[]; autoSelected?: UnderlyingAsset } {
+export function findUnderlyingMultiStrategy(query: string, customDb?: UnderlyingAsset[]): UnderlyingMatchResult {
   const db = (customDb && customDb.length > 0) ? customDb : getStoredUnderlyings();
   const rawClean = query.trim().toUpperCase();
   if (!rawClean) {
-    return { matches: db, autoSelected: db[0] };
+    return { matches: db, autoSelected: db[0], matchStrategy: 'none' };
   }
 
   const rawCollapsed = rawClean.replace(/[^A-Z0-9]/g, '');
@@ -236,7 +258,7 @@ export function findUnderlyingMultiStrategy(query: string, customDb?: Underlying
         const synCollapsed = synUpper.replace(/[^A-Z0-9]/g, '');
 
         if (rawClean === synUpper || rawClean.includes(synUpper) || (synCollapsed.length >= 4 && rawCollapsed.includes(synCollapsed))) {
-          return { matches: [targetAsset], autoSelected: targetAsset };
+          return { matches: [targetAsset], autoSelected: targetAsset, matchStrategy: 'alias' };
         }
       }
     }
@@ -251,17 +273,17 @@ export function findUnderlyingMultiStrategy(query: string, customDb?: Underlying
     const nameCollapsed = nameUpper.replace(/[^A-Z0-9]/g, '');
 
     if (rawClean === t || rawClean === isin || rawClean === nameUpper || rawCollapsed === nameCollapsed) {
-      return { matches: [asset], autoSelected: asset };
+      return { matches: [asset], autoSelected: asset, matchStrategy: 'exact' };
     }
 
     if (t.length >= 2 && rawClean.includes(t)) {
-      return { matches: [asset], autoSelected: asset };
+      return { matches: [asset], autoSelected: asset, matchStrategy: 'exact' };
     }
     if (tBase.length >= 2 && rawClean.match(new RegExp(`\\b${tBase}\\b`, 'i'))) {
-      return { matches: [asset], autoSelected: asset };
+      return { matches: [asset], autoSelected: asset, matchStrategy: 'exact' };
     }
     if (nameCollapsed.length >= 4 && (rawCollapsed.includes(nameCollapsed) || nameCollapsed.includes(rawCollapsed))) {
-      return { matches: [asset], autoSelected: asset };
+      return { matches: [asset], autoSelected: asset, matchStrategy: 'exact' };
     }
   }
 
@@ -291,7 +313,8 @@ export function findUnderlyingMultiStrategy(query: string, customDb?: Underlying
     textMatches.sort((a, b) => b.score - a.score);
     return {
       matches: textMatches.map(m => m.asset),
-      autoSelected: textMatches[0].asset
+      autoSelected: textMatches[0].asset,
+      matchStrategy: 'token',
     };
   }
 
@@ -335,6 +358,7 @@ export function findUnderlyingMultiStrategy(query: string, customDb?: Underlying
 
   return {
     matches: bestMatches.length > 0 ? bestMatches : db,
-    autoSelected: bestMatches.length > 0 ? bestMatches[0] : db[0]
+    autoSelected: bestMatches.length > 0 ? bestMatches[0] : db[0],
+    matchStrategy: bestMatches.length > 0 ? 'theme' : 'none',
   };
 }
