@@ -160,6 +160,44 @@ def test_member_cannot_delete(client, member_headers):
     assert client.delete("/api/prompts/equity-autocall", headers=member_headers).status_code == 403
 
 
+def test_reset_restores_a_prompt_from_its_seed_file(client, auth_headers):
+    original = client.get("/api/prompts/equity-autocall", headers=auth_headers).json()["prompt"]["body"]
+
+    client.put(
+        "/api/prompts/equity-autocall",
+        json={"name": "x", "kind": "domain", "assetClass": "EQUITY", "productFamily": "autocall", "body": "CORPS BIDON"},
+        headers=auth_headers,
+    )
+    assert client.get("/api/prompts/equity-autocall", headers=auth_headers).json()["prompt"]["body"] == "CORPS BIDON"
+
+    res = client.post("/api/prompts/equity-autocall/reset", headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["prompt"]["body"] == original
+    assert client.get("/api/prompts/equity-autocall", headers=auth_headers).json()["prompt"]["body"] == original
+
+
+def test_reset_works_on_a_protected_prompt(client, auth_headers):
+    client.put("/api/prompts/default", json={"name": "d", "kind": "domain", "body": "bidon"}, headers=auth_headers)
+    res = client.post("/api/prompts/default/reset", headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["prompt"]["isProtected"] is True
+    assert res.json()["prompt"]["body"] != "bidon"
+
+
+def test_reset_404_for_a_key_with_no_seed_file(client, auth_headers):
+    client.put(
+        "/api/prompts/equity-vanilla",
+        json={"name": "v", "kind": "domain", "assetClass": "EQUITY", "productFamily": "vanilla", "body": "corps"},
+        headers=auth_headers,
+    )
+    res = client.post("/api/prompts/equity-vanilla/reset", headers=auth_headers)
+    assert res.status_code == 404
+
+
+def test_reset_requires_admin(client, member_headers):
+    assert client.post("/api/prompts/equity-autocall/reset", headers=member_headers).status_code == 403
+
+
 def test_seed_does_not_overwrite_an_admin_edit_on_reboot(client, auth_headers, tmp_path, monkeypatch):
     # Edit a seeded row...
     current = client.get("/api/prompts/equity", headers=auth_headers).json()["prompt"]

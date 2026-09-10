@@ -175,31 +175,64 @@ def _parse_prompt_file(text: str) -> tuple[dict, str]:
     return meta, parts[2].strip()
 
 
-def _seed_prompts() -> None:
+def _iter_prompt_seed_files():
+    """Yields (key, meta, body) for every seed file directly under PROMPTS_DIR
+    (not recursive — prompts/reference/ holds the long-form docs and is skipped)."""
     prompts_dir = config.PROMPTS_DIR
     if not prompts_dir.is_dir():
         return
     for md_path in sorted(prompts_dir.glob("*.md")):
         meta, body = _parse_prompt_file(md_path.read_text(encoding="utf-8"))
-        key = meta.get("key") or md_path.stem
+        yield (meta.get("key") or md_path.stem), meta, body
+
+
+def _prompt_row_from_seed(key: str, meta: dict, body: str) -> tuple:
+    return (
+        key,
+        meta.get("name") or key,
+        meta.get("kind") or "domain",
+        (meta.get("assetClass") or "").upper() or None,
+        (meta.get("productFamily") or "").lower() or None,
+        meta.get("scopeDescription") or "",
+        body,
+        1 if key in _PROTECTED_PROMPT_KEYS else 0,
+        _now(),
+    )
+
+
+def _seed_prompts() -> None:
+    for key, meta, body in _iter_prompt_seed_files():
         if db.execute("SELECT key FROM prompts WHERE key = ?", (key,)).fetchone() is not None:
             continue  # never overwrite an existing (possibly admin-edited) row
         db.execute(
             "INSERT INTO prompts (key, name, kind, asset_class, product_family, scope_description, body, is_protected, updated_at) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (
-                key,
-                meta.get("name") or key,
-                meta.get("kind") or "domain",
-                (meta.get("assetClass") or "").upper() or None,
-                (meta.get("productFamily") or "").lower() or None,
-                meta.get("scopeDescription") or "",
-                body,
-                1 if key in _PROTECTED_PROMPT_KEYS else 0,
-                _now(),
-            ),
+            _prompt_row_from_seed(key, meta, body),
         )
     db.commit()
+
+
+def reseed_prompt(key: str) -> Optional[dict]:
+    """Force one prompt back to its on-disk seed file, discarding any admin edit.
+    Returns the refreshed row, or None if `key` has no seed file. Used by
+    POST /api/prompts/{key}/reset — the deliberate way to push a trimmed /
+    corrected seed .md into a database that already has the old version."""
+    for seed_key, meta, body in _iter_prompt_seed_files():
+        if seed_key != key:
+            continue
+        row = _prompt_row_from_seed(key, meta, body)
+        db.execute(
+            "INSERT INTO prompts (key, name, kind, asset_class, product_family, scope_description, body, is_protected, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET "
+            "name = excluded.name, kind = excluded.kind, asset_class = excluded.asset_class, "
+            "product_family = excluded.product_family, scope_description = excluded.scope_description, "
+            "body = excluded.body, updated_at = excluded.updated_at",
+            row,
+        )
+        db.commit()
+        return get_prompt(key)
+    return None
 
 
 def _row_to_prompt(row: sqlite3.Row) -> dict:

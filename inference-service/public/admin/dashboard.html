@@ -157,6 +157,7 @@
         <div class="row" style="margin-top:14px">
           <button type="submit" id="prompt-save-btn">Enregistrer</button>
           <button type="button" class="secondary hidden" id="prompt-cancel-edit-btn">Annuler la modification</button>
+          <button type="button" class="secondary hidden" id="prompt-reset-btn" title="Recharge ce pré-prompt depuis son fichier .md dans inference-service/prompts/, en écrasant l'édition en base.">Réinitialiser depuis le fichier seed</button>
         </div>
       </form>
     </section>
@@ -575,6 +576,7 @@
         document.getElementById('prompt-form-title').textContent = 'Modifier le pré-prompt « ' + p.key + ' »';
         document.getElementById('prompt-save-btn').textContent = 'Enregistrer les modifications';
         document.getElementById('prompt-cancel-edit-btn').classList.remove('hidden');
+        document.getElementById('prompt-reset-btn').classList.toggle('hidden', !isAdmin);
         document.getElementById('tab-prompts').scrollIntoView({ behavior: 'smooth', block: 'start' });
       } catch (err) {
         msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
@@ -589,8 +591,24 @@
       document.getElementById('prompt-form-title').textContent = 'Ajouter un pré-prompt de domaine';
       document.getElementById('prompt-save-btn').textContent = 'Enregistrer';
       document.getElementById('prompt-cancel-edit-btn').classList.add('hidden');
+      document.getElementById('prompt-reset-btn').classList.add('hidden');
     }
     document.getElementById('prompt-cancel-edit-btn').addEventListener('click', resetPromptForm);
+
+    document.getElementById('prompt-reset-btn').addEventListener('click', async function () {
+      var key = document.getElementById('prompt-editing-key').value;
+      var msg = document.getElementById('prompts-msg');
+      if (!key) return;
+      if (!confirm('Réinitialiser « ' + key + ' » depuis son fichier seed ? Toute modification enregistrée en base sera écrasée.')) return;
+      try {
+        var res = await Api.post('/api/prompts/' + encodeURIComponent(key) + '/reset');
+        document.getElementById('prompt-body').value = res.prompt.body;
+        msg.innerHTML = '<div class="msg success">« ' + escapeHtml(key) + ' » réinitialisé depuis le fichier seed.</div>';
+        loadPrompts();
+      } catch (err) {
+        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    });
 
     document.getElementById('prompt-form').addEventListener('submit', async function (e) {
       e.preventDefault();

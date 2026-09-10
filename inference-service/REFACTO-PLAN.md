@@ -131,11 +131,25 @@ adapté.
 - `tsc --noEmit`, 47 vitest, `vite build` OK. Vérifié end-to-end (Gemini réel) : Athena/LVMH
   → autocall/v1 → spec priçable.
 
+### 2c — pré-prompts compacts ✅ (2026-09-10, branche `refacto/trim-domain-prompts`)
+
+Le seed `equity-autocall` (~22k tokens) débordait le contexte des modèles locaux
+(erreur `maximum context length is 8192 tokens`). Réécrit en prompt d'extraction :
+- `prompts/equity-autocall.md` : ~22k → ~3k tokens (schéma `autocall/v1` + table des familles
+  + champs discriminants + overlays + 2 exemples).
+- `prompts/rates.md` : ~7k → ~1,8k tokens (11 `product_type` + enveloppe commune + champs par type + 2 exemples).
+- Documents de référence complets déplacés dans `prompts/reference/*.reference.md` (non seedés).
+- `POST /api/prompts/{key}/reset` + bouton admin *« Réinitialiser depuis le fichier seed »* :
+  `db.reseed_prompt(key)` recharge un `.md` en écrasant la base (le seed idempotent ne le fait jamais).
+  → pour prendre en compte les nouveaux seeds sur une base existante.
+- `dev-vllm-chat.sh` : `--max-model-len` 8192 → 32768 par défaut (marge).
+- Tests : 5 cas reset (RBAC, protégé, 404 sans fichier). 142 pytest verts.
+
 ### RESTE (hors périmètre immédiat)
 
-- Smoke-test navigateur d'une demande **taux** de bout en bout (le CLI a validé le chemin
-  autocall en réel ; le chemin dégradé n'a que la couverture vitest — quota Gemini épuisé pendant les tests).
-- Étoffer les pré-prompts squelettes `fx.md` / `credit.md` et le validateur `_detect_autocall_v1` (ténor).
+- Smoke-test réel des pré-prompts compacts (quota Gemini épuisé pendant les tests ; à faire
+  contre vLLM local ou Gemini une fois le quota réinitialisé).
+- Étoffer les squelettes `fx.md` / `credit.md` et le validateur `_detect_autocall_v1` (ténor).
 - Brancher un vrai `_common` de sortie taux/FX quand un pricer existera (Phase 3).
 
 ## PHASE 3 — ultérieur, hors lot

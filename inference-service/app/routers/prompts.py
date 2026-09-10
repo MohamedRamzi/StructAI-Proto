@@ -61,6 +61,20 @@ def upsert_prompt(key: str, payload: UpsertPromptRequest, current: dict = Depend
     return {"success": True, "prompt": prompt}
 
 
+@router.post("/{key}/reset")
+def reset_prompt_to_seed(key: str, _current: dict = Depends(require_role("admin"))):
+    """Discard the stored body and reload this prompt from its seed .md file —
+    the way to pick up a trimmed / corrected seed in a database that already
+    has the old version. 404 if `key` has no seed file (nothing to reset to)."""
+    refreshed = db.reseed_prompt(key)
+    if refreshed is None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"Aucun fichier seed pour « {key} » dans inference-service/prompts/ — rien à réinitialiser.",
+        )
+    return {"success": True, "prompt": refreshed}
+
+
 @router.delete("/{key}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_prompt(key: str, current: dict = Depends(require_role("admin"))):
     prompt = db.get_prompt(key)

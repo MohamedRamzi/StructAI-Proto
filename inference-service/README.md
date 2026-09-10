@@ -80,6 +80,10 @@ Le prompt de routage (`router`), les règles transverses (`_common`) et les pré
 
 Ensuite, la table est la source de vérité : édition / ajout / suppression depuis l'admin UI (onglet **Pré-prompts**), via `GET/PUT/DELETE /api/prompts`. Les lignes `router` / `_common` / `default` sont **protégées** (éditables mais non supprimables, `kind` non modifiable).
 
+`POST /api/prompts/{key}/reset` (bouton *« Réinitialiser depuis le fichier seed »*) recharge un pré-prompt depuis son `.md` en écrasant l'édition en base — c'est la façon de prendre en compte un seed corrigé (le seed idempotent au boot, lui, ne touche jamais une ligne existante).
+
+Les pré-prompts d'extraction sont **compacts** (`equity-autocall` ~3k tokens, `rates` ~1,8k) pour tenir dans le contexte des petits modèles locaux et rester rapides. Les documents de référence métier complets d'où ils sont dérivés vivent dans `inference-service/prompts/reference/` (non parcouru par le seed).
+
 ## Tests
 
 ```bash
