@@ -47,7 +47,7 @@ def test_search_returns_a_clear_error_when_the_embedding_call_fails_no_silent_fa
     def broken_embedding(*args, **kwargs):
         raise RuntimeError("Impossible de contacter le moteur d'embedding (vLLM) sur http://localhost:8002/v1 : connection refused.")
 
-    monkeypatch.setattr(inference_client, "embed_one", broken_embedding)
+    monkeypatch.setattr(inference_client, "embed_query", broken_embedding)
 
     res = client.post("/api/instruments/search", json={"query": "luxe"}, headers=auth_headers)
     assert res.status_code == 502
@@ -88,6 +88,34 @@ def test_reindex_recomputes_embeddings_for_every_instrument(client, auth_headers
     # Search still works correctly after a reindex.
     search_res = client.post("/api/instruments/search", json={"query": "energie petroliere"}, headers=auth_headers)
     assert search_res.json()["results"][0]["code"] == "FP FP"
+
+
+def test_build_description_text_leads_with_name_and_drops_numeric_metadata():
+    from app.services.instruments import build_description_text
+
+    text = build_description_text(
+        "SX5E Index", "EURO STOXX 50",
+        "Indice phare de la zone euro.", ["indice", "autocall"],
+        {"sector": "Indice actions", "region": "Europe", "spotPrice": 6400.0,
+         "impliedVol3m": 0.15, "isin": "EU0009658145", "currency": "EUR",
+         "reasoningForRecommendation": "blabla identique partout"},
+    )
+    assert text.startswith("EURO STOXX 50 EURO STOXX 50 SX5E Index")  # name x2, then code
+    assert "Indice actions" in text and "Europe" in text            # categorical metadata kept
+    assert "6400" not in text and "0.15" not in text                # numbers dropped
+    assert "EU0009658145" not in text and "blabla" not in text      # isin / boilerplate dropped
+
+
+def test_embed_query_instruction_wrapper_is_gated_on_qwen3_embedding():
+    from app.services import inference_client
+
+    assert inference_client._wants_query_instruction("Qwen/Qwen3-Embedding-0.6B") is True
+    assert inference_client._wants_query_instruction("Qwen/Qwen3-Embedding-8B") is True
+    assert inference_client._wants_query_instruction("BAAI/bge-m3") is False
+    assert inference_client._wants_query_instruction("") is False
+    # the wrapper the search path applies to a query
+    payload = f"Instruct: {inference_client._EMBED_QUERY_INSTRUCTION}\nQuery: EuroStoxx"
+    assert payload.startswith("Instruct: ") and payload.endswith("Query: EuroStoxx")
 
 
 def test_rejects_a_revoked_api_key(client, auth_headers):

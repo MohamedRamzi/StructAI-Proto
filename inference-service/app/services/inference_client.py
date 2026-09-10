@@ -218,3 +218,27 @@ def embed(texts: list[str]) -> list[list[float]]:
 
 def embed_one(text: str) -> list[float]:
     return embed([text])[0]
+
+
+# Qwen3-Embedding (and most modern instruct-tuned embedders) are ASYMMETRIC:
+# the document side is embedded raw, but the QUERY side must be wrapped in an
+# instruction ("Instruct: <task>\nQuery: <text>"). Skipping this is a large,
+# silent retrieval-quality hit — a query for "EuroStoxx" lands in a slightly
+# different subspace than the "EURO STOXX 50" document and gets out-ranked by
+# unrelated instruments. The wrapper is applied only for Qwen3-Embedding models
+# (other embedders may not expect it).
+_EMBED_QUERY_INSTRUCTION = (
+    "Retrouve l'instrument financier (indice, action, taux d'intérêt, paire de change, "
+    "indice de crédit) qui correspond le mieux à la description ou au nom recherché."
+)
+
+
+def _wants_query_instruction(model: str) -> bool:
+    return "qwen3-embedding" in (model or "").lower()
+
+
+def embed_query(text: str) -> list[float]:
+    """Embed a SEARCH QUERY (as opposed to a stored document — use embed_one for those)."""
+    model = db.get_embedding_settings()["model"]
+    payload = f"Instruct: {_EMBED_QUERY_INSTRUCTION}\nQuery: {text}" if _wants_query_instruction(model) else text
+    return embed([payload])[0]

@@ -20,8 +20,7 @@
    "impliedVol3m": 0.15,
    "dividendYield": 0.031,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice EURO STOXX 50 (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -44,8 +43,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice CAC 40 (France) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -67,8 +65,7 @@
    "impliedVol3m": 0.15,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice EURO STOXX 50 Net Return (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -93,8 +90,7 @@
    "impliedVol3m": 0.15,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice EURO STOXX 50 Decrement 50 Points (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -118,8 +114,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice CAC 40 Decrement 5% (France) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -142,8 +137,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.026,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice DAX 40 (Allemagne) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -166,8 +160,7 @@
    "impliedVol3m": 0.14,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice FTSE 100 (Royaume-Uni) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -190,8 +183,7 @@
    "impliedVol3m": 0.13,
    "dividendYield": 0.029,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice Swiss Market Index (Suisse) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -214,8 +206,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.038,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice IBEX 35 (Espagne) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -238,8 +229,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.045,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice FTSE MIB (Italie) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -262,8 +252,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.024,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice AEX (Pays-Bas) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -285,8 +274,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice OMX Stockholm 30 (Suede) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -309,8 +297,7 @@
    "impliedVol3m": 0.14,
    "dividendYield": 0.032,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice STOXX Europe 600 (Europe) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -333,8 +320,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.058,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice EURO STOXX Banks (Europe (zone euro)) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -356,8 +342,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.01,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice STOXX Europe 600 Technology (Europe) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -380,8 +365,7 @@
    "impliedVol3m": 0.14,
    "dividendYield": 0.013,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice S&P 500 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -404,8 +388,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.007,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice Nasdaq 100 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -428,8 +411,7 @@
    "impliedVol3m": 0.13,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice Dow Jones Industrial Average (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -452,8 +434,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.014,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice Russell 2000 (Etats-Unis) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -477,8 +458,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice Nikkei 225 (Japon) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -501,8 +481,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.021,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice TOPIX (Japon) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -525,8 +504,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.036,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice Hang Seng Index (Hong Kong) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -549,8 +527,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.038,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice Hang Seng China Enterprises (Hong Kong / Chine) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -573,8 +550,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.019,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice KOSPI 200 (Coree du Sud) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -597,8 +573,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Indice TAIEX (Taiwan Weighted) (Taiwan) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -620,8 +595,7 @@
    "impliedVol3m": 0.13,
    "dividendYield": 0.013,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice NIFTY 50 (Inde) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -642,8 +616,7 @@
    "impliedVol3m": 0.13,
    "dividendYield": 0.012,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice BSE SENSEX (Inde) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -666,8 +639,7 @@
    "impliedVol3m": 0.13,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice S&P/ASX 200 (Australie) - sous-jacent de produits structures. Niveau/vol indicatifs ~sept. 2026, a rafraichir via le service de donnees de marche."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -691,8 +663,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.01,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -716,8 +687,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -741,8 +711,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.007,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -766,8 +735,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.023,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -791,8 +759,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.011,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -816,8 +783,7 @@
    "impliedVol3m": 0.25,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -841,8 +807,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.052,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -866,8 +831,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -891,8 +855,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.014,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -916,8 +879,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.045,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -941,8 +903,7 @@
    "impliedVol3m": 0.19,
    "dividendYield": 0.032,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -966,8 +927,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.062,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -991,8 +951,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.041,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1016,8 +975,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.04,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1041,8 +999,7 @@
    "impliedVol3m": 0.19,
    "dividendYield": 0.058,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1066,8 +1023,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.036,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1091,8 +1047,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.07,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1116,8 +1071,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.014,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1141,8 +1095,7 @@
    "impliedVol3m": 0.19,
    "dividendYield": 0.033,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1166,8 +1119,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.011,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1191,8 +1143,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1216,8 +1167,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.058,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1241,8 +1191,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.045,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Espagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1266,8 +1215,7 @@
    "impliedVol3m": 0.27,
    "dividendYield": 0.07,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1291,8 +1239,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.085,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1316,8 +1263,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Italie. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1341,8 +1287,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.09,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Multi (FR/IT/US). Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1366,8 +1311,7 @@
    "impliedVol3m": 0.19,
    "dividendYield": 0.02,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1391,8 +1335,7 @@
    "impliedVol3m": 0.38,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1416,8 +1359,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.004,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1441,8 +1383,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1466,8 +1407,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1491,8 +1431,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Pays-Bas. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -1516,8 +1455,7 @@
    "impliedVol3m": 0.37,
    "dividendYield": 0.038,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1541,8 +1479,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1566,8 +1503,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.033,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1591,8 +1527,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.043,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1616,8 +1551,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.058,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1641,8 +1575,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1666,8 +1599,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.019,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / France. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1691,8 +1623,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.045,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1716,8 +1647,7 @@
    "impliedVol3m": 0.36,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1741,8 +1671,7 @@
    "impliedVol3m": 0.32,
    "dividendYield": 0.09,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1766,8 +1695,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.075,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Allemagne. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1791,8 +1719,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Finlande. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1816,8 +1743,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.075,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant EURO STOXX 50 / Finlande / Nordics. Prix indicatif ~sept. 2026, a rafraichir."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1840,8 +1766,7 @@
    "impliedVol3m": 0.27,
    "dividendYield": 0.07,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1864,8 +1789,7 @@
    "impliedVol3m": 0.32,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1888,8 +1812,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.024,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1912,8 +1835,7 @@
    "impliedVol3m": 0.38,
    "dividendYield": 0.015,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France / Italie). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -1936,8 +1858,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.026,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1960,8 +1881,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -1984,8 +1904,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2008,8 +1927,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2032,8 +1950,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.035,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2056,8 +1973,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.062,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -2080,8 +1996,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.04,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2104,8 +2019,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (France). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2128,8 +2042,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.02,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Luxembourg). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2152,8 +2065,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.012,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2176,8 +2088,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2200,8 +2111,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2224,8 +2134,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2248,8 +2157,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2272,8 +2180,7 @@
    "impliedVol3m": 0.36,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation europeenne (Allemagne). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2296,8 +2203,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.021,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2320,8 +2226,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.038,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2344,8 +2249,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.07,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2368,8 +2272,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.033,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -2392,8 +2295,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.055,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2416,8 +2318,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.065,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2440,8 +2341,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2464,8 +2364,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.038,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2488,8 +2387,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.075,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2512,8 +2410,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.017,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2536,8 +2433,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.011,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2560,8 +2456,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2584,8 +2479,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.05,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -2608,8 +2502,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.07,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2632,8 +2525,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du FTSE 100. Prix indicatif ~sept. 2026 (cotation Londres)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2656,8 +2548,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.004,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2680,8 +2571,7 @@
    "impliedVol3m": 0.23,
    "dividendYield": 0.007,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2704,8 +2594,7 @@
    "impliedVol3m": 0.4,
    "dividendYield": 0.001,
    "repoRate": 0.0,
-   "volatilityScore": "HIGH",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "HIGH"
   }
  },
  {
@@ -2728,8 +2617,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.005,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2752,8 +2640,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2776,8 +2663,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.003,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2800,8 +2686,7 @@
    "impliedVol3m": 0.5,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "HIGH",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "HIGH"
   }
  },
  {
@@ -2824,8 +2709,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.011,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2848,8 +2732,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.02,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2872,8 +2755,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.008,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2896,8 +2778,7 @@
    "impliedVol3m": 0.21,
    "dividendYield": 0.006,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -2920,8 +2801,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.007,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2944,8 +2824,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.021,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -2968,8 +2847,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -2992,8 +2870,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.033,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3016,8 +2893,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.043,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3040,8 +2916,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.009,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3064,8 +2939,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.024,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3088,8 +2962,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.026,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3112,8 +2985,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3136,8 +3008,7 @@
    "impliedVol3m": 0.17,
    "dividendYield": 0.037,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3160,8 +3031,7 @@
    "impliedVol3m": 0.18,
    "dividendYield": 0.024,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3184,8 +3054,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.009,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3208,8 +3077,7 @@
    "impliedVol3m": 0.32,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3232,8 +3100,7 @@
    "impliedVol3m": 0.42,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "HIGH",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "HIGH"
   }
  },
  {
@@ -3256,8 +3123,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.006,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3280,8 +3146,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.024,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3304,8 +3169,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3328,8 +3192,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.005,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3352,8 +3215,7 @@
    "impliedVol3m": 0.36,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3376,8 +3238,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.014,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3400,8 +3261,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.006,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Grande capitalisation americaine (S&P 500 / Nasdaq 100). Prix indicatif ~sept. 2026."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3424,8 +3284,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.028,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3448,8 +3307,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.006,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3472,8 +3330,7 @@
    "impliedVol3m": 0.38,
    "dividendYield": 0.004,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3496,8 +3353,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.005,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3520,8 +3376,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.015,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3544,8 +3399,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.012,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3568,8 +3422,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.014,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3592,8 +3445,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.033,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3616,8 +3468,7 @@
    "impliedVol3m": 0.3,
    "dividendYield": 0.01,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3640,8 +3491,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.03,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3664,8 +3514,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.02,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3688,8 +3537,7 @@
    "impliedVol3m": 0.42,
    "dividendYield": 0.008,
    "repoRate": 0.0,
-   "volatilityScore": "HIGH",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "HIGH"
   }
  },
  {
@@ -3712,8 +3560,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.012,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3736,8 +3583,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.032,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3760,8 +3606,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.045,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Nikkei 225 / TOPIX. Prix indicatif ~sept. 2026 (cotation Tokyo)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3785,8 +3630,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.008,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3810,8 +3654,7 @@
    "impliedVol3m": 0.34,
    "dividendYield": 0.01,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3835,8 +3678,7 @@
    "impliedVol3m": 0.24,
    "dividendYield": 0.025,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3860,8 +3702,7 @@
    "impliedVol3m": 0.38,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3885,8 +3726,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.075,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3910,8 +3750,7 @@
    "impliedVol3m": 0.2,
    "dividendYield": 0.075,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -3935,8 +3774,7 @@
    "impliedVol3m": 0.16,
    "dividendYield": 0.065,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -3960,8 +3798,7 @@
    "impliedVol3m": 0.28,
    "dividendYield": 0.06,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -3985,8 +3822,7 @@
    "impliedVol3m": 0.4,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "HIGH",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "HIGH"
   }
  },
  {
@@ -4010,8 +3846,7 @@
    "impliedVol3m": 0.38,
    "dividendYield": 0.015,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -4035,8 +3870,7 @@
    "impliedVol3m": 0.36,
    "dividendYield": 0.025,
    "repoRate": 0.0,
-   "volatilityScore": "EXCELLENT_FOR_AUTOCALL",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "EXCELLENT_FOR_AUTOCALL"
   }
  },
  {
@@ -4060,8 +3894,7 @@
    "impliedVol3m": 0.26,
    "dividendYield": 0.035,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Constituant majeur du Hang Seng Index. Prix indicatif ~sept. 2026 (cotation Hong Kong)."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -4084,8 +3917,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4107,8 +3939,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4129,8 +3960,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4154,8 +3984,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4177,8 +4006,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4200,8 +4028,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4225,8 +4052,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4250,8 +4076,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4277,8 +4102,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4303,8 +4127,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4328,8 +4151,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4353,8 +4175,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4378,8 +4199,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference EUR. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4403,8 +4223,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4427,8 +4246,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4452,8 +4270,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4477,8 +4294,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4503,8 +4319,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4528,8 +4343,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4553,8 +4367,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference USD. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4577,8 +4390,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference GBP. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4601,8 +4413,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference GBP. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4627,8 +4438,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Taux de reference JPY. Niveau indicatif en pourcentage (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4652,8 +4462,7 @@
    "impliedVol3m": 0.075,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4676,8 +4485,7 @@
    "impliedVol3m": 0.07,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/GBP. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4701,8 +4509,7 @@
    "impliedVol3m": 0.09,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/JPY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4726,8 +4533,7 @@
    "impliedVol3m": 0.055,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/CHF. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4750,8 +4556,7 @@
    "impliedVol3m": 0.085,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change GBP/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4776,8 +4581,7 @@
    "impliedVol3m": 0.095,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/JPY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4800,8 +4604,7 @@
    "impliedVol3m": 0.075,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/CHF. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4824,8 +4627,7 @@
    "impliedVol3m": 0.1,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change AUD/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4847,8 +4649,7 @@
    "impliedVol3m": 0.105,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change NZD/USD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4870,8 +4671,7 @@
    "impliedVol3m": 0.07,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/CAD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4893,8 +4693,7 @@
    "impliedVol3m": 0.08,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/SEK. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4916,8 +4715,7 @@
    "impliedVol3m": 0.09,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/NOK. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4941,8 +4739,7 @@
    "impliedVol3m": 0.055,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/CNH. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4966,8 +4763,7 @@
    "impliedVol3m": 0.15,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/BRL. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -4991,8 +4787,7 @@
    "impliedVol3m": 0.135,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/MXN. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5016,8 +4811,7 @@
    "impliedVol3m": 0.22,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "MEDIUM",
-   "reasoningForRecommendation": "Couple de change USD/TRY. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "MEDIUM"
   }
  },
  {
@@ -5040,8 +4834,7 @@
    "impliedVol3m": 0.05,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/INR. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5064,8 +4857,7 @@
    "impliedVol3m": 0.09,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/KRW. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5088,8 +4880,7 @@
    "impliedVol3m": 0.05,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change USD/SGD. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5112,8 +4903,7 @@
    "impliedVol3m": 0.075,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Couple de change EUR/PLN. Spot indicatif ~sept. 2026 ; ImpliedVol3m = volatilite implicite 3 mois indicative."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5137,8 +4927,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5163,8 +4952,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5188,8 +4976,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5213,8 +5000,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5238,8 +5024,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  },
  {
@@ -5263,8 +5048,7 @@
    "impliedVol3m": 0.0,
    "dividendYield": 0.0,
    "repoRate": 0.0,
-   "volatilityScore": "LOW",
-   "reasoningForRecommendation": "Indice de CDS. SpotPrice = spread indicatif en points de base (~sept. 2026)."
+   "volatilityScore": "LOW"
   }
  }
 ]

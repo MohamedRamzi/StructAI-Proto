@@ -11,24 +11,28 @@ from .. import db
 from . import inference_client, vector_store
 
 
+# Only CATEGORICAL metadata carries semantic signal. Raw numbers (spotPrice,
+# impliedVol3m, dividendYield, repoRate), identifiers (isin, currency) and the
+# free-text `reasoningForRecommendation` (often boilerplate, repeated verbatim
+# across dozens of instruments) are NOT embedded — folding them in flattened the
+# ranking so badly that a query for "EURO STOXX 50" was out-ranked by Euribor.
+_EMBEDDED_METADATA_KEYS = ("sector", "region", "volatilityScore")
+
+
 def build_description_text(code: str, name: str, description: str, tags: list[str], metadata: dict) -> str:
     """
-    Composes the actual text that gets embedded — folds quantitative metadata
-    into descriptive text too, so a query like "fort dividende faible
-    volatilité" can match assets with no hand-written qualitative blurb at all.
+    Composes the text that gets embedded for semantic search.
 
-    `code` (the ticker, e.g. "MC FP") is deliberately included, and first: a
-    caller searching for the exact Bloomberg ticker of an instrument must find
-    it, not just a caller searching by qualitative theme. Without it, a query
-    that IS the ticker has no lexical overlap with the embedded text at all
-    and its ranking depends entirely on the embedding model happening to know
-    that association — not reliable enough for what is effectively an exact
-    lookup dressed up as a semantic one.
+    Order matters: the NAME leads (it carries the most signal for a "find X"
+    query and is repeated once for weight), then the `code`/ticker (so a query
+    that IS the exact Bloomberg ticker still has lexical overlap), then the
+    qualitative blurb, the tags, and a few categorical metadata fields.
     """
-    parts = [code, name, description, " ".join(tags)]
-    for key, value in metadata.items():
+    parts = [name, name, code, description, " ".join(tags)]
+    for key in _EMBEDDED_METADATA_KEYS:
+        value = metadata.get(key)
         if value not in (None, ""):
-            parts.append(f"{key}: {value}")
+            parts.append(str(value))
     return " ".join(p for p in parts if p).strip()
 
 
@@ -75,7 +79,7 @@ def get(instrument_id: str) -> Optional[dict]:
 
 
 def search(query: str, asset_class: Optional[str], limit: int) -> list[dict]:
-    query_vector = inference_client.embed_one(query)
+    query_vector = inference_client.embed_query(query)
     ranked = vector_store.query(query_vector, limit, asset_class)
 
     results = []

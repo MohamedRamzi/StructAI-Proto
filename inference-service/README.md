@@ -7,6 +7,8 @@ Service Python unique regroupant :
 
 Les embeddings sont toujours servis par un sidecar **vLLM** local (`vllm serve --runner pooling`), jamais importé en Python dans ce service — `inference-service` ne lui parle qu'en HTTP, via son API compatible OpenAI (`/v1/embeddings`).
 
+**Recherche sémantique — asymétrie query/document.** Qwen3-Embedding attend une *instruction* côté requête (`Instruct: …\nQuery: …`, voir `inference_client.embed_query`) alors que les documents sont embeddés bruts. Le texte embeddé par instrument (`build_description_text`) commence par le **nom** (répété), puis le code/ticker, la description, les tags et quelques champs catégoriels (`sector`, `region`, `volatilityScore`) — **pas** les nombres (spot, vol, rendement) ni l'ISIN ni le texte `reasoning`, qui aplatissaient le classement (une requête « EURO STOXX 50 » se faisait doubler par l'Euribor). Après toute modif de cette formule : **Ré-indexer** (onglet Instruments, ou `POST /api/instruments/reindex`).
+
 Le chat/analyse, lui, supporte **deux types de fournisseur** (configurable depuis l'admin, onglet "Config. Chat") :
 - **`openai_compatible`** : tout endpoint parlant le protocole OpenAI chat-completions — par défaut le sidecar vLLM local (`vllm serve`, même principe que pour l'embedding), mais aussi LM Studio, l'endpoint OpenAI-compatible d'Ollama, ou une vraie API cloud OpenAI-compatible moyennant une clé.
 - **`gemini`** : l'API Google Gemini (cloud), appelée directement en REST (pas de dépendance SDK) — une clé API est requise.

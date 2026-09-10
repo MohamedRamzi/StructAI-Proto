@@ -44,6 +44,10 @@ def client(tmp_path, monkeypatch):
 
     monkeypatch.setattr(inference_client, "embed", lambda texts: [fake_embed_text(t) for t in texts])
     monkeypatch.setattr(inference_client, "embed_one", lambda text: fake_embed_text(text))
+    # embed_query wraps the query in a Qwen3-Embedding instruction in real use;
+    # the toy bag-of-words fake_embed_text would let that constant prefix swamp
+    # the actual query terms, so stub it symmetrically here.
+    monkeypatch.setattr(inference_client, "embed_query", lambda text: fake_embed_text(text))
 
     return TestClient(main_module.app)
 
