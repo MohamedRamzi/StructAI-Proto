@@ -37,6 +37,34 @@ de **classer** la demande — pas d'en extraire les paramètres détaillés.
 Si vous hésitez sur la famille, renvoyez la valeur la plus générique cohérente (ex. `vanilla`
 pour EQUITY, `ir_swap` pour RATES) plutôt qu'une famille précise mais douteuse.
 
+## Pièges à éviter
+
+La classe d'actif est déterminée par le **mécanisme du produit** (payoff, sous-jacent
+de référence), **jamais par un mot isolé du nom du sous-jacent ou de la demande**.
+
+- **Nom d'institution financière contenant « Crédit » / « Banque » / « Bank » /
+  « Financière » / « Assurances ».** Beaucoup d'émetteurs et de sous-jacents actions
+  portent ces mots : *Crédit Agricole*, *Société Générale*, *Deutsche Bank*, *BNP Paribas*,
+  *Banco Santander*, *ING*, *Natixis*… Un Autocall / Phoenix / Reverse Convertible sur
+  l'**action** *Crédit Agricole* (ticker `ACA FP`) est **`EQUITY` / `autocall`**, PAS
+  `CREDIT`. Ne classez `CREDIT` que si le payoff dépend explicitement d'un **événement de
+  crédit** (défaut, restructuration), d'un **spread de CDS**, d'une **CLN**, d'une
+  **tranche**, ou d'un **indice iTraxx / CDX**.
+- **Paire de devises citée comme devise du produit.** « Autocall EUR sur Euro Stoxx 50 »,
+  « note en USD » : la devise n'est pas le sous-jacent. Reste `EQUITY`. On ne classe `FX`
+  que si la **performance** dépend d'un taux de change (TARF EUR/USD, dual currency, FX
+  linked note).
+- **« TARF » / « accumulateur » sur une paire de devises → `FX`**, même si les produits
+  « target redemption » sont souvent rangés avec les taux. `RATES` seulement si le
+  sous-jacent est un taux (Euribor, CMS…).
+- **Indice décrément / decrement** (ex. « Euro Stoxx 50 Decrement 50 points ») → `EQUITY`.
+  C'est un indice actions à dividende synthétique, pas un produit de taux.
+- **« Swap » seul est ambigu.** Swap de taux → `RATES` ; equity swap / total return swap
+  sur action → `EQUITY` ; cross-currency swap → `FX`. Regardez le sous-jacent.
+
+Dans le doute entre `CREDIT` et une autre classe à cause d'un nom d'entité, choisissez
+l'autre classe et baissez `routerConfidence`.
+
 ## Cotations multiples
 
 La demande peut contenir plusieurs cotations (sous-jacents différents, ou variantes de

@@ -39,6 +39,15 @@ def test_seeded_protected_rows_are_flagged(client, auth_headers):
     assert prompts["equity-autocall"]["isProtected"] is False
 
 
+def test_router_seed_carries_the_asset_class_disambiguation_guidance(client, auth_headers):
+    """The router must not classify an equity underlying whose name contains
+    "Crédit" (Crédit Agricole, ...) as the CREDIT asset class — regression guard
+    for that guidance being dropped from prompts/router.md."""
+    body = client.get("/api/prompts/router", headers=auth_headers).json()["prompt"]["body"]
+    assert "Pièges à éviter" in body
+    assert "Crédit Agricole" in body
+
+
 def test_get_single_prompt_returns_its_body(client, auth_headers):
     res = client.get("/api/prompts/equity-autocall", headers=auth_headers)
     assert res.status_code == 200
