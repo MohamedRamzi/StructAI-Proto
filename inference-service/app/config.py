@@ -44,7 +44,12 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip() or None
 EMBEDDING_BASE_URL = os.environ.get("EMBEDDING_BASE_URL", "http://localhost:8002/v1")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "Qwen/Qwen3-Embedding-0.6B")
 
-QUOTATION_PROMPT_PATH = SERVICE_ROOT / "QuotationPrompt.md"
+# Seed directory for the routed-analyze pipeline's prompts (router, _common,
+# and the per-scope domain prompts). Loaded into the `prompts` SQLite table on
+# first boot (idempotent — see db._seed_prompts); the table is the runtime
+# source of truth thereafter, editable from the admin UI. (Replaces the single
+# QuotationPrompt.md the pre-refacto pipeline used.)
+PROMPTS_DIR = SERVICE_ROOT / "prompts"
 
 DB_PATH = os.environ.get("DB_PATH") or str(SERVICE_ROOT / "data" / "inference-service.db")
 CHROMA_PATH = os.environ.get("CHROMA_PATH") or str(SERVICE_ROOT / "data" / "chroma")

@@ -82,11 +82,25 @@ def init_schema() -> None:
             updated_at TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_instruments_asset_class ON instruments(asset_class);
+
+        CREATE TABLE IF NOT EXISTS prompts (
+            key TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            kind TEXT NOT NULL DEFAULT 'domain',
+            asset_class TEXT,
+            product_family TEXT,
+            scope_description TEXT NOT NULL DEFAULT '',
+            body TEXT NOT NULL,
+            is_protected INTEGER NOT NULL DEFAULT 0,
+            updated_at TEXT NOT NULL,
+            updated_by INTEGER REFERENCES users(id)
+        );
         """
     )
     db.commit()
     _migrate_llm_settings()
     _bootstrap()
+    _seed_prompts()
 
 
 def _migrate_llm_settings() -> None:
@@ -132,6 +146,161 @@ def _bootstrap() -> None:
             (config.EMBEDDING_MODEL, config.EMBEDDING_BASE_URL, _now()),
         )
         db.commit()
+
+
+# --- Prompts (routed analyze pipeline) ---
+# The router prompt, the shared "_common" rules, and the per-scope domain
+# prompts all live here. Seeded once from inference-service/prompts/*.md
+# (frontmatter + body); the seed is IDEMPOTENT — it inserts a `key` that is
+# missing but never overwrites a row an admin has since edited.
+
+_PROTECTED_PROMPT_KEYS = {"router", "_common", "default"}
+
+
+def _parse_prompt_file(text: str) -> tuple[dict, str]:
+    """Splits a seed file into (frontmatter dict, body). Frontmatter is a flat
+    block of `key: value` lines between two `---` fences; an empty value means
+    the field is absent (stored as NULL)."""
+    if not text.startswith("---"):
+        return {}, text.strip()
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return {}, text.strip()
+    meta: dict = {}
+    for line in parts[1].strip().splitlines():
+        if ":" in line:
+            raw_key, raw_val = line.split(":", 1)
+            val = raw_val.strip().strip('"').strip("'")
+            meta[raw_key.strip()] = val or None
+    return meta, parts[2].strip()
+
+
+def _seed_prompts() -> None:
+    prompts_dir = config.PROMPTS_DIR
+    if not prompts_dir.is_dir():
+        return
+    for md_path in sorted(prompts_dir.glob("*.md")):
+        meta, body = _parse_prompt_file(md_path.read_text(encoding="utf-8"))
+        key = meta.get("key") or md_path.stem
+        if db.execute("SELECT key FROM prompts WHERE key = ?", (key,)).fetchone() is not None:
+            continue  # never overwrite an existing (possibly admin-edited) row
+        db.execute(
+            "INSERT INTO prompts (key, name, kind, asset_class, product_family, scope_description, body, is_protected, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                key,
+                meta.get("name") or key,
+                meta.get("kind") or "domain",
+                (meta.get("assetClass") or "").upper() or None,
+                (meta.get("productFamily") or "").lower() or None,
+                meta.get("scopeDescription") or "",
+                body,
+                1 if key in _PROTECTED_PROMPT_KEYS else 0,
+                _now(),
+            ),
+        )
+    db.commit()
+
+
+def _row_to_prompt(row: sqlite3.Row) -> dict:
+    return {
+        "key": row["key"],
+        "name": row["name"],
+        "kind": row["kind"],
+        "assetClass": row["asset_class"],
+        "productFamily": row["product_family"],
+        "scopeDescription": row["scope_description"],
+        "body": row["body"],
+        "isProtected": bool(row["is_protected"]),
+        "updatedAt": row["updated_at"],
+    }
+
+
+def list_prompts() -> list[dict]:
+    rows = db.execute(
+        "SELECT * FROM prompts ORDER BY "
+        "CASE kind WHEN 'router' THEN 0 WHEN 'common' THEN 1 ELSE 2 END, "
+        "asset_class IS NOT NULL, asset_class, product_family IS NOT NULL, product_family, key"
+    ).fetchall()
+    return [_row_to_prompt(r) for r in rows]
+
+
+def get_prompt(key: str) -> Optional[dict]:
+    row = db.execute("SELECT * FROM prompts WHERE key = ?", (key,)).fetchone()
+    return _row_to_prompt(row) if row else None
+
+
+def find_domain_prompt(asset_class: Optional[str], product_family: Optional[str]) -> Optional[dict]:
+    """One row lookup used by the resolution cascade — exact (class, family)
+    match only. The cascade itself (services/prompt_resolver.py) decides the
+    fallback order."""
+    ac = (asset_class or "").upper() or None
+    pf = (product_family or "").lower() or None
+    if ac and pf:
+        row = db.execute(
+            "SELECT * FROM prompts WHERE kind = 'domain' AND asset_class = ? AND product_family = ?",
+            (ac, pf),
+        ).fetchone()
+    elif ac:
+        row = db.execute(
+            "SELECT * FROM prompts WHERE kind = 'domain' AND asset_class = ? AND product_family IS NULL",
+            (ac,),
+        ).fetchone()
+    else:
+        row = None
+    return _row_to_prompt(row) if row else None
+
+
+def upsert_prompt(
+    key: str,
+    name: str,
+    kind: str,
+    asset_class: Optional[str],
+    product_family: Optional[str],
+    scope_description: str,
+    body: str,
+    updated_by: Optional[int],
+) -> dict:
+    existing = db.execute("SELECT is_protected FROM prompts WHERE key = ?", (key,)).fetchone()
+    is_protected = existing["is_protected"] if existing else (1 if key in _PROTECTED_PROMPT_KEYS else 0)
+    db.execute(
+        """
+        INSERT INTO prompts (key, name, kind, asset_class, product_family, scope_description, body, is_protected, updated_at, updated_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(key) DO UPDATE SET
+            name = excluded.name,
+            kind = excluded.kind,
+            asset_class = excluded.asset_class,
+            product_family = excluded.product_family,
+            scope_description = excluded.scope_description,
+            body = excluded.body,
+            updated_at = excluded.updated_at,
+            updated_by = excluded.updated_by
+        """,
+        (
+            key,
+            name,
+            kind,
+            (asset_class or "").upper() or None,
+            (product_family or "").lower() or None,
+            scope_description or "",
+            body,
+            is_protected,
+            _now(),
+            updated_by,
+        ),
+    )
+    db.commit()
+    return get_prompt(key)
+
+
+def delete_prompt(key: str) -> bool:
+    row = db.execute("SELECT is_protected FROM prompts WHERE key = ?", (key,)).fetchone()
+    if row is None or row["is_protected"]:
+        return False
+    db.execute("DELETE FROM prompts WHERE key = ?", (key,))
+    db.commit()
+    return True
 
 
 # --- Users ---
