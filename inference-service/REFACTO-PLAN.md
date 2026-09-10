@@ -98,14 +98,33 @@ pytest vert · smoke-tests réels (vLLM + Gemini) : equity/autocall, rates/tarf,
 multi-cotations equity+rates, hors-scope → default · `scripts/batch_analyze.py`
 adapté.
 
-## PHASE 2 — app principale (après validation Phase 1)
+## PHASE 2 — app principale
 
-- `server.ts` + `src/services/spec-builder.ts` : **adaptateur `autocall/v1` →
-  `ExtractedProductSpec`** pour Athena/Phoenix/Reverse Convertible → Monte Carlo
-  inchangé.
-- Autres familles : structure riche + `pricingAvailable: false` + motif ;
-  `QueryParserWorkbench.tsx` affiche sans grille de prix.
-- `scripts/parse-query-cli.ts` adapté. Tests vitest : adaptateur + dégradation.
+### 2a — adaptateur + wiring backend ✅ (2026-09-10, branche `refacto/phase2-rich-schema-adapter`)
+
+- `src/services/spec-builder.ts` : `buildSpecFromAutocallV1({query, extraction, ...})`
+  — mappe l'enveloppe `autocall/v1` vers `ExtractedProductSpec` (famille→productTypeId,
+  maturité depuis `dates.finalValuationDate` ou `observation.numberOfObservations`×fréquence,
+  strike date future→forward start, barrières `initialTrigger`/`knockIn.barrier`,
+  `targetToSolve` = le champ laissé `null`). Monte Carlo (`quant-pricer.ts`) inchangé.
+- `src/services/analyze-adapter.ts` (NOUVEAU) : `adaptAnalyzeResponse()` — le seul endroit
+  qui connaît le mapping schemaVersion→builder. `autocall/v1`/`generic/v1` → spec+prix ;
+  `rates/v1`/`fx/v1`/`credit/v1`/autre → `{pricingAvailable:false, richExtraction, degradationReason}`.
+  Partagé par `server.ts` `/api/parse-query` ET `scripts/parse-query-cli.ts`.
+- `server.ts` : `/api/parse-query` utilise l'adaptateur ; réponse enrichie de `pipeline`,
+  et chaque quote porte `schemaVersion`/`routing`/`pricingAvailable`. Top-level `spec`/`pricing`
+  = 1re quote priçable.
+- `llm-parser.ts` : `QuoteBundle`/`ParseQueryResult` étendus (champs optionnels).
+- Tests : `analyze-adapter.test.ts` (14 cas — autocall/v1, generic/v1, dégradation rates/fx,
+  bundle hétérogène, vector underlying), `spec-builder.test.ts` inchangé. 47 vitest verts, `tsc --noEmit` clean.
+
+### 2b — front (RESTE À FAIRE)
+
+- `QueryParserWorkbench.tsx` : gérer `quote.pricingAvailable === false` — afficher
+  `richExtraction` (structure lisible) + bannière « pricing indisponible » + `degradationReason`,
+  sans la grille de prix ; idem dans le sélecteur multi-cotations et quand la 1re quote n'est pas priçable.
+  Rendre `QuoteBundle.spec`/`.pricing` réellement optionnels et propager.
+- Éventuellement afficher `routing` (classe/famille/pré-prompt/précision) dans le panneau d'extraction.
 
 ## PHASE 3 — ultérieur, hors lot
 Pricers taux/FX réels · schéma riche de bout en bout dans le front · termsheets

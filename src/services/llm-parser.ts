@@ -8,6 +8,23 @@ export interface QuoteBundle {
   spec: ExtractedProductSpec;
   pricing: PricingResult;
   underlyingMatches?: any[];
+  // --- routed pipeline (inference-service) metadata, see src/services/analyze-adapter.ts ---
+  /** e.g. "autocall/v1", "generic/v1", "rates/v1". */
+  schemaVersion?: string;
+  routing?: {
+    assetClass: string | null;
+    productFamily: string | null;
+    promptKey: string;
+    scopePrecision: number;
+    routerConfidence: number | null;
+  } | null;
+  /** false for families with no local pricer yet (rates/fx/credit) — spec/pricing are then absent. */
+  pricingAvailable?: boolean;
+  /** Present when !pricingAvailable — the raw rich extraction, for display. */
+  richExtraction?: Record<string, any>;
+  /** Present when !pricingAvailable — why no price grid is shown. */
+  degradationReason?: string;
+  missingFields?: { field: string; label: string; message: string }[];
 }
 
 export interface ParseQueryResult {
@@ -19,6 +36,8 @@ export interface ParseQueryResult {
   error?: string;
   providerUsed?: string;
   modelUsed?: string;
+  /** "routed" (default) | "single" — which inference-service pipeline produced this. */
+  pipeline?: string;
 }
 
 export function isLlmDebugEnabled(): boolean {

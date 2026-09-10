@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from './src/data/underlyings-db.js';
 import { PRODUCT_CATALOG } from './src/data/product-taxonomy.js';
 import { priceStructuredProduct } from './src/services/quant-pricer.js';
-import { buildExtractedProductSpec } from './src/services/spec-builder.js';
+import { adaptAnalyzeResponse } from './src/services/analyze-adapter.js';
 import { UnderlyingAsset } from './src/types/structured-product.js';
 
 const currentFilePath = typeof import.meta !== 'undefined' && import.meta.url ? fileURLToPath(import.meta.url) : (typeof __filename !== 'undefined' ? __filename : process.cwd());
@@ -302,42 +302,27 @@ app.post('/api/parse-query', async (req, res) => {
       parsedResult: analyzeData.quotes,
     });
 
-    // Resolve underlying + build the full ExtractedProductSpec (shared with the CLI
-    // tool, see src/services/spec-builder.ts) for EACH quote returned by
-    // inference-service, then price it via the quant engine. Any field
-    // inference-service flagged as missing (quote.missingFields) is merged into
-    // spec.missingRequiredParams, reusing the UI's existing display for it.
+    // Turn each quote into a bundle, branching on its schemaVersion (see
+    // src/services/analyze-adapter.ts — the single schema-version -> builder
+    // mapping, shared with scripts/parse-query-cli.ts):
+    //  - autocall/v1 / generic/v1 -> ExtractedProductSpec + Monte Carlo price
+    //  - rates/v1, fx/v1, credit/v1, ... -> parsed structure only, no local
+    //    pricer yet (pricingAvailable: false, richExtraction attached)
+    // Fields inference-service flagged as missing (quote.missingFields) are
+    // merged into spec.missingRequiredParams, reusing the UI's existing display.
     //
-    // Underlying resolution strategy: by default the local deterministic matcher
-    // (findUnderlyingByTickerOrQuery, run inside buildExtractedProductSpec) is used.
-    // When `useVectorSearchForUnderlying` is set, the LLM-extracted
-    // underlyingQueryOrTicker (or, failing that, the underlying selection note or
-    // the raw query) is sent instead to inference-service's real semantic search
-    // — see resolveUnderlyingViaVectorSearch — and its top hit is used directly.
+    // Underlying resolution: the local deterministic matcher by default; when
+    // `useVectorSearchForUnderlying` is on, the adapter calls back into
+    // inference-service's real semantic search (resolveUnderlyingViaVectorSearch).
     const activeDb = req.body.underlyingsDb || req.body.underlyings || serverUnderlyingsDb;
-    const quotes = await Promise.all((analyzeData.quotes || []).map(async (quote: any, index: number) => {
-      let vectorResolvedUnderlying: UnderlyingAsset | null = null;
-      if (useVectorSearchForUnderlying) {
-        const vectorQueryText = quote.extraction?.underlyingQueryOrTicker || quote.extraction?.underlyingSelectionNote || query;
-        vectorResolvedUnderlying = await resolveUnderlyingViaVectorSearch(vectorQueryText);
-      }
-
-      const { spec, underlyingMatches } = buildExtractedProductSpec({
-        query,
-        parsedJson: quote.extraction,
-        underlyingsDb: activeDb,
-        externalMissingFields: quote.missingFields,
-        vectorResolvedUnderlying: vectorResolvedUnderlying || undefined,
-      });
-      const pricing = priceStructuredProduct(spec);
-      return {
-        quoteId: quote.quoteId ?? index + 1,
-        label: quote.label || spec.productTypeName || `Cotation ${index + 1}`,
-        spec,
-        pricing,
-        underlyingMatches,
-      };
-    }));
+    const quotes = await adaptAnalyzeResponse({
+      query,
+      analyzeData,
+      underlyingsDb: activeDb,
+      resolveVectorUnderlying: useVectorSearchForUnderlying
+        ? (hint: string) => resolveUnderlyingViaVectorSearch(hint)
+        : undefined,
+    });
 
     if (quotes.length === 0) {
       return res.status(502).json({ error: "inference-service n'a retourné aucune cotation exploitable." });
@@ -345,11 +330,18 @@ app.post('/api/parse-query', async (req, res) => {
 
     logServerLlmDebug('FINAL PRICING CALCULATED', { quotes });
 
+    // Top-level spec/pricing mirror the first PRICEABLE quote (the common
+    // single-autocall case, and multi-quote bundles where at least one leg
+    // prices). Non-priceable-only bundles still return success + quotes; the
+    // workbench renders those from `quotes[].richExtraction`.
+    const firstPriceable = quotes.find((q) => q.pricingAvailable) || quotes[0];
+
     return res.json({
       success: true,
-      spec: quotes[0].spec,
-      pricing: quotes[0].pricing,
-      underlyingMatches: quotes[0].underlyingMatches,
+      pipeline: analyzeData.pipeline,
+      spec: firstPriceable.spec,
+      pricing: firstPriceable.pricing,
+      underlyingMatches: firstPriceable.underlyingMatches,
       quotes,
     });
   } catch (error: any) {

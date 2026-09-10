@@ -1,8 +1,7 @@
 #!/usr/bin/env tsx
 import 'dotenv/config';
 import fs from 'fs';
-import { priceStructuredProduct } from '../src/services/quant-pricer';
-import { buildExtractedProductSpec } from '../src/services/spec-builder';
+import { adaptAnalyzeResponse, AdaptedQuote } from '../src/services/analyze-adapter';
 import { ExtractedProductSpec, PricingResult } from '../src/types/structured-product';
 
 // Interface for parse result
@@ -10,16 +9,11 @@ interface CliParseResult {
   query: string;
   providerUsed: string;
   modelUsed: string;
+  pipeline?: string;
   success: boolean;
   spec?: ExtractedProductSpec;
   pricing?: PricingResult;
-  quotes?: Array<{
-    quoteId: number;
-    label: string;
-    spec: ExtractedProductSpec;
-    pricing: PricingResult;
-    missingFields?: { field: string; label: string; message: string }[];
-  }>;
+  quotes?: AdaptedQuote[];
   error?: string;
 }
 
@@ -51,25 +45,18 @@ async function processSingleQuery(query: string): Promise<CliParseResult> {
       throw new Error(analyzeData.error || `inference-service a répondu ${analyzeRes.status}`);
     }
 
-    const processedQuotes = (analyzeData.quotes || []).map((quote: any, idx: number) => {
-      const { spec } = buildExtractedProductSpec({ query, parsedJson: quote.extraction, externalMissingFields: quote.missingFields });
-      const pricing = priceStructuredProduct(spec);
-      return {
-        quoteId: quote.quoteId ?? idx + 1,
-        label: quote.label || spec.productTypeName,
-        spec,
-        pricing,
-        missingFields: quote.missingFields,
-      };
-    });
+    // Same schema-version -> builder branching as server.ts's /api/parse-query.
+    const processedQuotes = await adaptAnalyzeResponse({ query, analyzeData });
+    const firstPriceable = processedQuotes.find((q) => q.pricingAvailable) || processedQuotes[0];
 
     return {
       query,
       providerUsed: 'inference-service',
       modelUsed: analyzeData.modelUsed,
+      pipeline: analyzeData.pipeline,
       success: true,
-      spec: processedQuotes[0].spec,
-      pricing: processedQuotes[0].pricing,
+      spec: firstPriceable?.spec,
+      pricing: firstPriceable?.pricing,
       quotes: processedQuotes.length > 1 ? processedQuotes : undefined,
     };
   } catch (err: any) {

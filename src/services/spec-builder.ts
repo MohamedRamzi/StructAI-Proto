@@ -1,5 +1,5 @@
 import { STOCK_DATABASE, findUnderlyingByTickerOrQuery } from '../data/underlyings-db';
-import { ExtractedProductSpec, UnderlyingAsset } from '../types/structured-product';
+import { ExtractedProductSpec, SolverTargetVariable, UnderlyingAsset } from '../types/structured-product';
 import { parseFlexibleDate, monthsBetween, toIsoDateString } from './date-utils';
 
 /**
@@ -168,6 +168,263 @@ export function buildExtractedProductSpec({
     underlyingSelectionNote: vectorResolvedUnderlying
       ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${parsedJson.underlyingQueryOrTicker || query}".`
       : parsedJson.underlyingSelectionNote || selectedUnderlying.reasoningForRecommendation,
+  };
+
+  return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };
+}
+
+// ---------------------------------------------------------------------------
+// autocall/v1 (the rich per-family envelope produced by inference-service's
+// routed pipeline for equity autocalls — Athena / Phoenix / Reverse
+// Convertible & co.) -> ExtractedProductSpec, so the existing Monte Carlo
+// engine (quant-pricer.ts) can price it unchanged.
+//
+// Only the fields the pricer and the workbench form actually consume are
+// mapped; the full rich structure is kept separately (server.ts attaches it
+// as `richExtraction`) for display and future pricers.
+// ---------------------------------------------------------------------------
+
+/** autocall/v1 `productFamily` -> (our ProductTypeId, human name, is-capital-protected). */
+const AUTOCALL_V1_FAMILY_MAP: Record<string, { typeId: string; name: string; capitalProtected?: boolean }> = {
+  ATHENA: { typeId: 'AUTOCALL_CLASSIC', name: 'Athena (Autocall à capital conditionnel)' },
+  PHOENIX: { typeId: 'PHOENIX_MEMORY', name: 'Phoenix' },
+  AUTOCALL_REVERSE_CONVERTIBLE: { typeId: 'REVERSE_CONVERTIBLE', name: 'Autocall Reverse Convertible' },
+  BARRIER_REVERSE_CONVERTIBLE: { typeId: 'REVERSE_CONVERTIBLE', name: 'Barrier Reverse Convertible' },
+  ATHENA_CAPITAL_PROTECTED: { typeId: 'CAPITAL_PROTECTION', name: 'Athena à capital protégé', capitalProtected: true },
+  TWIN_WIN_AUTOCALL: { typeId: 'TWIN_WIN_NOTE', name: 'Twin-Win Autocall' },
+  BOOSTER_AUTOCALL: { typeId: 'AUTOCALL_CLASSIC', name: 'Booster Autocall' },
+  CALLABLE_NOTE: { typeId: 'AUTOCALL_CLASSIC', name: 'Callable Note' },
+};
+
+const OBS_FREQUENCY_MAP: Record<string, 'MONTHLY' | 'QUARTERLY' | 'SEMI_ANNUALLY' | 'ANNUALLY'> = {
+  MONTHLY: 'MONTHLY',
+  QUARTERLY: 'QUARTERLY',
+  SEMI_ANNUAL: 'SEMI_ANNUALLY',
+  SEMI_ANNUALLY: 'SEMI_ANNUALLY',
+  ANNUAL: 'ANNUALLY',
+  ANNUALLY: 'ANNUALLY',
+};
+
+const PERIODS_PER_YEAR: Record<string, number> = { MONTHLY: 12, QUARTERLY: 4, SEMI_ANNUALLY: 2, ANNUALLY: 1 };
+
+/** A ratio in autocall/v1 is a fraction (0.7 = 70%). Tolerate a model that
+ * already emitted a percent (70) — anything > 1.5 is taken as already-percent. */
+function ratioToPct(value: any): number | null {
+  if (value === null || value === undefined || value === '' || isNaN(Number(value))) return null;
+  const n = Number(value);
+  return n <= 1.5 && n >= -1.5 ? Math.round(n * 1000) / 10 : Math.round(n * 10) / 10;
+}
+
+function firstComponentHint(underlying: any, query: string): string {
+  const c = Array.isArray(underlying?.components) ? underlying.components[0] : null;
+  return (
+    c?.name ||
+    c?.identifiers?.bloomberg ||
+    c?.identifiers?.isin ||
+    c?.ref ||
+    (typeof underlying === 'string' ? underlying : '') ||
+    query ||
+    ''
+  );
+}
+
+export interface BuildAutocallV1Input {
+  query: string;
+  /** The `autocall/v1` extraction object (quote.extraction from POST /api/analyze). */
+  extraction: RawExtractionJson;
+  underlyingsDb?: UnderlyingAsset[];
+  engineDescription?: string;
+  referenceDate?: Date;
+  externalMissingFields?: { field: string; label: string; message: string }[];
+  vectorResolvedUnderlying?: UnderlyingAsset;
+}
+
+/**
+ * Builds a priceable ExtractedProductSpec from an `autocall/v1` envelope.
+ * Mirrors buildExtractedProductSpec's contract (same output shape, same
+ * underlying-resolution + missing-field-merge behaviour) so callers can treat
+ * the two interchangeably once they've branched on schemaVersion.
+ */
+export function buildSpecFromAutocallV1({
+  query,
+  extraction,
+  underlyingsDb,
+  engineDescription,
+  referenceDate,
+  externalMissingFields,
+  vectorResolvedUnderlying,
+}: BuildAutocallV1Input): BuildSpecOutput {
+  const ex = extraction || {};
+  const dates = ex.dates || {};
+  const observation = ex.observation || {};
+  const autocall = ex.autocall || {};
+  const coupon = ex.coupon || {};
+  const finalRedemption = ex.finalRedemption || {};
+  const knockIn = finalRedemption.knockIn || {};
+
+  // --- Underlying(s) ---
+  const fallbackDb = underlyingsDb && underlyingsDb.length > 0 ? underlyingsDb : STOCK_DATABASE;
+  const components: any[] = Array.isArray(ex.underlying?.components) ? ex.underlying.components : [];
+  const hint = firstComponentHint(ex.underlying, query);
+
+  let underlyingResult = findUnderlyingByTickerOrQuery(hint, underlyingsDb);
+  if (!vectorResolvedUnderlying && (!underlyingResult.autoSelected || (underlyingResult.autoSelected === fallbackDb[0] && fallbackDb.length > 1))) {
+    const fullQueryMatch = findUnderlyingByTickerOrQuery(query, underlyingsDb);
+    if (fullQueryMatch.autoSelected && fullQueryMatch.autoSelected !== fallbackDb[0]) {
+      underlyingResult = fullQueryMatch;
+    }
+  }
+  const primaryUnderlying = vectorResolvedUnderlying || underlyingResult.autoSelected || fallbackDb[0] || STOCK_DATABASE[0];
+
+  // Multi-component basket: resolve each named component; fall back to the primary.
+  let resolvedUnderlyings: UnderlyingAsset[] = [primaryUnderlying];
+  if (!vectorResolvedUnderlying && components.length > 1) {
+    resolvedUnderlyings = components.map((c) => {
+      const cHint = c?.name || c?.identifiers?.bloomberg || c?.ref || '';
+      const m = cHint ? findUnderlyingByTickerOrQuery(cHint, underlyingsDb).autoSelected : null;
+      return m || primaryUnderlying;
+    });
+  }
+
+  const basketTypeMap: Record<string, ExtractedProductSpec['commonParams']['basketType']> = {
+    SINGLE: 'SINGLE', WORST_OF: 'WORST_OF', BEST_OF: 'BEST_OF', WEIGHTED_BASKET: 'BASKET_AVERAGE',
+  };
+  const basketType = basketTypeMap[String(ex.underlying?.basketType || '').toUpperCase()]
+    || (resolvedUnderlyings.length > 1 ? 'WORST_OF' : 'SINGLE');
+
+  // --- Frequency / observation schedule ---
+  const frequency = OBS_FREQUENCY_MAP[String(observation.frequency || '').toUpperCase()] || 'QUARTERLY';
+  const periodsPerYear = PERIODS_PER_YEAR[frequency];
+  const monthsPerPeriod = 12 / periodsPerYear;
+
+  // --- Maturity: prefer explicit final valuation date, else derive from the observation count. ---
+  const refDate = referenceDate || new Date();
+  const strikeDate = typeof dates.strikeDate === 'string' ? parseFlexibleDate(dates.strikeDate) : null;
+  const finalValuationDate = typeof dates.finalValuationDate === 'string' ? parseFlexibleDate(dates.finalValuationDate) : null;
+
+  let maturityMonths: number | null = null;
+  if (finalValuationDate) {
+    maturityMonths = monthsBetween(strikeDate || refDate, finalValuationDate);
+  } else if (observation.numberOfObservations && Number(observation.numberOfObservations) > 0) {
+    maturityMonths = Math.round(Number(observation.numberOfObservations) * monthsPerPeriod);
+  }
+  if (maturityMonths !== null && maturityMonths <= 0) maturityMonths = null;
+
+  // --- Forward start: a strike date in the future relative to "today". ---
+  let forwardStartMonths = 0;
+  let forwardStartDateIso: string | null = null;
+  if (strikeDate) {
+    const fwd = monthsBetween(refDate, strikeDate);
+    if (fwd > 0) {
+      forwardStartMonths = fwd;
+      forwardStartDateIso = toIsoDateString(strikeDate);
+    }
+  }
+
+  const noCallPeriods = observation.noCallPeriods !== undefined && observation.noCallPeriods !== null
+    ? Number(observation.noCallPeriods)
+    : 0;
+  const nonCallMonths = Math.round(noCallPeriods * monthsPerPeriod);
+
+  // --- Family / product type ---
+  const familyKey = String(ex.productFamily || '').toUpperCase();
+  const familyInfo = AUTOCALL_V1_FAMILY_MAP[familyKey] || { typeId: 'AUTOCALL_CLASSIC', name: 'Autocall' };
+  let productTypeId = familyInfo.typeId;
+  if (productTypeId === 'AUTOCALL_CLASSIC' && knockIn.airbagLevel !== null && knockIn.airbagLevel !== undefined) {
+    productTypeId = 'ATHENA_AIRBAG';
+  }
+  if (productTypeId === 'AUTOCALL_CLASSIC' && String(autocall.triggerType || '').toUpperCase() === 'STEP_DOWN') {
+    productTypeId = 'STEP_DOWN_AUTOCALL';
+  }
+
+  // --- Barriers / target ---
+  const scheduleFirst = Array.isArray(autocall.triggerSchedule) && autocall.triggerSchedule.length > 0
+    ? autocall.triggerSchedule[0]?.level
+    : null;
+  const autocallBarrierPct = ratioToPct(autocall.initialTrigger ?? scheduleFirst) ?? 100;
+  const stepDownPctPerPeriod = autocall.stepPerPeriod !== null && autocall.stepPerPeriod !== undefined
+    ? Math.abs(ratioToPct(autocall.stepPerPeriod) ?? 0)
+    : undefined;
+  const pdiBarrierPct = ratioToPct(knockIn.barrier) ?? 70;
+
+  const pdiTypeMap: Record<string, 'EUROPEAN' | 'AMERICAN' | 'DAILY'> = {
+    EUROPEAN_AT_MATURITY: 'EUROPEAN', AMERICAN_CONTINUOUS: 'AMERICAN', AMERICAN_CLOSING: 'AMERICAN', WINDOW: 'DAILY',
+  };
+  const pdiType = pdiTypeMap[String(knockIn.observationStyle || '').toUpperCase()] || 'EUROPEAN';
+
+  const couponRatePresent = coupon.rate !== null && coupon.rate !== undefined && !isNaN(Number(coupon.rate));
+  let targetToSolve: SolverTargetVariable;
+  if (!couponRatePresent) targetToSolve = 'COUPON_RATE';
+  else if (ratioToPct(knockIn.barrier) === null) targetToSolve = 'PDI_BARRIER';
+  else if (ratioToPct(autocall.initialTrigger ?? scheduleFirst) === null) targetToSolve = 'CALL_BARRIER';
+  else targetToSolve = 'COUPON_RATE';
+
+  // --- Missing fields (inference-service's autocall/v1 validator output + maturity guard) ---
+  const missingRequiredParams: any[] = [];
+  if (Array.isArray(externalMissingFields)) {
+    for (const flag of externalMissingFields) {
+      missingRequiredParams.push({ param: flag.field, label: flag.label, reason: flag.message });
+    }
+  }
+  if (maturityMonths === null && !missingRequiredParams.some((p) => p.param === 'maturityMonths' || p.param === 'dates.finalValuationDate')) {
+    missingRequiredParams.push({
+      param: 'maturityMonths',
+      label: 'Maturité totale (mois)',
+      reason: 'Ni date de constatation finale ni calendrier d\'observation exploitable dans la demande.',
+    });
+  }
+
+  const assumedDefaults: { param: string; value: any; reason: string }[] = [];
+  if (engineDescription) {
+    assumedDefaults.push({ param: 'Moteur LLM', value: engineDescription, reason: 'Modèle IA exécuté pour la structuration' });
+  }
+  assumedDefaults.push({ param: 'Schéma', value: 'autocall/v1', reason: 'Extraction produite par le pré-prompt actions/autocall (schéma riche)' });
+  assumedDefaults.push(
+    maturityMonths !== null
+      ? { param: 'Maturité', value: `${maturityMonths} mois`, reason: finalValuationDate ? 'Déduite de la date de constatation finale' : 'Déduite du nombre de constatations et de la fréquence' }
+      : { param: 'Maturité', value: 'Non spécifiée (Unspecified)', reason: 'À préciser par l\'utilisateur' }
+  );
+  if (forwardStartDateIso) {
+    assumedDefaults.push({ param: 'Départ Forward', value: `${forwardStartMonths} mois (strike date ${forwardStartDateIso})`, reason: 'Strike date future détectée dans la demande' });
+  }
+  assumedDefaults.push({ param: 'Spread de financement', value: '45 bps', reason: `Rating émetteur ${ex.issuer?.creditRating || 'A+'} (hypothèse)` });
+
+  const spec: ExtractedProductSpec = {
+    rawQuery: query || ex.productName || 'Demande client',
+    productTypeId,
+    productTypeName: ex.productName || familyInfo.name,
+    productFamily: familyInfo.capitalProtected ? 'CAPITAL_PROTECTION' : 'YIELD_ENHANCEMENT',
+    targetToSolve,
+    commonParams: {
+      underlyings: resolvedUnderlyings,
+      basketType,
+      maturityMonths,
+      forwardStartMonths,
+      forwardStartDate: forwardStartDateIso,
+      observationFrequency: frequency,
+      nonCallMonths,
+      currency: ex.currency || primaryUnderlying.currency || 'EUR',
+      denomination: Number(ex.notional?.denomination) > 0 ? Number(ex.notional.denomination) : 1000,
+      issuerCreditRating: ex.issuer?.creditRating || 'A+',
+      fundingSpreadBps: 45,
+    },
+    specificParams: {
+      autocallBarrierPct,
+      ...(stepDownPctPerPeriod !== undefined ? { stepDownPctPerPeriod } : {}),
+      pdiBarrierPct,
+      pdiType,
+      memoryCoupon: Boolean(coupon.memory),
+      ...(knockIn.airbagLevel !== null && knockIn.airbagLevel !== undefined ? { airbagProtectionPct: ratioToPct(knockIn.airbagLevel) ?? undefined } : {}),
+      ...(couponRatePresent ? { couponRatePct: ratioToPct(coupon.rate) ?? undefined } : {}),
+    },
+    confidenceScore: ex.confidenceScore ? Number(ex.confidenceScore) : 0.9,
+    extractedTokens: Array.isArray(ex.extractedTokens) ? ex.extractedTokens : [],
+    missingRequiredParams,
+    assumedDefaults,
+    aiExplanation: ex.aiExplanation || 'Produit à rappel automatique sur sous-jacent actions (schéma autocall/v1).',
+    underlyingSelectionNote: vectorResolvedUnderlying
+      ? `Sous-jacent résolu via recherche vectorielle (embeddings) sur "${hint}".`
+      : primaryUnderlying.reasoningForRecommendation,
   };
 
   return { spec, underlyingMatches: vectorResolvedUnderlying ? [vectorResolvedUnderlying] : underlyingResult.matches };
