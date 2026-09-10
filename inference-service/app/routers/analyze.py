@@ -12,6 +12,9 @@ router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 
 class AnalyzeRequest(BaseModel):
     query: Optional[str] = None
+    # "routed" (default): router step + per-scope pre-prompt + rich schema.
+    # "single": one call with the `default` pre-prompt, flat generic/v1 schema.
+    pipeline: Optional[str] = None
 
 
 @router.post("", dependencies=[Depends(require_api_key_or_auth)])
@@ -19,21 +22,24 @@ def analyze(payload: AnalyzeRequest):
     if not payload.query or not payload.query.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "query (texte de la demande client) est requis.")
 
+    pipeline = payload.pipeline if payload.pipeline in ("routed", "single") else "routed"
+
     try:
-        outcome = analyze_service.analyze_query(payload.query)
+        outcome = analyze_service.analyze_query(payload.query, pipeline=pipeline)
     except RuntimeError as exc:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(exc))
 
-    if not outcome["rawQuotes"]:
+    if not outcome["quotes"]:
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, "Le moteur LLM configuré n'a retourné aucune cotation exploitable.")
 
-    quotes = []
-    for index, extraction in enumerate(outcome["rawQuotes"]):
-        quotes.append({
-            "quoteId": extraction.get("quoteId", index + 1),
-            "label": extraction.get("label") or extraction.get("productTypeName") or f"Cotation {index + 1}",
-            "extraction": extraction,
-            "missingFields": detect_missing_fields(extraction),
-        })
+    quotes = [
+        {**quote, "missingFields": detect_missing_fields(quote["extraction"], quote.get("schemaVersion"))}
+        for quote in outcome["quotes"]
+    ]
 
-    return {"success": True, "modelUsed": outcome["modelUsed"], "quotes": quotes}
+    return {
+        "success": True,
+        "modelUsed": outcome["modelUsed"],
+        "pipeline": outcome["pipeline"],
+        "quotes": quotes,
+    }

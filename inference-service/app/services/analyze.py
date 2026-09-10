@@ -1,22 +1,28 @@
 """
-The core of this service: takes a raw client request, concatenates it with
-QuotationPrompt.md as the system prompt, runs it through the chat vLLM
-sidecar (services/inference_client.py), and returns the recognized JSON per
-quote. Direct Python port of quotation-service's llm-client.ts, minus the
-multi-provider dispatch (gemini/ollama/lmstudio) — there is now exactly one
-inference path (the OpenAI-compatible vLLM sidecar), so that branching no
-longer applies.
+The core of `/api/analyze`. Two pipelines:
 
-Deliberately does NOT catch or fall back on failure — any error (sidecar
-unreachable, malformed response, ...) propagates to the caller
-(routers/analyze.py), which turns it into a clear `{ success: false, error }`
-response. There is no silent degraded mode: an extraction failure must be
-visible, not masked behind a best-effort deterministic guess.
+- "routed" (default): step 1 classifies the request (services/routing.py),
+  step 2 resolves a domain pre-prompt per (assetClass, family) by a
+  deterministic cascade (services/prompt_resolver.py), step 3 runs one
+  extraction LLM call per distinct scope group with that pre-prompt +
+  `_common` as the system prompt. Output is a RICH schema per product family
+  (autocall/v1, rates/v1, ...). Confidence is weighted by how specific the
+  matched pre-prompt was.
+
+- "single": one extraction call with the `default` domain prompt + `_common`,
+  no routing — reproduces the pre-refacto behaviour (flat `generic/v1`
+  schema), kept for rollback / A-B comparison.
+
+Deliberately does NOT catch or fall back on failure — any error (LLM call
+fails, malformed response, ...) propagates to routers/analyze.py, which turns
+it into a clear `{ success: false, error }`. No silent degraded mode.
 """
 import json
 import re
+from collections import OrderedDict
+from typing import Optional
 
-from .. import config, db
+from .. import db
 from . import inference_client
 
 _THINK_TAG_RE = re.compile(r"<think>[\s\S]*?</think>", re.IGNORECASE)
@@ -24,12 +30,15 @@ _JSON_BLOCK_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)\s*```", re.IGNORECASE)
 _BRACE_RE = re.compile(r"\{[\s\S]*\}")
 _BRACKET_RE = re.compile(r"\[[\s\S]*\]")
 
-
-def load_quotation_prompt() -> str:
-    return config.QUOTATION_PROMPT_PATH.read_text(encoding="utf-8").strip()
-
-
-FINANCIAL_PARSER_SYSTEM_PROMPT = load_quotation_prompt()
+# Fallback schemaVersion by prompt key, used only if the model didn't put one
+# in its output.
+_SCHEMA_BY_PROMPT_KEY = {
+    "equity-autocall": "autocall/v1",
+    "rates": "rates/v1",
+    "fx": "fx/v1",
+    "credit": "credit/v1",
+}
+_SCOPE_CONFIDENCE_FACTOR = {3: 1.0, 2: 0.9, 1: 0.75}
 
 
 def extract_json_from_text(raw_text):
@@ -89,16 +98,122 @@ def normalize_to_raw_quotes(parsed_json) -> list[dict]:
     return []
 
 
-def analyze_query(query: str) -> dict:
+def _common_prompt_body() -> str:
+    row = db.get_prompt("_common")
+    if row is None:
+        raise RuntimeError(
+            "Aucun pré-prompt '_common' en base — le seed des prompts a échoué. "
+            "Vérifiez inference-service/prompts/_common.md."
+        )
+    return row["body"]
+
+
+def _system_prompt(domain_body: str) -> str:
+    return f"{domain_body}\n\n---\n\n{_common_prompt_body()}"
+
+
+def _run_extraction(system_prompt: str, user_prompt: str) -> list[dict]:
+    raw_text = inference_client.chat_completion(system_prompt, user_prompt)
+    parsed = extract_json_from_text(raw_text)
+    if not parsed:
+        model = db.get_llm_settings()["model"]
+        raise RuntimeError(f'Le modèle ("{model}") a répondu sans JSON valide décodable.')
+    return normalize_to_raw_quotes(parsed)
+
+
+def _finalize_quote(raw: dict, index: int, routing: Optional[dict], prompt_key: str) -> dict:
+    schema_version = raw.get("schemaVersion") or _SCHEMA_BY_PROMPT_KEY.get(prompt_key, "generic/v1")
+    quote_id = raw.get("quoteId", index + 1)
+    label = raw.get("label") or raw.get("productTypeName") or raw.get("productName") or f"Cotation {quote_id}"
+
+    confidence = raw.get("confidenceScore")
+    scope_precision = routing["scopePrecision"] if routing else 1
+    if isinstance(confidence, (int, float)):
+        raw["confidenceScore"] = round(float(confidence) * _SCOPE_CONFIDENCE_FACTOR.get(scope_precision, 1.0), 4)
+
+    return {
+        "quoteId": quote_id,
+        "label": label,
+        "schemaVersion": schema_version,
+        "routing": routing,
+        "extraction": raw,
+    }
+
+
+def _analyze_single(query: str) -> dict:
+    default_prompt = db.get_prompt("default")
+    if default_prompt is None:
+        raise RuntimeError("Aucun pré-prompt 'default' en base — le seed des prompts a échoué.")
+    system_prompt = _system_prompt(default_prompt["body"])
     user_prompt = (
         f'Analyse cette demande client de produit(s) structuré(s) et extrais les spécifications au format JSON :\n"{query}"'
-        f"\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau)."
+        "\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau)."
     )
-    raw_text = inference_client.chat_completion(FINANCIAL_PARSER_SYSTEM_PROMPT, user_prompt)
-    parsed_json = extract_json_from_text(raw_text)
+    raw_quotes = _run_extraction(system_prompt, user_prompt)
+    routing = {"promptKey": "default", "scopePrecision": 1, "assetClass": None, "productFamily": None, "routerConfidence": None}
+    quotes = [_finalize_quote(raw, i, routing, "default") for i, raw in enumerate(raw_quotes)]
+    return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "single", "quotes": quotes}
 
-    model_used = db.get_llm_settings()["model"]
-    if not parsed_json:
-        raise RuntimeError(f'Le modèle ("{model_used}") a répondu sans JSON valide décodable.')
 
-    return {"modelUsed": model_used, "rawQuotes": normalize_to_raw_quotes(parsed_json)}
+def _analyze_routed(query: str) -> dict:
+    from . import prompt_resolver, routing as routing_svc
+
+    classifications = routing_svc.classify_request(query)
+
+    # Resolve a domain prompt per classification, then group by resolved promptKey.
+    groups: "OrderedDict[str, dict]" = OrderedDict()
+    for cls in classifications:
+        resolution = prompt_resolver.resolve(cls["assetClass"], cls["productFamily"])
+        key = resolution["promptKey"]
+        group = groups.setdefault(key, {"resolution": resolution, "classifications": []})
+        group["classifications"].append(cls)
+
+    single_group = len(groups) == 1
+    merged: dict[object, dict] = {}
+
+    for key, group in groups.items():
+        resolution = group["resolution"]
+        member_ids = [c["quoteId"] for c in group["classifications"]]
+        system_prompt = _system_prompt(resolution["promptBody"])
+
+        if single_group:
+            user_prompt = (
+                f'Analyse cette demande client et extrais les spécifications au format JSON :\n"{query}"'
+                "\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau)."
+            )
+        else:
+            id_list = ", ".join(str(i) for i in member_ids)
+            user_prompt = (
+                f'Voici une demande client contenant plusieurs cotations :\n"{query}"'
+                f"\n\nTu ne dois traiter QUE la ou les cotation(s) portant sur un produit de type "
+                f"« {resolution['productFamily'] or 'ce type'} » en classe d'actif « {resolution['assetClass'] or 'cette classe'} » "
+                f"— c'est-à-dire les cotations d'identifiant : {id_list}. Ignore les autres."
+                "\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau), "
+                "en conservant les quoteId d'origine."
+            )
+
+        raw_quotes = _run_extraction(system_prompt, user_prompt)
+
+        # Attach this group's routing to each quote it produced, matched to a
+        # classification by quoteId when possible, else positionally.
+        by_id = {c["quoteId"]: c for c in group["classifications"]}
+        for i, raw in enumerate(raw_quotes):
+            qid = raw.get("quoteId", member_ids[i] if i < len(member_ids) else i + 1)
+            cls = by_id.get(qid) or (group["classifications"][i] if i < len(group["classifications"]) else None)
+            routing = {
+                "assetClass": resolution["assetClass"],
+                "productFamily": resolution["productFamily"],
+                "promptKey": resolution["promptKey"],
+                "scopePrecision": resolution["scopePrecision"],
+                "routerConfidence": cls["routerConfidence"] if cls else None,
+            }
+            merged[qid] = _finalize_quote(raw, i, routing, resolution["promptKey"])
+
+    quotes = [merged[qid] for qid in sorted(merged, key=lambda x: (isinstance(x, str), x))]
+    return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "routed", "quotes": quotes}
+
+
+def analyze_query(query: str, pipeline: str = "routed") -> dict:
+    if pipeline == "single":
+        return _analyze_single(query)
+    return _analyze_routed(query)
