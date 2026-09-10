@@ -30,8 +30,50 @@ def test_classifies_a_single_equity_autocall(routing):
 
     result = routing_module.classify_request("Autocall LVMH 3 ans PDI 70%")
     assert result == [
-        {"quoteId": 1, "assetClass": "EQUITY", "productFamily": "autocall", "underlying": "MC FP", "routerConfidence": 0.92},
+        {
+            "quoteId": 1, "assetClass": "EQUITY", "assetClassCorrectedFrom": None,
+            "productFamily": "autocall", "underlying": "MC FP", "routerConfidence": 0.92,
+        },
     ]
+
+
+def test_corrects_a_credit_misclassification_of_an_equity_autocall(routing):
+    """An Athena on the equity "Crédit Agricole" that the model labelled CREDIT
+    is put back to EQUITY (the family is the reliable signal), and the override
+    is surfaced, not silent."""
+    routing_module, set_response = routing
+    set_response({"quotes": [
+        {"quoteId": 1, "assetClass": "CREDIT", "productFamily": "athena", "underlying": "Crédit Agricole", "routerConfidence": 0.7},
+    ]})
+
+    result = routing_module.classify_request("DUO MIX 60/40 - poche Athéna sur Crédit Agricole, airbag -30%")
+    assert result[0]["assetClass"] == "EQUITY"
+    assert result[0]["assetClassCorrectedFrom"] == "CREDIT"
+    assert result[0]["productFamily"] == "athena"
+
+
+def test_corrects_an_fx_misclassification_of_a_rates_family(routing):
+    routing_module, set_response = routing
+    set_response({"quotes": [{"quoteId": 1, "assetClass": "FX", "productFamily": "range accrual", "routerConfidence": 0.6}]})
+    result = routing_module.classify_request("range accrual Euribor")
+    assert result[0]["assetClass"] == "RATES"
+    assert result[0]["assetClassCorrectedFrom"] == "FX"
+
+
+def test_does_not_touch_an_ambiguous_family_like_tarf(routing):
+    routing_module, set_response = routing
+    set_response({"quotes": [{"quoteId": 1, "assetClass": "RATES", "productFamily": "TARF", "routerConfidence": 0.8}]})
+    result = routing_module.classify_request("TARF EUR/USD")
+    assert result[0]["assetClass"] == "RATES"          # tarf can be RATES or FX — left as-is
+    assert result[0]["assetClassCorrectedFrom"] is None
+
+
+def test_leaves_a_consistent_classification_untouched(routing):
+    routing_module, set_response = routing
+    set_response({"quotes": [{"quoteId": 1, "assetClass": "EQUITY", "productFamily": "autocall", "routerConfidence": 0.95}]})
+    result = routing_module.classify_request("Autocall LVMH")
+    assert result[0]["assetClass"] == "EQUITY"
+    assert result[0]["assetClassCorrectedFrom"] is None
 
 
 def test_lowercases_unknown_asset_class_to_none_but_keeps_family(routing):

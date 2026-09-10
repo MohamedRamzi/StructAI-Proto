@@ -206,6 +206,7 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
                 "promptKey": resolution["promptKey"],
                 "scopePrecision": resolution["scopePrecision"],
                 "routerConfidence": cls["routerConfidence"] if cls else None,
+                "assetClassCorrectedFrom": cls.get("assetClassCorrectedFrom") if cls else None,
             }
             merged[qid] = _finalize_quote(raw, i, routing, resolution["promptKey"])
 

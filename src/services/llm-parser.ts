@@ -17,6 +17,7 @@ export interface QuoteBundle {
     promptKey: string;
     scopePrecision: number;
     routerConfidence: number | null;
+    assetClassCorrectedFrom?: string | null;
   } | null;
   /** false for families with no local pricer yet (rates/fx/credit) — spec/pricing are then absent. */
   pricingAvailable?: boolean;

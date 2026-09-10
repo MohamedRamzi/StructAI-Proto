@@ -35,6 +35,11 @@ export const RichExtractionPanel: React.FC<{ quote: QuoteBundle }> = ({ quote })
             <Chip label="Pré-prompt" value={routing.promptKey} mono />
             <Chip label="Précision scope" value={String(routing.scopePrecision)} />
             {routing.routerConfidence != null && <Chip label="Confiance routeur" value={routing.routerConfidence.toFixed(2)} />}
+            {routing.assetClassCorrectedFrom && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800 text-amber-200">
+                classe corrigée : {routing.assetClassCorrectedFrom} → {routing.assetClass}
+              </span>
+            )}
           </div>
         )}
 

@@ -23,6 +23,10 @@ export interface AnalyzeQuoteRouting {
   promptKey: string;
   scopePrecision: number;
   routerConfidence: number | null;
+  /** Set when the router's asset class was inconsistent with the family it
+   * detected and got corrected (e.g. an autocall on "Crédit Agricole" the model
+   * labelled CREDIT -> put back to EQUITY). */
+  assetClassCorrectedFrom?: string | null;
 }
 
 export interface AdaptedQuote {
@@ -111,6 +115,14 @@ export async function adaptAnalyzeResponse(opts: AdaptAnalyzeOptions): Promise<A
     const { spec, underlyingMatches } = isAutocallV1
       ? buildSpecFromAutocallV1({ query, extraction, underlyingsDb, engineDescription, referenceDate, externalMissingFields: missingFields, vectorResolvedUnderlying })
       : buildExtractedProductSpec({ query, parsedJson: extraction, underlyingsDb, engineDescription, referenceDate, externalMissingFields: missingFields, vectorResolvedUnderlying });
+
+    if (routing?.assetClassCorrectedFrom) {
+      spec.assumedDefaults.unshift({
+        param: "Classe d'actif",
+        value: `${routing.assetClassCorrectedFrom} → ${routing.assetClass}`,
+        reason: "Le routeur avait classé la demande dans une classe d'actif incohérente avec la famille de produit détectée — corrigé automatiquement.",
+      });
+    }
 
     return {
       quoteId,

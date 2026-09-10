@@ -656,10 +656,14 @@
       var rows = quotes.map(function (q) {
         var r = q.routing || {};
         var missing = (q.missingFields || []).map(function (f) { return f.field; });
+        var classCell = escapeHtml(r.assetClass || '—') + ' / ' + escapeHtml(r.productFamily || '—');
+        if (r.assetClassCorrectedFrom) {
+          classCell += ' <span class="badge admin" title="Classe corrigée : le routeur avait répondu ' + escapeHtml(r.assetClassCorrectedFrom) + ', incohérent avec la famille détectée.">corr. ' + escapeHtml(r.assetClassCorrectedFrom) + '→</span>';
+        }
         return '<tr>' +
           '<td class="mono">' + escapeHtml(q.quoteId) + '</td>' +
           '<td>' + escapeHtml(q.label || '') + '</td>' +
-          '<td class="mono">' + escapeHtml(r.assetClass || '—') + ' / ' + escapeHtml(r.productFamily || '—') + '</td>' +
+          '<td class="mono">' + classCell + '</td>' +
           '<td class="mono">' + escapeHtml(r.promptKey || '—') + '</td>' +
           '<td class="mono">' + escapeHtml(r.scopePrecision != null ? r.scopePrecision : '—') + '</td>' +
           '<td class="mono">' + escapeHtml(q.schemaVersion || '—') + '</td>' +

@@ -84,6 +84,14 @@ Ensuite, la table est la source de vérité : édition / ajout / suppression dep
 
 `POST /api/prompts/{key}/reset` (bouton *« Réinitialiser depuis le fichier seed »*) recharge un pré-prompt depuis son `.md` en écrasant l'édition en base — c'est la façon de prendre en compte un seed corrigé (le seed idempotent au boot, lui, ne touche jamais une ligne existante).
 
+**Garde-fou de classification** : après l'étape de routage, `routing.py` recroise la classe
+d'actif renvoyée par le modèle avec la **famille** qu'il a détectée. Si la famille n'appartient
+sans ambiguïté qu'à une classe (`autocall`/`vanilla` → EQUITY, `range_accrual`/`cms_spread`/… →
+RATES, `fx_swap`/… → FX, `credit_linked`/`tranche` → CREDIT) et que le modèle a nommé une autre
+classe, la famille l'emporte et la correction est signalée (`routing.assetClassCorrectedFrom`,
+badge dans « Tester l'analyse », entrée dans les hypothèses côté app). Corrige le cas
+« Autocall sur *Crédit Agricole* classé CREDIT ». `tarf`/`tarn` sont exclus (réellement RATES ou FX).
+
 Les pré-prompts d'extraction sont **compacts** (`equity-autocall` ~3k tokens, `rates` ~1,8k) pour tenir dans le contexte des petits modèles locaux et rester rapides. Les documents de référence métier complets d'où ils sont dérivés vivent dans `inference-service/prompts/reference/` (non parcouru par le seed).
 
 ## Tests

@@ -15,6 +15,16 @@ de **classer** la demande — pas d'en extraire les paramètres détaillés.
 - `FX` — change, paires de devises.
 - `CREDIT` — dérivés de crédit, CLN, tranches, iTraxx/CDX.
 
+**Règle prioritaire.** La classe d'actif vient du **mécanisme du produit**, jamais d'un
+mot du nom du sous-jacent. Un produit dont le sous-jacent est **l'action** d'une banque
+ou d'un assureur — *Crédit Agricole* (`ACA FP`), *Société Générale*, *BNP Paribas*,
+*Deutsche Bank*, *AXA*… — est `EQUITY`, **même si son nom contient « Crédit »**. Le
+vocabulaire « Athéna / Airbag / PDI / seuil de perte en capital à maturité / seuil de
+remboursement anticipé / dégressivité / dividende fixe » est celui d'un **autocall
+actions** (`EQUITY` / `autocall`). Ne mettez `CREDIT` que si le payoff dépend d'un
+**événement de crédit** (défaut, restructuration), d'un **spread de CDS**, d'une **CLN**,
+d'une **tranche** ou d'un **indice iTraxx / CDX**.
+
 ## Familles de produit — mots-clés indicatifs (liste non exhaustive)
 
 - **`autocall`** (EQUITY) : Autocall, Athena, Phoenix, Airbag, Yeti, Himalaya, Magnet,
@@ -39,17 +49,10 @@ pour EQUITY, `ir_swap` pour RATES) plutôt qu'une famille précise mais douteuse
 
 ## Pièges à éviter
 
-La classe d'actif est déterminée par le **mécanisme du produit** (payoff, sous-jacent
-de référence), **jamais par un mot isolé du nom du sous-jacent ou de la demande**.
-
-- **Nom d'institution financière contenant « Crédit » / « Banque » / « Bank » /
-  « Financière » / « Assurances ».** Beaucoup d'émetteurs et de sous-jacents actions
-  portent ces mots : *Crédit Agricole*, *Société Générale*, *Deutsche Bank*, *BNP Paribas*,
-  *Banco Santander*, *ING*, *Natixis*… Un Autocall / Phoenix / Reverse Convertible sur
-  l'**action** *Crédit Agricole* (ticker `ACA FP`) est **`EQUITY` / `autocall`**, PAS
-  `CREDIT`. Ne classez `CREDIT` que si le payoff dépend explicitement d'un **événement de
-  crédit** (défaut, restructuration), d'un **spread de CDS**, d'une **CLN**, d'une
-  **tranche**, ou d'un **indice iTraxx / CDX**.
+- **Nom d'entité contenant « Crédit » / « Banque » / « Bank » / « Financière ».**
+  Voir la règle prioritaire ci-dessus : *Crédit Agricole*, *Société Générale*, *Deutsche
+  Bank*… en sous-jacent = `EQUITY`. Une demande *DUO MIX*, *poche Athéna*, *poche garantie*
+  reste `EQUITY` / `autocall` (la poche garantie n'est pas un produit de crédit).
 - **Paire de devises citée comme devise du produit.** « Autocall EUR sur Euro Stoxx 50 »,
   « note en USD » : la devise n'est pas le sous-jacent. Reste `EQUITY`. On ne classe `FX`
   que si la **performance** dépend d'un taux de change (TARF EUR/USD, dual currency, FX

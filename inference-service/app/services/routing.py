@@ -11,7 +11,7 @@ principle applied everywhere in this service).
 from typing import Optional
 
 from .. import db
-from . import inference_client
+from . import inference_client, prompt_resolver
 from .analyze import extract_json_from_text, normalize_to_raw_quotes
 
 _VALID_ASSET_CLASSES = {"EQUITY", "RATES", "FX", "CREDIT"}
@@ -43,10 +43,24 @@ def classify_request(query: str, reasoning_mode: Optional[str] = None) -> list[d
     classifications: list[dict] = []
     for index, raw in enumerate(normalize_to_raw_quotes(parsed)):
         asset_class = str(raw.get("assetClass") or raw.get("AssetClass") or "").strip().upper()
+        asset_class = asset_class if asset_class in _VALID_ASSET_CLASSES else None
+        product_family = raw.get("productFamily") or raw.get("ProductFamily") or None
+
+        # Consistency guard: the family the model detected ("autocall", "range
+        # accrual", ...) is a more reliable asset-class signal than the class it
+        # named, which is easily thrown off by a word in the underlying's name
+        # (an Athena on the *equity* "Crédit Agricole" gets labelled CREDIT).
+        # Trust the family when it can only belong to one class.
+        corrected_from = None
+        family_class = prompt_resolver.asset_class_for_family(prompt_resolver.normalize_family(product_family))
+        if family_class and asset_class and asset_class != family_class:
+            corrected_from, asset_class = asset_class, family_class
+
         classifications.append({
             "quoteId": raw.get("quoteId", index + 1),
-            "assetClass": asset_class if asset_class in _VALID_ASSET_CLASSES else None,
-            "productFamily": (raw.get("productFamily") or raw.get("ProductFamily") or None),
+            "assetClass": asset_class,
+            "assetClassCorrectedFrom": corrected_from,
+            "productFamily": product_family,
             "underlying": (raw.get("underlying") or raw.get("underlyingQueryOrTicker") or None),
             "routerConfidence": _as_float(raw.get("routerConfidence")),
         })
