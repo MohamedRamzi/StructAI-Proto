@@ -118,13 +118,25 @@ adapté.
 - Tests : `analyze-adapter.test.ts` (14 cas — autocall/v1, generic/v1, dégradation rates/fx,
   bundle hétérogène, vector underlying), `spec-builder.test.ts` inchangé. 47 vitest verts, `tsc --noEmit` clean.
 
-### 2b — front (RESTE À FAIRE)
+### 2b — front ✅ (2026-09-10, même branche)
 
-- `QueryParserWorkbench.tsx` : gérer `quote.pricingAvailable === false` — afficher
-  `richExtraction` (structure lisible) + bannière « pricing indisponible » + `degradationReason`,
-  sans la grille de prix ; idem dans le sélecteur multi-cotations et quand la 1re quote n'est pas priçable.
-  Rendre `QuoteBundle.spec`/`.pricing` réellement optionnels et propager.
-- Éventuellement afficher `routing` (classe/famille/pré-prompt/précision) dans le panneau d'extraction.
+- `src/components/RichExtractionPanel.tsx` (NOUVEAU) : pour une quote non priçable —
+  chips de routage, bannière « pricing indisponible » + `degradationReason`, liste des
+  champs manquants, vue JSON récursive read-only de `richExtraction`.
+- `QueryParserWorkbench.tsx` : `handleParseQuery` accepte une réponse avec `quotes` sans
+  `spec` top-level ; re-pricing/re-résolution du sous-jacent uniquement pour les quotes
+  priçables ; sélectionne la 1re quote priçable pour la grille, sinon `RichExtractionPanel`.
+  `handleSwitchQuote` branche sur `isPriceable(quote)`. Onglets multi-cotations : point ambre
+  + libellé schéma pour les legs parse-only ; tableau comparateur affiche « — » / « pricing indispo. ».
+- `tsc --noEmit`, 47 vitest, `vite build` OK. Vérifié end-to-end (Gemini réel) : Athena/LVMH
+  → autocall/v1 → spec priçable.
+
+### RESTE (hors périmètre immédiat)
+
+- Smoke-test navigateur d'une demande **taux** de bout en bout (le CLI a validé le chemin
+  autocall en réel ; le chemin dégradé n'a que la couverture vitest — quota Gemini épuisé pendant les tests).
+- Étoffer les pré-prompts squelettes `fx.md` / `credit.md` et le validateur `_detect_autocall_v1` (ténor).
+- Brancher un vrai `_common` de sortie taux/FX quand un pricer existera (Phase 3).
 
 ## PHASE 3 — ultérieur, hors lot
 Pricers taux/FX réels · schéma riche de bout en bout dans le front · termsheets
