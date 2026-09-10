@@ -1,0 +1,40 @@
+{
+  "_comment": "One-click provider presets for the admin UI (onglet « Config. Chat » / « Config. Embedding »). Edit freely — this file is re-read on every request, no restart needed. Selecting a preset only fills the form; click « Enregistrer » to apply, and it never sets an API key. Delete this file to fall back to app/config.py:BUILTIN_LLM_PRESETS.",
+  "chat": [
+    {
+      "label": "vLLM local — Qwen3-4B-Instruct (port 8001)",
+      "provider": "openai_compatible",
+      "model": "Qwen/Qwen3-4B-Instruct-2507",
+      "baseUrl": "http://localhost:8001/v1",
+      "temperature": 0.1
+    },
+    {
+      "label": "LM Studio local (port 1234)",
+      "provider": "openai_compatible",
+      "model": "local-model",
+      "baseUrl": "http://localhost:1234/v1",
+      "temperature": 0.1
+    },
+    {
+      "label": "Ollama local — endpoint OpenAI-compatible (port 11434)",
+      "provider": "openai_compatible",
+      "model": "qwen3:4b",
+      "baseUrl": "http://localhost:11434/v1",
+      "temperature": 0.1
+    },
+    {
+      "label": "Google Gemini Flash (cloud — clé API requise)",
+      "provider": "gemini",
+      "model": "gemini-flash-latest",
+      "baseUrl": "",
+      "temperature": 0.1
+    }
+  ],
+  "embedding": [
+    {
+      "label": "vLLM local — Qwen3-Embedding-0.6B (port 8002)",
+      "model": "Qwen/Qwen3-Embedding-0.6B",
+      "baseUrl": "http://localhost:8002/v1"
+    }
+  ]
+}

@@ -187,6 +187,14 @@
       <h2>Configuration du moteur de chat (analyse NLP)</h2>
       <p class="subtitle" style="margin-bottom:14px">Un endpoint compatible OpenAI (sidecar <span class="mono">vllm serve</span> local, LM Studio, ou tout endpoint cloud nécessitant une clé) ou Google Gemini (cloud, clé API requise).</p>
       <div id="llm-msg"></div>
+      <div class="row" style="margin-bottom:14px; align-items:flex-end">
+        <div style="flex:1">
+          <label for="llm-preset">Charger une configuration connue</label>
+          <select id="llm-preset">
+            <option value="">— Choisir un préréglage (remplit le formulaire, ne l'enregistre pas) —</option>
+          </select>
+        </div>
+      </div>
       <form id="llm-form">
         <label for="llm-provider">Fournisseur</label>
         <select id="llm-provider">
@@ -217,6 +225,14 @@
       <h2>Configuration du moteur d'embedding</h2>
       <p class="subtitle" style="margin-bottom:14px">Sidecar <span class="mono">vllm serve --runner pooling</span> exposant une API compatible OpenAI.</p>
       <div id="embedding-msg"></div>
+      <div class="row" style="margin-bottom:14px; align-items:flex-end">
+        <div style="flex:1">
+          <label for="emb-preset">Charger une configuration connue</label>
+          <select id="emb-preset">
+            <option value="">— Choisir un préréglage (remplit le formulaire, ne l'enregistre pas) —</option>
+          </select>
+        </div>
+      </div>
       <form id="embedding-form">
         <label for="emb-model">Modèle</label>
         <input id="emb-model" type="text" placeholder="ex: Qwen/Qwen3-Embedding-0.6B" />
@@ -656,6 +672,55 @@
       }
     });
 
+    // --- Provider presets (Chat + Embedding) ---
+    async function loadConfigPresets() {
+      var chatSel = document.getElementById('llm-preset');
+      var embSel = document.getElementById('emb-preset');
+      try {
+        var data = await Api.get('/api/config/presets');
+        var presets = (data && data.presets) || {};
+        window.__chatPresets = presets.chat || [];
+        window.__embPresets = presets.embedding || [];
+        (presets.chat || []).forEach(function (p, i) {
+          var o = document.createElement('option');
+          o.value = String(i);
+          o.textContent = p.label || (p.provider + ' · ' + p.model);
+          chatSel.appendChild(o);
+        });
+        (presets.embedding || []).forEach(function (p, i) {
+          var o = document.createElement('option');
+          o.value = String(i);
+          o.textContent = p.label || p.model;
+          embSel.appendChild(o);
+        });
+      } catch (err) {
+        // Presets are a convenience — a failure here shouldn't block the config tabs.
+        console.warn('Préréglages indisponibles :', err.message);
+      }
+      if (!isAdmin) { chatSel.disabled = true; embSel.disabled = true; }
+    }
+
+    document.getElementById('llm-preset').addEventListener('change', function () {
+      if (this.value === '') return;
+      var p = (window.__chatPresets || [])[Number(this.value)];
+      if (!p) return;
+      if (p.provider) document.getElementById('llm-provider').value = p.provider;
+      if (p.model !== undefined) document.getElementById('llm-model').value = p.model;
+      if (p.baseUrl !== undefined) document.getElementById('llm-baseurl').value = p.baseUrl;
+      if (p.temperature !== undefined && p.temperature !== null) document.getElementById('llm-temp').value = p.temperature;
+      updateLlmProviderVisibility();
+      document.getElementById('llm-msg').innerHTML = '<div class="msg info">Préréglage « ' + escapeHtml(p.label || p.model) + ' » chargé — cliquez sur <strong>Enregistrer</strong> pour l\'appliquer.' + (p.provider === 'gemini' ? ' (Gemini : renseignez aussi la clé API.)' : '') + '</div>';
+    });
+
+    document.getElementById('emb-preset').addEventListener('change', function () {
+      if (this.value === '') return;
+      var p = (window.__embPresets || [])[Number(this.value)];
+      if (!p) return;
+      if (p.model !== undefined) document.getElementById('emb-model').value = p.model;
+      if (p.baseUrl !== undefined) document.getElementById('emb-baseurl').value = p.baseUrl;
+      document.getElementById('embedding-msg').innerHTML = '<div class="msg info">Préréglage « ' + escapeHtml(p.label || p.model) + ' » chargé — cliquez sur <strong>Enregistrer</strong> pour l\'appliquer.</div>';
+    });
+
     // --- Chat (LLM) config ---
     function updateLlmProviderVisibility() {
       var isGemini = document.getElementById('llm-provider').value === 'gemini';
@@ -693,6 +758,7 @@
         if (apiKeyVal !== '') payload.apiKey = apiKeyVal;
         await Api.put('/api/config/llm', payload);
         document.getElementById('llm-apikey').value = '';
+        document.getElementById('llm-preset').value = '';
         msg.innerHTML = '<div class="msg success">Configuration enregistrée.</div>';
         loadLlmConfig();
       } catch (err) {
@@ -718,6 +784,7 @@
       msg.innerHTML = '';
       try {
         await Api.put('/api/config/embedding', { model: document.getElementById('emb-model').value, baseUrl: document.getElementById('emb-baseurl').value });
+        document.getElementById('emb-preset').value = '';
         msg.innerHTML = '<div class="msg success">Configuration enregistrée.</div>';
         loadEmbeddingConfig();
       } catch (err) {
@@ -808,6 +875,7 @@
 
     loadInstruments();
     loadPrompts();
+    loadConfigPresets();
     loadLlmConfig();
     loadEmbeddingConfig();
     loadUsers();

@@ -51,6 +51,55 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "Qwen/Qwen3-Embedding-0.6B")
 # QuotationPrompt.md the pre-refacto pipeline used.)
 PROMPTS_DIR = SERVICE_ROOT / "prompts"
 
+# Known-good chat / embedding provider configurations, offered as one-click
+# presets in the admin UI ("Charger une configuration connue…") so you don't
+# have to retype a local model name + vLLM URL every time you switch. Read
+# fresh on each request from this JSON file if it exists (edit it to add your
+# own — no restart needed), else the built-in list below is used. Selecting a
+# preset only fills the form; you still click "Enregistrer" to apply it, and it
+# never touches a stored API key.
+LLM_PRESETS_PATH = SERVICE_ROOT / "llm-presets.json"
+
+BUILTIN_LLM_PRESETS = {
+    "chat": [
+        {
+            "label": "vLLM local — Qwen3-4B-Instruct (port 8001)",
+            "provider": "openai_compatible",
+            "model": "Qwen/Qwen3-4B-Instruct-2507",
+            "baseUrl": "http://localhost:8001/v1",
+            "temperature": 0.1,
+        },
+        {
+            "label": "LM Studio local (port 1234)",
+            "provider": "openai_compatible",
+            "model": "local-model",
+            "baseUrl": "http://localhost:1234/v1",
+            "temperature": 0.1,
+        },
+        {
+            "label": "Ollama local — endpoint OpenAI-compatible (port 11434)",
+            "provider": "openai_compatible",
+            "model": "qwen3:4b",
+            "baseUrl": "http://localhost:11434/v1",
+            "temperature": 0.1,
+        },
+        {
+            "label": "Google Gemini Flash (cloud — clé API requise)",
+            "provider": "gemini",
+            "model": "gemini-flash-latest",
+            "baseUrl": "",
+            "temperature": 0.1,
+        },
+    ],
+    "embedding": [
+        {
+            "label": "vLLM local — Qwen3-Embedding-0.6B (port 8002)",
+            "model": "Qwen/Qwen3-Embedding-0.6B",
+            "baseUrl": "http://localhost:8002/v1",
+        },
+    ],
+}
+
 DB_PATH = os.environ.get("DB_PATH") or str(SERVICE_ROOT / "data" / "inference-service.db")
 CHROMA_PATH = os.environ.get("CHROMA_PATH") or str(SERVICE_ROOT / "data" / "chroma")
 DEBUG = os.environ.get("DEBUG", "false").lower() in ("true", "1")

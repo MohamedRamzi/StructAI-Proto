@@ -79,3 +79,52 @@ def test_embedding_config_requires_admin_to_write(client, auth_headers):
 
     res = client.put("/api/config/embedding", json={"model": "x"}, headers=member_headers)
     assert res.status_code == 403
+
+
+def test_config_presets_endpoint_returns_chat_and_embedding_lists(client, auth_headers):
+    res = client.get("/api/config/presets", headers=auth_headers)
+    assert res.status_code == 200
+    presets = res.json()["presets"]
+    assert isinstance(presets["chat"], list) and len(presets["chat"]) >= 1
+    assert isinstance(presets["embedding"], list) and len(presets["embedding"]) >= 1
+    # every chat preset carries what the form needs
+    for p in presets["chat"]:
+        assert p["provider"] in ("openai_compatible", "gemini")
+        assert "model" in p and "baseUrl" in p
+    # a local vLLM preset is offered (the point of the feature: no retyping)
+    assert any(p["provider"] == "openai_compatible" and "8001" in p["baseUrl"] for p in presets["chat"])
+
+
+def test_config_presets_require_auth(client):
+    assert client.get("/api/config/presets").status_code == 401
+
+
+def test_config_presets_prefers_the_json_file_when_present(client, auth_headers, tmp_path, monkeypatch):
+    import json as _json
+    from app import config as config_module
+    from app.routers import llm_config
+
+    custom = tmp_path / "llm-presets.json"
+    custom.write_text(_json.dumps({
+        "chat": [{"label": "Mon endpoint perso", "provider": "openai_compatible", "model": "my-model", "baseUrl": "http://host:9999/v1", "temperature": 0.0}],
+        "embedding": [],
+    }), encoding="utf-8")
+    monkeypatch.setattr(config_module, "LLM_PRESETS_PATH", custom)
+    monkeypatch.setattr(llm_config.config, "LLM_PRESETS_PATH", custom)
+
+    res = client.get("/api/config/presets", headers=auth_headers)
+    labels = [p["label"] for p in res.json()["presets"]["chat"]]
+    assert labels == ["Mon endpoint perso"]
+
+
+def test_config_presets_fall_back_to_builtin_on_a_broken_file(client, auth_headers, tmp_path, monkeypatch):
+    from app import config as config_module
+    from app.routers import llm_config
+
+    broken = tmp_path / "llm-presets.json"
+    broken.write_text("{ not json", encoding="utf-8")
+    monkeypatch.setattr(llm_config.config, "LLM_PRESETS_PATH", broken)
+
+    res = client.get("/api/config/presets", headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["presets"] == config_module.BUILTIN_LLM_PRESETS

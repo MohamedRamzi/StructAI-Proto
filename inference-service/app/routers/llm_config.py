@@ -2,18 +2,36 @@
 (local vLLM sidecar by default, but any provider speaking that protocol) or
 Google Gemini, given an API key. The stored API key is never returned in
 plaintext — GET/PUT both redact it to a `hasApiKey` boolean, matching the
-pattern quotation-service used before this project's vLLM merge."""
+pattern quotation-service used before this project's vLLM merge.
+
+Also serves the one-click provider presets (config.LLM_PRESETS_PATH, else
+config.BUILTIN_LLM_PRESETS) the admin UI offers so you don't retype a local
+model name + vLLM URL on every switch."""
+import json
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from .. import db
+from .. import config, db
 from ..auth.dependencies import require_auth, require_role
 
 router = APIRouter(prefix="/api/config", tags=["config"])
 
 VALID_PROVIDERS = {"openai_compatible", "gemini"}
+
+
+def _load_presets() -> dict:
+    """Read the presets JSON file fresh (so edits show without a restart);
+    fall back to the built-in list if it's missing or unreadable."""
+    path = config.LLM_PRESETS_PATH
+    if path.is_file():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            return {"chat": list(data.get("chat") or []), "embedding": list(data.get("embedding") or [])}
+        except (ValueError, OSError):
+            pass
+    return config.BUILTIN_LLM_PRESETS
 
 
 class UpdateLlmConfigRequest(BaseModel):
@@ -38,6 +56,13 @@ def _redact(cfg: dict) -> dict:
 @router.get("/llm", dependencies=[Depends(require_auth)])
 def get_llm_config():
     return {"success": True, "config": _redact(db.get_llm_settings())}
+
+
+@router.get("/presets", dependencies=[Depends(require_auth)])
+def get_config_presets():
+    """Known chat + embedding provider configs, for the admin UI's
+    "Charger une configuration connue…" dropdowns."""
+    return {"success": True, "presets": _load_presets()}
 
 
 @router.put("/llm")
