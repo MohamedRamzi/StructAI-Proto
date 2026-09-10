@@ -27,14 +27,24 @@ générique) par un pipeline :
 | Familles non priçables (taux, FX, crédit, actions non-autocall) | Parsées en schéma riche ; l'app principale les affiche **sans prix** (`pricingAvailable: false`) |
 | Séquencement | **Phase 1 complète et validée**, puis Phase 2 |
 
-## PHASE 1 — `inference-service` ✅ (code + tests + admin UI faits ; smoke-tests réels vLLM/Gemini restants)
+## PHASE 1 — `inference-service` ✅ TERMINÉE (2026-09-10)
 
-> État au 2026-09-10 : items 1–9 faits, 134 tests verts (dont `test_routing`,
-> `test_prompt_resolver`, `test_prompts_crud`, `test_analyze_integration`
-> réécrit, `test_db_migration` étendu). Onglet admin **Pré-prompts** + résumé
-> de routage dans « Tester l'analyse » livrés et vérifiés au navigateur.
-> `scripts/batch_analyze.py` accepte `--pipeline`. Reste : item 10 — smoke-tests
-> contre de vrais moteurs (vLLM local + Gemini).
+> Items 1–10 faits. 134 tests pytest verts. Onglet admin **Pré-prompts** +
+> résumé de routage dans « Tester l'analyse » vérifiés au navigateur.
+> `scripts/batch_analyze.py` accepte `--pipeline`.
+>
+> **Smoke-tests réels (Gemini, 4 cas)** — pipeline mécaniquement OK sur tous :
+> - Athena LVMH 3Y → `equity-autocall` (précision 3), `autocall/v1`, flag `coupon.rate` (= « coupon à chercher ») ✔
+> - TARF EUR/USD → routé **FX** (correct, pas RATES) → `fx` (précision 2), `fx/v1` ; `fx.md` est un squelette → sortie pauvre (flags `underlying`/`maturity`) — attendu
+> - Multi Phoenix worst-of + Range Accrual Euribor → 2 groupes, 2 appels, fusion par quoteId : q1 `equity-autocall` p3 / q2 `rates` p2 ✔
+> - Variance swap Nikkei (hors scope) → router dit EQUITY/vanilla → `equity` (précision 2), `generic/v1` — repli raisonnable (pas `default` p1 car le router a donné une classe)
+> - Pondération de confiance par précision vérifiée (0.98→0.98, 0.98→0.882, 0.95→0.855)
+>
+> **Points de réglage notés (prompts, PAS le pipeline)** :
+> - `_detect_autocall_v1` devrait aussi accepter une maturité exprimée en ténor
+>   (« 5 ans ») et pas seulement `dates.finalValuationDate` / `observation.numberOfObservations`
+> - `fx.md` et `credit.md` sont des squelettes à étoffer
+> - envisager un prompt `equity` distinct d'un futur `equity-vanilla` pour éviter que l'exotique hors-scope tombe en `generic/v1` sans cible
 
 ### 1. Table `prompts`
 `key` (PK) · `name` · `kind` (`router`|`common`|`domain`) · `asset_class` (null) ·
