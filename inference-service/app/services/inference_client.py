@@ -111,7 +111,14 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
         payload["chat_template_kwargs"] = {"enable_thinking": True}
 
     try:
-        response = _post_with_retry(url, json=payload, headers=headers, timeout=120.0)
+        # 300s, not 120s: a local vLLM-metal sidecar on Apple Silicon (dev) can
+        # run an order of magnitude slower than the GH200 target (single-digit
+        # tokens/s generation observed), and the extraction call's response is
+        # long (full JSON schema, plus reasoning tokens whenever the model's
+        # default chat template enables thinking under reasoning_mode="auto").
+        # This bounds how long we wait before giving up — it doesn't paper
+        # over an actually-down sidecar, which fails immediately on connect.
+        response = _post_with_retry(url, json=payload, headers=headers, timeout=300.0)
     except httpx.RequestError as exc:
         raise RuntimeError(
             f"Impossible de contacter le moteur de chat configuré sur {base_url} : {exc}. "
