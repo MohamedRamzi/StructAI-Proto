@@ -13,23 +13,26 @@ de **classer** la demande — pas d'en extraire les paramètres détaillés.
 - `EQUITY` — actions, indices actions, ETF, paniers d'actions.
 - `RATES` — taux d'intérêt (Euribor, CMS, spreads de courbe, swaps de taux).
 - `FX` — change, paires de devises.
-- `CREDIT` — dérivés de crédit, CLN, tranches, iTraxx/CDX.
 
-**Règle prioritaire.** La classe d'actif vient du **mécanisme du produit**, jamais d'un
-mot du nom du sous-jacent. Un produit dont le sous-jacent est **l'action** d'une banque
-ou d'un assureur — *Crédit Agricole* (`ACA FP`), *Société Générale*, *BNP Paribas*,
-*Deutsche Bank*, *AXA*… — est `EQUITY`, **même si son nom contient « Crédit »**. Le
-vocabulaire « Athéna / Airbag / PDI / seuil de perte en capital à maturité / seuil de
-remboursement anticipé / dégressivité / dividende fixe » est celui d'un **autocall
-actions** (`EQUITY` / `autocall`). Ne mettez `CREDIT` que si le payoff dépend d'un
-**événement de crédit** (défaut, restructuration), d'un **spread de CDS**, d'une **CLN**,
-d'une **tranche** ou d'un **indice iTraxx / CDX**.
+**Règle prioritaire.** La classe d'actif vient du **mécanisme du produit ET de son
+sous-jacent réel**, jamais d'un mot du nom du sous-jacent ni du seul type de produit. Un
+produit dont le sous-jacent est **l'action** d'une banque ou d'un assureur — *Crédit
+Agricole* (`ACA FP`), *Société Générale*, *BNP Paribas*, *Deutsche Bank*, *AXA*… — est
+`EQUITY`, même si son nom contient « Crédit ». Le vocabulaire « Athéna / Airbag / PDI /
+seuil de perte en capital à maturité / seuil de remboursement anticipé / dégressivité /
+dividende fixe » est celui d'un **autocall**, mais **un autocall n'est pas forcément
+`EQUITY`** : il existe des autocalls sur indice de taux (`RATES`, ex. CMS, Euribor) ou
+sur paire de change (`FX`). Regardez le **sous-jacent cité** pour trancher — ne déduisez
+jamais la classe d'actif de la seule famille de produit.
 
 ## Familles de produit — mots-clés indicatifs (liste non exhaustive)
 
 - **`autocall`** (EQUITY) : Autocall, Athena, Phoenix, Airbag, Yeti, Himalaya, Magnet,
   Altiplano, Best-of / Worst-of, Reverse Convertible (ARC / BRC), Twin-Win, Booster,
-  Express, snowball coupon, effet mémoire, PDI, barrière de rappel.
+  Express, snowball coupon, effet mémoire, PDI, barrière de rappel — **quand le
+  sous-jacent est une action, un indice actions ou un panier d'actions.** Le même
+  vocabulaire (Athena, Phoenix, PDI, rappel anticipé…) sur un sous-jacent de taux
+  (CMS, Euribor…) est un `rate_autocall` (RATES), pas un `autocall` (EQUITY).
 - **`vanilla`** (toutes classes) : call / put simple, tunnel, collar, participation
   linéaire sans rappel. La **classe** vient du sous-jacent (action → `EQUITY`, paire de
   devises → `FX` via `fx_option`, taux → `RATES` via `ir_swap`), pas du mot « vanille ».
@@ -66,8 +69,8 @@ pour EQUITY, `ir_swap` pour RATES) plutôt qu'une famille précise mais douteuse
 - **« Swap » seul est ambigu.** Swap de taux → `RATES` ; equity swap / total return swap
   sur action → `EQUITY` ; cross-currency swap → `FX`. Regardez le sous-jacent.
 
-Dans le doute entre `CREDIT` et une autre classe à cause d'un nom d'entité, choisissez
-l'autre classe et baissez `routerConfidence`.
+En cas de doute sur la classe d'actif, ne devinez pas : choisissez la classe la plus
+probable au vu du sous-jacent cité et baissez `routerConfidence` en conséquence.
 
 ## Cotations multiples
 

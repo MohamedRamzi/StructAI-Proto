@@ -206,7 +206,6 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
                 "promptKey": resolution["promptKey"],
                 "scopePrecision": resolution["scopePrecision"],
                 "routerConfidence": cls["routerConfidence"] if cls else None,
-                "assetClassCorrectedFrom": cls.get("assetClassCorrectedFrom") if cls else None,
             }
             merged[qid] = _finalize_quote(raw, i, routing, resolution["promptKey"])
 
@@ -230,7 +229,6 @@ def _analyze_route_only(query: str, reasoning_mode: Optional[str] = None) -> dic
             "label": cls.get("label") or f"Cotation {cls['quoteId']}",
             "routing": {
                 "assetClass": resolution["assetClass"],
-                "assetClassCorrectedFrom": cls.get("assetClassCorrectedFrom"),
                 "productFamily": resolution["productFamily"],           # canonical
                 "productFamilyRaw": cls.get("productFamily"),           # what the model said
                 "underlying": cls.get("underlying"),

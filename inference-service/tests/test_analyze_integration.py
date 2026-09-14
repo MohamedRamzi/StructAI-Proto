@@ -152,16 +152,15 @@ def test_route_pipeline_returns_routing_only_and_makes_no_extraction_call(client
 
     def fake(system, user, reasoning_mode=None):
         calls.append(user)
-        # An Athena the model wrongly labels CREDIT — the guard must fix it.
         return json.dumps({"quotes": [{
-            "quoteId": 1, "label": "Athena Crédit Agricole", "assetClass": "CREDIT",
-            "productFamily": "athena", "underlying": "Crédit Agricole", "routerConfidence": 0.6,
+            "quoteId": 1, "label": "Athena LVMH", "assetClass": "EQUITY",
+            "productFamily": "athena", "underlying": "MC FP", "routerConfidence": 0.9,
         }]})
 
     monkeypatch.setattr(inference_client, "chat_completion", fake)
     token = _api_key(client, auth_headers, "k")
 
-    res = client.post("/api/analyze", json={"query": "Poche Athéna sur Crédit Agricole, airbag -30%", "pipeline": "route"},
+    res = client.post("/api/analyze", json={"query": "Athéna sur LVMH, airbag -30%", "pipeline": "route"},
                       headers={"Authorization": f"Bearer {token}"})
     assert res.status_code == 200
     body = res.json()
@@ -174,7 +173,6 @@ def test_route_pipeline_returns_routing_only_and_makes_no_extraction_call(client
     assert "missingFields" not in q
     r = q["routing"]
     assert r["assetClass"] == "EQUITY"
-    assert r["assetClassCorrectedFrom"] == "CREDIT"
     assert r["productFamily"] == "autocall"       # canonical
     assert r["productFamilyRaw"] == "athena"      # what the model said
     assert r["promptKey"] == "equity-autocall"

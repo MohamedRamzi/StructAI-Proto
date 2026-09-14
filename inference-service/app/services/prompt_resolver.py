@@ -53,40 +53,10 @@ _register("xccy_swap", "xccyswap", "crosscurrencyswap", "crosscurrency")
 _register("fx_option", "fxoption", "dualcurrencydeposit", "fxlinkednote", "fxlinked")
 
 # --- CREDIT ---
+# Not currently routable (CREDIT is deprioritized — see router.md), but the
+# family taxonomy and this domain prompt are kept for when it's picked back up.
 _register("credit_linked", "creditlinkednote", "cln", "creditlinked")
 _register("tranche", "tranchenote", "tranche", "cdo", "synthcdo")
-
-
-# Canonical family -> the asset class it can ONLY belong to. Used by routing.py
-# to correct an obviously wrong router classification: an "autocall" / "athena"
-# on an equity issuer whose name contains "Crédit" (Crédit Agricole, ...) is
-# routinely mislabelled CREDIT, but no autocall is a credit derivative.
-#
-# Only families that are genuinely single-class belong here. Deliberately absent:
-#   - `vanilla`  — calls/puts/tunnels/collars exist on every asset class
-#   - `tarf` / `tarn` — genuinely RATES *or* FX
-# (`autocall` = equity autocalls; rate autocalls normalise to `rate_autocall`.)
-_FAMILY_ASSET_CLASS: dict[str, str] = {
-    "autocall": "EQUITY",
-    "range_accrual": "RATES",
-    "cms_spread": "RATES",
-    "rate_autocall": "RATES",
-    "snowball": "RATES",
-    "formosa": "RATES",
-    "prdc": "RATES",
-    "ir_swap": "RATES",
-    "fx_swap": "FX",
-    "xccy_swap": "FX",
-    "fx_option": "FX",
-    "credit_linked": "CREDIT",
-    "tranche": "CREDIT",
-}
-
-
-def asset_class_for_family(canonical_family: Optional[str]) -> Optional[str]:
-    """The unambiguous asset class of a canonical family, or None when the
-    family is unknown or can span classes (tarf/tarn)."""
-    return _FAMILY_ASSET_CLASS.get(canonical_family or "")
 
 
 def normalize_family(raw: Optional[str]) -> Optional[str]:

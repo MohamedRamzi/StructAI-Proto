@@ -751,9 +751,6 @@
           famDisplay += ' <span class="muted">(modèle : ' + escapeHtml(r.productFamilyRaw) + ')</span>';
         }
         var classCell = escapeHtml(r.assetClass || '—') + ' / ' + famDisplay;
-        if (r.assetClassCorrectedFrom) {
-          classCell += ' <span class="badge admin" title="Classe corrigée : le routeur avait répondu ' + escapeHtml(r.assetClassCorrectedFrom) + ', incohérent avec la famille détectée.">corr. ' + escapeHtml(r.assetClassCorrectedFrom) + '→</span>';
-        }
         var confidence = (q.extraction && q.extraction.confidenceScore != null)
           ? q.extraction.confidenceScore
           : (r.routerConfidence != null ? r.routerConfidence + ' (routeur)' : '—');
