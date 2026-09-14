@@ -27,6 +27,16 @@ import {
   ClipboardPaste
 } from 'lucide-react';
 
+/** extractedTokens[].parsedValue is `any` — the LLM can map a phrase to a compound
+ * value (e.g. an index-decrement `{type, amount, accrualBasis}`), not just a
+ * primitive. React throws "Objects are not valid as a React child" if we hand it
+ * the raw object, so render anything non-primitive as its JSON text instead. */
+function formatTokenValue(value: unknown): string {
+  if (value === null || value === undefined) return '—';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
 interface QueryParserWorkbenchProps {
   initialSpec?: ExtractedProductSpec | null;
   initialPricing?: PricingResult | null;
@@ -566,7 +576,7 @@ export const QueryParserWorkbench: React.FC<QueryParserWorkbenchProps> = ({
                         {token.parameterName}
                       </td>
                       <td className="px-3 py-2.5 text-emerald-400 font-bold font-mono">
-                        {token.parsedValue}
+                        {formatTokenValue(token.parsedValue)}
                       </td>
                     </tr>
                   ))}
