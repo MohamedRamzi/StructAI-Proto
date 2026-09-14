@@ -55,6 +55,13 @@ Renseigne **uniquement** les champs déductibles de la demande ; tout le reste �
 (ne supprime aucune clé — un même parseur traite toutes les familles). N'invente
 aucune valeur non exprimée (barrières, coupon, maturité, dates…).
 
+**Ces champs métier (`schemaVersion`, `dates`, `underlying`, `coupon`, `finalRedemption`,
+…) sont OBLIGATOIRES dans CHAQUE réponse, même sur une demande longue ou complexe avec
+beaucoup de lignes à traiter.** `extractedTokens` (§ Sortie attendue) est une trace
+d'audit **en plus** de cette enveloppe, jamais un remplacement : une réponse qui contient
+`extractedTokens` mais pas `dates`/`underlying`/`coupon`/`finalRedemption` est **invalide**,
+même si elle est un JSON syntaxiquement correct.
+
 ```json
 {
   "schemaVersion": "autocall/v1",
@@ -174,6 +181,17 @@ aucune valeur non exprimée (barrières, coupon, maturité, dates…).
 
 ## Sortie attendue
 
-Pour **chaque cotation**, un objet `autocall/v1` (`schemaVersion: "autocall/v1"`) avec
-`quoteId`, `label`, `confidenceScore`, `extractedTokens`, `aiExplanation` en plus des
-champs métier. Enveloppe finale : `{ "quotes": [ … ] }`.
+Pour **chaque cotation**, un objet `autocall/v1` complet : TOUS les champs métier du §3
+(`schemaVersion`, `productFamily`, `dates`, `underlying`, `observation`, `autocall`,
+`coupon`, `finalRedemption`, …, à `null` quand non déductibles) **PLUS** `quoteId`,
+`label`, `confidenceScore`, `extractedTokens`, `aiExplanation`. Ce sont deux parties
+distinctes de la MÊME réponse, pas une alternative l'une à l'autre. Enveloppe finale :
+`{ "quotes": [ … ] }`.
+
+**Anti-exemple à ne jamais produire** (`extractedTokens` seul, sans les champs métier) :
+```json
+{ "quotes": [ { "quoteId": 1, "label": "...", "confidenceScore": 0.9,
+  "extractedTokens": [ ... ], "aiExplanation": "..." } ] }
+```
+Chaque objet de `quotes` doit toujours contenir aussi `schemaVersion`, `dates`,
+`underlying`, `coupon`, `finalRedemption`, etc. — comme dans l'enveloppe du §3.
