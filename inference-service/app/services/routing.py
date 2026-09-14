@@ -38,7 +38,10 @@ def classify_request(query: str, reasoning_mode: Optional[str] = None) -> list[d
     parsed = extract_json_from_text(raw_text)
     if not parsed:
         model = db.get_llm_settings()["model"]
-        raise RuntimeError(f'Le routage a échoué : le modèle ("{model}") a répondu sans JSON valide décodable.')
+        raise RuntimeError(
+            f'Le routage a échoué : le modèle ("{model}") a répondu sans JSON valide décodable. '
+            f"Réponse brute : {raw_text[:500]!r}"
+        )
 
     classifications: list[dict] = []
     for index, raw in enumerate(normalize_to_raw_quotes(parsed)):
@@ -56,7 +59,9 @@ def classify_request(query: str, reasoning_mode: Optional[str] = None) -> list[d
         })
 
     if not classifications:
-        raise RuntimeError("Le routage n'a retourné aucune cotation classable.")
+        raise RuntimeError(
+            f"Le routage n'a retourné aucune cotation classable. Réponse brute : {raw_text[:500]!r}"
+        )
     return classifications
 
 
