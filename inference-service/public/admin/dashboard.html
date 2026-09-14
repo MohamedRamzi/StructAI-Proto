@@ -48,37 +48,28 @@
         <button id="semantic-search-btn">Recherche sémantique</button>
       </div>
 
+      <div class="row" style="margin-bottom:10px">
+        <button id="inst-new-btn">+ Nouvel instrument</button>
+      </div>
+
       <table>
         <thead><tr><th>ID</th><th>Classe</th><th>Code</th><th>Nom</th><th>Tags</th><th>Score</th><th></th></tr></thead>
         <tbody id="instruments-tbody"></tbody>
       </table>
 
-      <h3 style="margin-top:24px">Ajouter / modifier un instrument</h3>
-      <form id="instrument-form">
-        <input type="hidden" id="inst-editing-id" value="" />
-        <div class="row">
-          <div style="flex:1"><label for="inst-asset-class">Classe d'actif</label>
-            <select id="inst-asset-class">
-              <option value="EQUITY">EQUITY</option>
-              <option value="RATE_INDEX">RATE_INDEX</option>
-              <option value="FX">FX</option>
-              <option value="CREDIT">CREDIT</option>
-            </select>
-          </div>
-          <div style="flex:1"><label for="inst-code">Code (ticker...)</label><input id="inst-code" type="text" required /></div>
-          <div style="flex:1"><label for="inst-name">Nom</label><input id="inst-name" type="text" required /></div>
-        </div>
-        <label for="inst-description">Description (texte embeddé pour la recherche sémantique)</label>
-        <input id="inst-description" type="text" placeholder="ex: Leader mondial du luxe, forte volatilité, idéal Autocall." />
-        <label for="inst-tags">Tags (séparés par des virgules)</label>
-        <input id="inst-tags" type="text" placeholder="luxe, europe, cac40" />
-        <label for="inst-metadata">Métadonnées (JSON libre — champs spécifiques à la classe d'actif)</label>
-        <input id="inst-metadata" type="text" placeholder='{"sector":"Luxe","spotPrice":685.4,"currency":"EUR"}' />
-        <div class="row" style="margin-top:14px">
-          <button type="submit" id="inst-save-btn">Enregistrer</button>
-          <button type="button" class="secondary hidden" id="inst-cancel-edit-btn">Annuler la modification</button>
-        </div>
-      </form>
+      <div class="pager" id="instruments-pager">
+        <button class="secondary" id="pager-prev-btn">‹ Précédent</button>
+        <span class="pager-info" id="pager-info"></span>
+        <button class="secondary" id="pager-next-btn">Suivant ›</button>
+        <span class="spacer"></span>
+        <label for="pager-page-size" style="margin:0">Par page</label>
+        <select id="pager-page-size" style="max-width:80px">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
 
       <h3 style="margin-top:24px">Import / Export</h3>
       <div class="row">
@@ -103,6 +94,43 @@
         <button class="secondary" id="reindex-btn">Ré-indexer tous les instruments</button>
       </div>
     </section>
+
+    <!-- Add / Edit instrument — modal (was an inline form at the bottom of the page,
+         easy to miss after clicking Éditer on a long list; a modal is always in view). -->
+    <div class="modal-overlay hidden" id="instrument-modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="instrument-modal-title">Nouvel instrument</h3>
+          <button type="button" class="modal-close" id="instrument-modal-close-btn" aria-label="Fermer">✕</button>
+        </div>
+        <div id="instrument-modal-msg"></div>
+        <form id="instrument-form">
+          <input type="hidden" id="inst-editing-id" value="" />
+          <div class="row">
+            <div style="flex:1"><label for="inst-asset-class">Classe d'actif</label>
+              <select id="inst-asset-class">
+                <option value="EQUITY">EQUITY</option>
+                <option value="RATE_INDEX">RATE_INDEX</option>
+                <option value="FX">FX</option>
+                <option value="CREDIT">CREDIT</option>
+              </select>
+            </div>
+            <div style="flex:1"><label for="inst-code">Code (ticker...)</label><input id="inst-code" type="text" required /></div>
+          </div>
+          <label for="inst-name">Nom</label><input id="inst-name" type="text" required />
+          <label for="inst-description">Description (texte embeddé pour la recherche sémantique)</label>
+          <input id="inst-description" type="text" placeholder="ex: Leader mondial du luxe, forte volatilité, idéal Autocall." />
+          <label for="inst-tags">Tags (séparés par des virgules)</label>
+          <input id="inst-tags" type="text" placeholder="luxe, europe, cac40" />
+          <label for="inst-metadata">Métadonnées (JSON libre — champs spécifiques à la classe d'actif)</label>
+          <input id="inst-metadata" type="text" placeholder='{"sector":"Luxe","spotPrice":685.4,"currency":"EUR"}' />
+          <div class="row" style="margin-top:16px">
+            <button type="submit" id="inst-save-btn">Enregistrer</button>
+            <button type="button" class="secondary" id="inst-cancel-edit-btn">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Pré-prompts (routed-analyze pipeline) -->
     <section id="tab-prompts" class="card hidden">
@@ -337,13 +365,17 @@
     });
     if (!isAdmin) {
       ['users', 'keys'].forEach(function (t) { document.querySelector('nav.tabs button[data-tab="' + t + '"]').classList.add('hidden'); });
-      document.getElementById('instrument-form').classList.add('hidden');
-      document.querySelector('#tab-instruments h3').classList.add('hidden');
+      document.getElementById('inst-new-btn').classList.add('hidden');
       document.getElementById('prompt-form').classList.add('hidden');
       document.getElementById('prompt-form-title').classList.add('hidden');
     }
 
     // --- Instruments ---
+    var instPage = 0;
+    var instPageSize = 25;
+    var instTotal = 0;
+    var instSemanticMode = false; // true while showing semantic-search results — those aren't paginated
+
     function renderInstrumentsTable(list, withScore) {
       var tbody = document.getElementById('instruments-tbody');
       tbody.innerHTML = list.map(function (item) {
@@ -377,41 +409,79 @@
       });
     }
 
+    function updateInstrumentsPager() {
+      var pager = document.getElementById('instruments-pager');
+      if (instSemanticMode) { pager.classList.add('hidden'); return; }
+      pager.classList.remove('hidden');
+      var totalPages = Math.max(1, Math.ceil(instTotal / instPageSize));
+      var from = instTotal === 0 ? 0 : instPage * instPageSize + 1;
+      var to = Math.min(instTotal, (instPage + 1) * instPageSize);
+      document.getElementById('pager-info').textContent = instTotal === 0
+        ? 'Aucun instrument'
+        : (from + '–' + to + ' sur ' + instTotal + ' · page ' + (instPage + 1) + '/' + totalPages);
+      document.getElementById('pager-prev-btn').disabled = instPage <= 0;
+      document.getElementById('pager-next-btn').disabled = (instPage + 1) * instPageSize >= instTotal;
+    }
+
     async function loadInstruments() {
       var assetClass = document.getElementById('filter-asset-class').value;
       var q = document.getElementById('filter-search').value.trim();
       var params = new URLSearchParams();
       if (assetClass) params.set('assetClass', assetClass);
       if (q) params.set('q', q);
+      params.set('limit', instPageSize);
+      params.set('offset', instPage * instPageSize);
       try {
         var data = await Api.get('/api/instruments?' + params.toString());
+        instSemanticMode = false;
+        instTotal = data.total || 0;
         renderInstrumentsTable(data.instruments, false);
+        updateInstrumentsPager();
       } catch (err) {
         document.getElementById('instruments-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
       }
     }
 
-    document.getElementById('reload-instruments-btn').addEventListener('click', loadInstruments);
-    document.getElementById('filter-search').addEventListener('keyup', function (e) { if (e.key === 'Enter') loadInstruments(); });
+    document.getElementById('reload-instruments-btn').addEventListener('click', function () { instPage = 0; loadInstruments(); });
+    document.getElementById('filter-asset-class').addEventListener('change', function () { instPage = 0; loadInstruments(); });
+    document.getElementById('filter-search').addEventListener('keyup', function (e) { if (e.key === 'Enter') { instPage = 0; loadInstruments(); } });
+
+    document.getElementById('pager-prev-btn').addEventListener('click', function () {
+      if (instPage > 0) { instPage--; loadInstruments(); }
+    });
+    document.getElementById('pager-next-btn').addEventListener('click', function () {
+      instPage++; loadInstruments();
+    });
+    document.getElementById('pager-page-size').addEventListener('change', function () {
+      instPageSize = parseInt(this.value, 10) || 25;
+      instPage = 0;
+      loadInstruments();
+    });
 
     document.getElementById('semantic-search-btn').addEventListener('click', async function () {
       var query = document.getElementById('semantic-query').value.trim();
       var msg = document.getElementById('instruments-msg');
       msg.innerHTML = '';
-      if (!query) { loadInstruments(); return; }
+      if (!query) { instPage = 0; loadInstruments(); return; }
       var assetClass = document.getElementById('filter-asset-class').value;
       try {
         var data = await Api.post('/api/instruments/search', { query: query, assetClass: assetClass || undefined, limit: 10 });
+        instSemanticMode = true;
         renderInstrumentsTable(data.results, true);
+        updateInstrumentsPager();
       } catch (err) {
         msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
       }
     });
 
-    async function startEditInstrument(id) {
-      try {
-        var data = await Api.get('/api/instruments/' + encodeURIComponent(id));
-        var item = data.instrument;
+    // --- Instrument modal (add / edit) — a modal instead of an inline form at
+    // the bottom of the page, which was easy to miss after clicking "Éditer"
+    // on a long list ("on a l'impression qu'il ne se passe rien").
+    function openInstrumentModal(item) {
+      document.getElementById('instrument-modal-msg').innerHTML = '';
+      document.getElementById('instrument-form').reset();
+      if (item) {
+        document.getElementById('instrument-modal-title').textContent = 'Modifier « ' + item.code + ' »';
         document.getElementById('inst-editing-id').value = item.id;
         document.getElementById('inst-asset-class').value = item.assetClass;
         document.getElementById('inst-asset-class').disabled = true;
@@ -422,33 +492,52 @@
         document.getElementById('inst-tags').value = (item.tags || []).join(', ');
         document.getElementById('inst-metadata').value = JSON.stringify(item.metadata || {});
         document.getElementById('inst-save-btn').textContent = 'Enregistrer les modifications';
-        document.getElementById('inst-cancel-edit-btn').classList.remove('hidden');
+      } else {
+        document.getElementById('instrument-modal-title').textContent = 'Nouvel instrument';
+        document.getElementById('inst-editing-id').value = '';
+        document.getElementById('inst-asset-class').disabled = false;
+        document.getElementById('inst-code').disabled = false;
+        document.getElementById('inst-save-btn').textContent = 'Enregistrer';
+      }
+      document.getElementById('instrument-modal-overlay').classList.remove('hidden');
+      document.getElementById('inst-name').focus();
+    }
+
+    function closeInstrumentModal() {
+      document.getElementById('instrument-modal-overlay').classList.add('hidden');
+      document.getElementById('instrument-form').reset();
+    }
+
+    document.getElementById('inst-new-btn').addEventListener('click', function () { openInstrumentModal(null); });
+    document.getElementById('instrument-modal-close-btn').addEventListener('click', closeInstrumentModal);
+    document.getElementById('inst-cancel-edit-btn').addEventListener('click', closeInstrumentModal);
+    document.getElementById('instrument-modal-overlay').addEventListener('click', function (e) {
+      if (e.target === this) closeInstrumentModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !document.getElementById('instrument-modal-overlay').classList.contains('hidden')) closeInstrumentModal();
+    });
+
+    async function startEditInstrument(id) {
+      try {
+        var data = await Api.get('/api/instruments/' + encodeURIComponent(id));
+        openInstrumentModal(data.instrument);
       } catch (err) {
         document.getElementById('instruments-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
       }
     }
 
-    function resetInstrumentForm() {
-      document.getElementById('instrument-form').reset();
-      document.getElementById('inst-editing-id').value = '';
-      document.getElementById('inst-asset-class').disabled = false;
-      document.getElementById('inst-code').disabled = false;
-      document.getElementById('inst-save-btn').textContent = 'Enregistrer';
-      document.getElementById('inst-cancel-edit-btn').classList.add('hidden');
-    }
-    document.getElementById('inst-cancel-edit-btn').addEventListener('click', resetInstrumentForm);
-
     document.getElementById('instrument-form').addEventListener('submit', async function (e) {
       e.preventDefault();
-      var msg = document.getElementById('instruments-msg');
-      msg.innerHTML = '';
+      var modalMsg = document.getElementById('instrument-modal-msg');
+      modalMsg.innerHTML = '';
       var editingId = document.getElementById('inst-editing-id').value;
       var tags = document.getElementById('inst-tags').value.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
       var metadataRaw = document.getElementById('inst-metadata').value.trim();
       var metadata = {};
       if (metadataRaw) {
         try { metadata = JSON.parse(metadataRaw); } catch (err) {
-          msg.innerHTML = '<div class="msg error">Métadonnées : JSON invalide.</div>';
+          modalMsg.innerHTML = '<div class="msg error">Métadonnées : JSON invalide.</div>';
           return;
         }
       }
@@ -470,11 +559,11 @@
             metadata: metadata,
           });
         }
-        resetInstrumentForm();
-        msg.innerHTML = '<div class="msg success">Instrument enregistré.</div>';
+        closeInstrumentModal();
+        document.getElementById('instruments-msg').innerHTML = '<div class="msg success">Instrument enregistré.</div>';
         loadInstruments();
       } catch (err) {
-        msg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+        modalMsg.innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
       }
     });
 

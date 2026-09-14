@@ -35,6 +35,25 @@ def test_list_instruments_filters_by_asset_class(client, auth_headers):
     assert codes == {"MC FP", "KER FP"}
 
 
+def test_list_instruments_reports_a_total_independent_of_the_page(client, auth_headers):
+    for i in range(5):
+        client.post("/api/instruments", json={**LVMH, "code": f"TICK{i} FP", "name": f"Stock {i}"}, headers=auth_headers)
+
+    res = client.get("/api/instruments", params={"assetClass": "EQUITY", "limit": 2, "offset": 0}, headers=auth_headers)
+    body = res.json()
+    assert body["total"] == 5
+    assert len(body["instruments"]) == 2
+
+    res2 = client.get("/api/instruments", params={"assetClass": "EQUITY", "limit": 2, "offset": 4}, headers=auth_headers)
+    body2 = res2.json()
+    assert body2["total"] == 5
+    assert len(body2["instruments"]) == 1  # last, partial page
+
+    # total respects the same search filter as the page itself
+    res3 = client.get("/api/instruments", params={"assetClass": "EQUITY", "q": "Stock 3", "limit": 2}, headers=auth_headers)
+    assert res3.json()["total"] == 1
+
+
 def test_update_instrument_partial(client, auth_headers):
     created = client.post("/api/instruments", json=LVMH, headers=auth_headers).json()["instrument"]
     res = client.put(f"/api/instruments/{created['id']}", json={"description": "Nouvelle description."}, headers=auth_headers)

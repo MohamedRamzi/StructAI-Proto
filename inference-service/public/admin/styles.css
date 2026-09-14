@@ -136,3 +136,25 @@ nav.tabs button.active { background: var(--panel-2); color: var(--text); border-
 
 .muted { color: var(--muted); }
 .mono { font-family: ui-monospace, monospace; }
+
+.pager { display: flex; align-items: center; gap: 10px; margin: 4px 0 14px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.pager select { width: auto; padding: 6px 10px; }
+.pager .pager-info { white-space: nowrap; }
+.pager .spacer { flex: 1; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(5,7,13,.72); backdrop-filter: blur(2px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 6vh 16px; z-index: 100; overflow-y: auto;
+}
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.modal-header h3 { margin: 0; }
+.modal-close {
+  background: transparent; border: none; color: var(--muted); font-size: 20px;
+  padding: 2px 8px; line-height: 1; border-radius: 6px;
+}
+.modal-close:hover { color: var(--text); filter: none; background: var(--panel-2); }

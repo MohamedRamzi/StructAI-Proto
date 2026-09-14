@@ -528,20 +528,31 @@ def make_instrument_id(asset_class: str, code: str) -> str:
     return f"{asset_class}:{code}"
 
 
-def list_instruments(asset_class: Optional[str] = None, search: Optional[str] = None, limit: int = 100, offset: int = 0) -> list[dict]:
-    query = "SELECT * FROM instruments WHERE 1=1"
+def _instruments_where(asset_class: Optional[str], search: Optional[str]) -> tuple[str, list[Any]]:
+    clause = " WHERE 1=1"
     params: list[Any] = []
     if asset_class:
-        query += " AND asset_class = ?"
+        clause += " AND asset_class = ?"
         params.append(asset_class)
     if search:
-        query += " AND (code LIKE ? OR name LIKE ? OR description LIKE ?)"
+        clause += " AND (code LIKE ? OR name LIKE ? OR description LIKE ?)"
         like = f"%{search}%"
         params.extend([like, like, like])
-    query += " ORDER BY asset_class ASC, code ASC LIMIT ? OFFSET ?"
-    params.extend([limit, offset])
-    rows = db.execute(query, params).fetchall()
+    return clause, params
+
+
+def list_instruments(asset_class: Optional[str] = None, search: Optional[str] = None, limit: int = 100, offset: int = 0) -> list[dict]:
+    clause, params = _instruments_where(asset_class, search)
+    query = "SELECT * FROM instruments" + clause + " ORDER BY asset_class ASC, code ASC LIMIT ? OFFSET ?"
+    rows = db.execute(query, params + [limit, offset]).fetchall()
     return [_row_to_instrument(r) for r in rows]
+
+
+def count_instruments(asset_class: Optional[str] = None, search: Optional[str] = None) -> int:
+    """Total row count for the same filters as list_instruments — lets the
+    admin UI paginate (page X of Y) instead of guessing from a partial page."""
+    clause, params = _instruments_where(asset_class, search)
+    return db.execute("SELECT COUNT(*) AS c FROM instruments" + clause, params).fetchone()["c"]
 
 
 def get_instrument(instrument_id: str) -> Optional[dict]:

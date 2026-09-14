@@ -74,6 +74,10 @@ def list_all(asset_class: Optional[str] = None, search: Optional[str] = None, li
     return db.list_instruments(asset_class, search, limit, offset)
 
 
+def count_all(asset_class: Optional[str] = None, search: Optional[str] = None) -> int:
+    return db.count_instruments(asset_class, search)
+
+
 def get(instrument_id: str) -> Optional[dict]:
     return db.get_instrument(instrument_id)
 

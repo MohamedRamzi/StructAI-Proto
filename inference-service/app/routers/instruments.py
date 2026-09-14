@@ -12,7 +12,11 @@ router = APIRouter(prefix="/api/instruments", tags=["instruments"])
 
 @router.get("", dependencies=[Depends(require_api_key_or_auth)])
 def list_instruments(assetClass: Optional[str] = None, q: Optional[str] = None, limit: int = 100, offset: int = 0):
-    return {"success": True, "instruments": instruments_service.list_all(assetClass, q, limit, offset)}
+    return {
+        "success": True,
+        "instruments": instruments_service.list_all(assetClass, q, limit, offset),
+        "total": instruments_service.count_all(assetClass, q),
+    }
 
 
 @router.get("/export")
