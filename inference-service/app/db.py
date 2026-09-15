@@ -96,6 +96,25 @@ def init_schema() -> None:
             updated_at TEXT NOT NULL,
             updated_by INTEGER REFERENCES users(id)
         );
+
+        CREATE TABLE IF NOT EXISTS parsing_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+            created_by TEXT,
+            query TEXT NOT NULL,
+            pipeline TEXT NOT NULL,
+            reasoning_mode TEXT,
+            chat_model TEXT,
+            embedding_model TEXT,
+            routing_result TEXT,
+            routing_duration_ms INTEGER,
+            extraction_result TEXT,
+            extraction_duration_ms INTEGER,
+            total_duration_ms INTEGER NOT NULL,
+            success INTEGER NOT NULL,
+            error_message TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_parsing_logs_created_at ON parsing_logs(created_at);
         """
     )
     db.commit()
@@ -585,6 +604,121 @@ def upsert_instrument(asset_class: str, code: str, name: str, description: str, 
 def delete_instrument(instrument_id: str) -> None:
     db.execute("DELETE FROM instruments WHERE id = ?", (instrument_id,))
     db.commit()
+
+
+# --- Parsing logs (audit trail for POST /api/analyze) ---
+# One row per call, written by routers/analyze.py regardless of outcome — a
+# failed call (sidecar unreachable, model returned no classifiable quote, ...)
+# is logged too, with `success=0` and `errorMessage` set, so reliability
+# issues (the kind of thing debugged by hand this session) become queryable
+# instead of living only in server logs. `routingResult` is the pré-prompt
+# (router) step's raw classification; `extractionResult` is the final quotes
+# after the domain pré-prompt. Either can be NULL depending on `pipeline`
+# ("route" has no extraction, "single" has no routing).
+
+def _row_to_parsing_log(row: sqlite3.Row) -> dict:
+    return {
+        "id": row["id"],
+        "createdAt": row["created_at"],
+        "createdBy": row["created_by"],
+        "query": row["query"],
+        "pipeline": row["pipeline"],
+        "reasoningMode": row["reasoning_mode"],
+        "chatModel": row["chat_model"],
+        "embeddingModel": row["embedding_model"],
+        "routingResult": json.loads(row["routing_result"]) if row["routing_result"] is not None else None,
+        "routingDurationMs": row["routing_duration_ms"],
+        "extractionResult": json.loads(row["extraction_result"]) if row["extraction_result"] is not None else None,
+        "extractionDurationMs": row["extraction_duration_ms"],
+        "totalDurationMs": row["total_duration_ms"],
+        "success": bool(row["success"]),
+        "errorMessage": row["error_message"],
+    }
+
+
+def create_parsing_log(
+    query: str,
+    pipeline: str,
+    total_duration_ms: int,
+    success: bool,
+    created_by: Optional[str] = None,
+    reasoning_mode: Optional[str] = None,
+    chat_model: Optional[str] = None,
+    embedding_model: Optional[str] = None,
+    routing_result: Optional[Any] = None,
+    routing_duration_ms: Optional[int] = None,
+    extraction_result: Optional[Any] = None,
+    extraction_duration_ms: Optional[int] = None,
+    error_message: Optional[str] = None,
+) -> dict:
+    cur = db.execute(
+        """
+        INSERT INTO parsing_logs (
+            created_at, created_by, query, pipeline, reasoning_mode, chat_model, embedding_model,
+            routing_result, routing_duration_ms, extraction_result, extraction_duration_ms,
+            total_duration_ms, success, error_message
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            _now(), created_by, query, pipeline, reasoning_mode, chat_model, embedding_model,
+            json.dumps(routing_result) if routing_result is not None else None,
+            routing_duration_ms,
+            json.dumps(extraction_result) if extraction_result is not None else None,
+            extraction_duration_ms,
+            total_duration_ms,
+            1 if success else 0,
+            error_message,
+        ),
+    )
+    db.commit()
+    return get_parsing_log(cur.lastrowid)
+
+
+def _parsing_logs_where(pipeline: Optional[str], success: Optional[bool], search: Optional[str]) -> tuple[str, list[Any]]:
+    clause = " WHERE 1=1"
+    params: list[Any] = []
+    if pipeline:
+        clause += " AND pipeline = ?"
+        params.append(pipeline)
+    if success is not None:
+        clause += " AND success = ?"
+        params.append(1 if success else 0)
+    if search:
+        clause += " AND query LIKE ?"
+        params.append(f"%{search}%")
+    return clause, params
+
+
+def list_parsing_logs(
+    limit: int = 50, offset: int = 0,
+    pipeline: Optional[str] = None, success: Optional[bool] = None, search: Optional[str] = None,
+) -> list[dict]:
+    clause, params = _parsing_logs_where(pipeline, success, search)
+    query = "SELECT * FROM parsing_logs" + clause + " ORDER BY id DESC LIMIT ? OFFSET ?"
+    rows = db.execute(query, params + [limit, offset]).fetchall()
+    return [_row_to_parsing_log(r) for r in rows]
+
+
+def count_parsing_logs(pipeline: Optional[str] = None, success: Optional[bool] = None, search: Optional[str] = None) -> int:
+    clause, params = _parsing_logs_where(pipeline, success, search)
+    return db.execute("SELECT COUNT(*) AS c FROM parsing_logs" + clause, params).fetchone()["c"]
+
+
+def get_parsing_log(log_id: int) -> Optional[dict]:
+    row = db.execute("SELECT * FROM parsing_logs WHERE id = ?", (log_id,)).fetchone()
+    return _row_to_parsing_log(row) if row else None
+
+
+def delete_parsing_log(log_id: int) -> bool:
+    cur = db.execute("DELETE FROM parsing_logs WHERE id = ?", (log_id,))
+    db.commit()
+    return cur.rowcount > 0
+
+
+def delete_all_parsing_logs() -> int:
+    cur = db.execute("DELETE FROM parsing_logs")
+    db.commit()
+    return cur.rowcount
 
 
 init_schema()

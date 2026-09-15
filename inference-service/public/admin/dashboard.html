@@ -20,6 +20,7 @@
       <button data-tab="instruments" class="active">Instruments</button>
       <button data-tab="prompts">Pré-prompts</button>
       <button data-tab="analyze">Tester l'analyse</button>
+      <button data-tab="logs">Journal des requêtes</button>
       <button data-tab="llm">Config. Chat (vLLM)</button>
       <button data-tab="embedding">Config. Embedding (vLLM)</button>
       <button data-tab="users">Utilisateurs</button>
@@ -221,6 +222,69 @@
       <pre id="analyze-result" class="mono" style="white-space:pre-wrap; margin-top:16px; display:none; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:12px;"></pre>
     </section>
 
+    <!-- Parsing logs (audit trail for POST /api/analyze) -->
+    <section id="tab-logs" class="card hidden">
+      <h2>Journal des requêtes de parsing</h2>
+      <p class="subtitle" style="margin-bottom:14px">
+        Une ligne par appel à <span class="mono">POST /api/analyze</span>, succès ou échec : requête client, modèles
+        utilisés, résultat du routeur (pré-prompt) et de l'extraction (prompt de domaine), durée de chaque étape.
+      </p>
+      <div id="logs-msg"></div>
+
+      <div class="row" style="margin-bottom:14px">
+        <select id="logs-filter-pipeline" style="max-width:220px">
+          <option value="">Tous les pipelines</option>
+          <option value="routed">routed</option>
+          <option value="single">single</option>
+          <option value="route">route</option>
+        </select>
+        <select id="logs-filter-success" style="max-width:160px">
+          <option value="">Tous les statuts</option>
+          <option value="true">Succès</option>
+          <option value="false">Échec</option>
+        </select>
+        <input id="logs-filter-search" type="text" placeholder="Filtrer par texte de la requête..." style="flex:1" />
+        <button class="secondary" id="logs-reload-btn">Rafraîchir</button>
+        <button class="danger hidden" id="logs-clear-btn">Vider le journal</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Appelant</th><th>Pipeline</th><th>Modèle chat</th>
+            <th>Pré-prompt</th><th>Extraction</th><th>Total</th><th>Statut</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="logs-tbody"></tbody>
+      </table>
+
+      <div class="pager" id="logs-pager">
+        <button class="secondary" id="logs-pager-prev-btn">‹ Précédent</button>
+        <span class="pager-info" id="logs-pager-info"></span>
+        <button class="secondary" id="logs-pager-next-btn">Suivant ›</button>
+        <span class="spacer"></span>
+        <label for="logs-pager-page-size" style="margin:0">Par page</label>
+        <select id="logs-pager-page-size" style="max-width:80px">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Parsing log detail — read-only modal (a log entry is a system-produced
+         record of what happened, not something edited in place). -->
+    <div class="modal-overlay hidden" id="log-detail-modal-overlay">
+      <div class="modal" style="max-width:760px">
+        <div class="modal-header">
+          <h3>Détail de la requête</h3>
+          <button class="modal-close" id="log-detail-close-btn">&times;</button>
+        </div>
+        <div id="log-detail-body" style="margin-top:10px"></div>
+      </div>
+    </div>
+
     <!-- Chat (LLM) config -->
     <section id="tab-llm" class="card hidden">
       <h2>Configuration du moteur de chat (analyse NLP)</h2>
@@ -351,6 +415,7 @@
       instruments: document.getElementById('tab-instruments'),
       prompts: document.getElementById('tab-prompts'),
       analyze: document.getElementById('tab-analyze'),
+      logs: document.getElementById('tab-logs'),
       llm: document.getElementById('tab-llm'),
       embedding: document.getElementById('tab-embedding'),
       users: document.getElementById('tab-users'),
@@ -1010,6 +1075,165 @@
       });
     }
 
+    // --- Parsing logs ---
+    var logsPage = 0;
+    var logsPageSize = 25;
+    var logsTotal = 0;
+
+    function statusBadge(success) {
+      return success ? '<span class="badge active">Succès</span>' : '<span class="badge revoked">Échec</span>';
+    }
+
+    function formatMs(ms) {
+      return ms == null ? '—' : (ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : ms + 'ms');
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleString('fr-FR'); } catch (e) { return iso; }
+    }
+
+    function renderLogsTable(list) {
+      var tbody = document.getElementById('logs-tbody');
+      tbody.innerHTML = list.map(function (log) {
+        return '<tr>' +
+          '<td class="mono muted">' + escapeHtml(formatDate(log.createdAt)) + '</td>' +
+          '<td class="muted">' + escapeHtml(log.createdBy || '—') + '</td>' +
+          '<td><span class="badge admin">' + escapeHtml(log.pipeline) + '</span></td>' +
+          '<td class="mono">' + escapeHtml(log.chatModel || '—') + '</td>' +
+          '<td class="mono">' + formatMs(log.routingDurationMs) + '</td>' +
+          '<td class="mono">' + formatMs(log.extractionDurationMs) + '</td>' +
+          '<td class="mono">' + formatMs(log.totalDurationMs) + '</td>' +
+          '<td>' + statusBadge(log.success) + '</td>' +
+          '<td>' +
+            '<button class="secondary" data-view-log="' + log.id + '">Détail</button> ' +
+            (isAdmin ? '<button class="danger" data-del-log="' + log.id + '">Suppr.</button>' : '') +
+          '</td>' +
+          '</tr>';
+      }).join('');
+
+      tbody.querySelectorAll('[data-view-log]').forEach(function (btn) {
+        btn.addEventListener('click', function () { openLogDetail(btn.dataset.viewLog); });
+      });
+      tbody.querySelectorAll('[data-del-log]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          if (!confirm('Supprimer cette entrée du journal ?')) return;
+          try {
+            await Api.del('/api/parsing-logs/' + btn.dataset.delLog);
+            loadLogs();
+          } catch (err) {
+            document.getElementById('logs-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+          }
+        });
+      });
+    }
+
+    function updateLogsPager() {
+      var totalPages = Math.max(1, Math.ceil(logsTotal / logsPageSize));
+      var from = logsTotal === 0 ? 0 : logsPage * logsPageSize + 1;
+      var to = Math.min(logsTotal, (logsPage + 1) * logsPageSize);
+      document.getElementById('logs-pager-info').textContent = logsTotal === 0
+        ? 'Aucune entrée'
+        : (from + '–' + to + ' sur ' + logsTotal + ' · page ' + (logsPage + 1) + '/' + totalPages);
+      document.getElementById('logs-pager-prev-btn').disabled = logsPage <= 0;
+      document.getElementById('logs-pager-next-btn').disabled = (logsPage + 1) * logsPageSize >= logsTotal;
+    }
+
+    async function loadLogs() {
+      var pipeline = document.getElementById('logs-filter-pipeline').value;
+      var success = document.getElementById('logs-filter-success').value;
+      var q = document.getElementById('logs-filter-search').value.trim();
+      var params = new URLSearchParams();
+      params.set('limit', logsPageSize);
+      params.set('offset', logsPage * logsPageSize);
+      if (pipeline) params.set('pipeline', pipeline);
+      if (success) params.set('success', success);
+      if (q) params.set('q', q);
+
+      try {
+        var data = await Api.get('/api/parsing-logs?' + params.toString());
+        logsTotal = data.total;
+        renderLogsTable(data.logs);
+        updateLogsPager();
+      } catch (err) {
+        document.getElementById('logs-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    }
+
+    document.getElementById('logs-reload-btn').addEventListener('click', function () { logsPage = 0; loadLogs(); });
+    document.getElementById('logs-filter-pipeline').addEventListener('change', function () { logsPage = 0; loadLogs(); });
+    document.getElementById('logs-filter-success').addEventListener('change', function () { logsPage = 0; loadLogs(); });
+    document.getElementById('logs-filter-search').addEventListener('keyup', function (e) { if (e.key === 'Enter') { logsPage = 0; loadLogs(); } });
+    document.getElementById('logs-pager-prev-btn').addEventListener('click', function () { if (logsPage > 0) { logsPage--; loadLogs(); } });
+    document.getElementById('logs-pager-next-btn').addEventListener('click', function () { logsPage++; loadLogs(); });
+    document.getElementById('logs-pager-page-size').addEventListener('change', function (e) {
+      logsPageSize = parseInt(e.target.value, 10);
+      logsPage = 0;
+      loadLogs();
+    });
+
+    if (isAdmin) { document.getElementById('logs-clear-btn').classList.remove('hidden'); }
+    document.getElementById('logs-clear-btn').addEventListener('click', async function () {
+      if (!confirm('Supprimer TOUTES les entrées du journal ? Cette action est irréversible.')) return;
+      try {
+        await Api.del('/api/parsing-logs');
+        logsPage = 0;
+        loadLogs();
+      } catch (err) {
+        document.getElementById('logs-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    });
+
+    // --- Log detail modal ---
+    function jsonBlock(value) {
+      if (value == null) return '<span class="muted">—</span>';
+      return '<pre class="mono" style="white-space:pre-wrap; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px; font-size:11px; max-height:320px; overflow:auto">' +
+        escapeHtml(JSON.stringify(value, null, 2)) + '</pre>';
+    }
+
+    async function openLogDetail(id) {
+      try {
+        var data = await Api.get('/api/parsing-logs/' + id);
+        var log = data.log;
+        var body = document.getElementById('log-detail-body');
+        body.innerHTML =
+          '<div class="row" style="margin-bottom:10px; flex-wrap:wrap">' +
+            '<span class="badge admin">' + escapeHtml(log.pipeline) + '</span> ' +
+            statusBadge(log.success) +
+            '<span class="muted">' + escapeHtml(formatDate(log.createdAt)) + ' · ' + escapeHtml(log.createdBy || '—') + '</span>' +
+          '</div>' +
+          '<label>Requête client</label>' +
+          '<pre class="mono" style="white-space:pre-wrap; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px; font-size:12px">' + escapeHtml(log.query) + '</pre>' +
+          '<div class="row" style="gap:20px; margin:10px 0; flex-wrap:wrap">' +
+            '<span class="muted">Modèle chat : <b class="mono" style="color:var(--text)">' + escapeHtml(log.chatModel || '—') + '</b></span>' +
+            '<span class="muted">Modèle embedding : <b class="mono" style="color:var(--text)">' + escapeHtml(log.embeddingModel || '—') + '</b></span>' +
+            '<span class="muted">Raisonnement : <b class="mono" style="color:var(--text)">' + escapeHtml(log.reasoningMode || '—') + '</b></span>' +
+          '</div>' +
+          '<div class="row" style="gap:20px; margin-bottom:14px; flex-wrap:wrap">' +
+            '<span class="muted">Durée pré-prompt : <b style="color:var(--text)">' + formatMs(log.routingDurationMs) + '</b></span>' +
+            '<span class="muted">Durée extraction : <b style="color:var(--text)">' + formatMs(log.extractionDurationMs) + '</b></span>' +
+            '<span class="muted">Durée totale : <b style="color:var(--text)">' + formatMs(log.totalDurationMs) + '</b></span>' +
+          '</div>' +
+          (log.errorMessage ? '<div class="msg error">' + escapeHtml(log.errorMessage) + '</div>' : '') +
+          '<label style="margin-top:10px">Résultat après pré-prompt (routage)</label>' + jsonBlock(log.routingResult) +
+          '<label style="margin-top:10px">Résultat après prompt (extraction)</label>' + jsonBlock(log.extractionResult);
+        document.getElementById('log-detail-modal-overlay').classList.remove('hidden');
+      } catch (err) {
+        document.getElementById('logs-msg').innerHTML = '<div class="msg error">' + escapeHtml(err.message) + '</div>';
+      }
+    }
+
+    function closeLogDetail() {
+      document.getElementById('log-detail-modal-overlay').classList.add('hidden');
+    }
+    document.getElementById('log-detail-close-btn').addEventListener('click', closeLogDetail);
+    document.getElementById('log-detail-modal-overlay').addEventListener('click', function (e) {
+      if (e.target === this) closeLogDetail();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !document.getElementById('log-detail-modal-overlay').classList.contains('hidden')) closeLogDetail();
+    });
+
     loadInstruments();
     loadPrompts();
     loadConfigPresets();
@@ -1017,6 +1241,7 @@
     loadEmbeddingConfig();
     loadUsers();
     loadKeys();
+    loadLogs();
   </script>
 </body>
 </html>

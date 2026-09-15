@@ -19,6 +19,7 @@ it into a clear `{ success: false, error }`. No silent degraded mode.
 """
 import json
 import re
+import time
 from collections import OrderedDict
 from typing import Optional
 
@@ -140,7 +141,7 @@ def _finalize_quote(raw: dict, index: int, routing: Optional[dict], prompt_key: 
     }
 
 
-def _analyze_single(query: str, reasoning_mode: Optional[str] = None) -> dict:
+def _analyze_single(query: str, reasoning_mode: Optional[str] = None, trace: Optional[dict] = None) -> dict:
     default_prompt = db.get_prompt("default")
     if default_prompt is None:
         raise RuntimeError("Aucun pré-prompt 'default' en base — le seed des prompts a échoué.")
@@ -149,16 +150,23 @@ def _analyze_single(query: str, reasoning_mode: Optional[str] = None) -> dict:
         f'Analyse cette demande client de produit(s) structuré(s) et extrais les spécifications au format JSON :\n"{query}"'
         "\n\nIMPORTANT: Réponds uniquement avec l'objet JSON valide (une clé \"quotes\" contenant un tableau)."
     )
+    extraction_started = time.monotonic()
     raw_quotes = _run_extraction(system_prompt, user_prompt, reasoning_mode)
+    if trace is not None:
+        trace["extractionMs"] = round((time.monotonic() - extraction_started) * 1000)
     routing = {"promptKey": "default", "scopePrecision": 1, "assetClass": None, "productFamily": None, "routerConfidence": None}
     quotes = [_finalize_quote(raw, i, routing, "default") for i, raw in enumerate(raw_quotes)]
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "single", "quotes": quotes}
 
 
-def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
+def _analyze_routed(query: str, reasoning_mode: Optional[str] = None, trace: Optional[dict] = None) -> dict:
     from . import prompt_resolver, routing as routing_svc
 
+    routing_started = time.monotonic()
     classifications = routing_svc.classify_request(query, reasoning_mode=reasoning_mode)
+    if trace is not None:
+        trace["routingMs"] = round((time.monotonic() - routing_started) * 1000)
+        trace["routing"] = classifications
 
     # Resolve a domain prompt per classification, then group by resolved promptKey.
     groups: "OrderedDict[str, dict]" = OrderedDict()
@@ -170,6 +178,7 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
 
     single_group = len(groups) == 1
     merged: dict[object, dict] = {}
+    extraction_elapsed_s = 0.0
 
     for key, group in groups.items():
         resolution = group["resolution"]
@@ -192,7 +201,9 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
                 "en conservant les quoteId d'origine."
             )
 
+        extraction_started = time.monotonic()
         raw_quotes = _run_extraction(system_prompt, user_prompt, reasoning_mode)
+        extraction_elapsed_s += time.monotonic() - extraction_started
 
         # Attach this group's routing to each quote it produced, matched to a
         # classification by quoteId when possible, else positionally.
@@ -209,18 +220,25 @@ def _analyze_routed(query: str, reasoning_mode: Optional[str] = None) -> dict:
             }
             merged[qid] = _finalize_quote(raw, i, routing, resolution["promptKey"])
 
+    if trace is not None:
+        trace["extractionMs"] = round(extraction_elapsed_s * 1000)
+
     quotes = [merged[qid] for qid in sorted(merged, key=lambda x: (isinstance(x, str), x))]
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "routed", "quotes": quotes}
 
 
-def _analyze_route_only(query: str, reasoning_mode: Optional[str] = None) -> dict:
+def _analyze_route_only(query: str, reasoning_mode: Optional[str] = None, trace: Optional[dict] = None) -> dict:
     """Just step 1+2: the router LLM call + the deterministic pre-prompt cascade,
     with NO extraction call. For iterating on the router prompt / asset-class
     selection cheaply. Quotes carry only `routing` — no `extraction`, no schema,
     no pricing."""
     from . import prompt_resolver, routing as routing_svc
 
+    routing_started = time.monotonic()
     classifications = routing_svc.classify_request(query, reasoning_mode=reasoning_mode)
+    if trace is not None:
+        trace["routingMs"] = round((time.monotonic() - routing_started) * 1000)
+        trace["routing"] = classifications
     quotes = []
     for cls in classifications:
         resolution = prompt_resolver.resolve(cls["assetClass"], cls["productFamily"])
@@ -240,9 +258,13 @@ def _analyze_route_only(query: str, reasoning_mode: Optional[str] = None) -> dic
     return {"modelUsed": db.get_llm_settings()["model"], "pipeline": "route", "quotes": quotes}
 
 
-def analyze_query(query: str, pipeline: str = "routed", reasoning_mode: Optional[str] = None) -> dict:
+def analyze_query(query: str, pipeline: str = "routed", reasoning_mode: Optional[str] = None, trace: Optional[dict] = None) -> dict:
+    """`trace`, when passed, is filled in-place with step timings/intermediate
+    results (routingMs, routing, extractionMs) as the pipeline progresses —
+    used by routers/analyze.py to write a parsing_logs row, including partial
+    data when a later step fails. Not part of the public API response."""
     if pipeline == "route":
-        return _analyze_route_only(query, reasoning_mode)
+        return _analyze_route_only(query, reasoning_mode, trace=trace)
     if pipeline == "single":
-        return _analyze_single(query, reasoning_mode)
-    return _analyze_routed(query, reasoning_mode)
+        return _analyze_single(query, reasoning_mode, trace=trace)
+    return _analyze_routed(query, reasoning_mode, trace=trace)
