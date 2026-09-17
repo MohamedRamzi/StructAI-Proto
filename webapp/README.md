@@ -118,7 +118,7 @@ Le fichier `src/assets/app-config.json` permet de piloter le comportement de l'a
 ### Prérequis
 - **Node.js** v20.0.0, v22.0.0 ou v24.0.0+ (100% compatible avec Node v24.18.0)
 - **npm** v10.0.0 ou supérieur
-- **Python 3.12** pour `../inference-service/` (pas 3.14 : `chromadb`/`pydantic-core` n'a pas encore de wheel précompilé) — `uv python install 3.12` si besoin.
+- **Python 3.12+** pour `../inference-service/` — 3.14 fonctionne aussi désormais (vérifié le 2026-09-17 : `pip install -r requirements.txt` s'installe entièrement depuis des wheels précompilées sous 3.14.6, et la suite `pytest` (188 tests) passe intégralement ; c'était bloqué par `chromadb`/`pydantic-core` sans wheel 3.14 au moment de l'écriture initiale de cette note, ce n'est plus le cas).
 - **vLLM** (via le plugin `vllm-metal` sur Apple Silicon, ou vLLM natif sur Linux/GPU) pour servir les deux sidecars chat/embedding — voir [`../inference-service/README.md`](../inference-service/README.md).
 
 ### 1. Cloner le Projet & Installer les Dépendances
