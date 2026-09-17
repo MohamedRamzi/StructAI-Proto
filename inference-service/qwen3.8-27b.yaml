@@ -1,0 +1,25 @@
+# vLLM serve config — Qwen3.8-27B
+# Doc: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
+model: /models/Qwen/Qwen3.8-27B
+served_model_name: qwen3.8-27b
+host: 0.0.0.0
+port: 8000
+# Pas de quantification nécessaire : 27B fp16 ~54 Go, largement dans les 96 Go VRAM
+dtype: float16
+# Modèle VL — usage texte uniquement, désactiver les modalités image/vidéo
+limit_mm_per_prompt: '{"image": 0, "video": 0}'
+# Contexte & batch
+max_model_len: 32768        # 32k tokens — ajuster selon usage
+max_num_seqs: 8             # 4-5 users + marge pour requêtes concurrentes
+max_num_batched_tokens: 32768
+# Performance H200
+gpu_memory_utilization: 0.88   # laisser ~12% pour l'OS et l'embedding
+tensor_parallel_size: 1
+enable_prefix_caching: true    # indispensable pour multi-turn avec peu d'users
+enable_chunked_prefill: true
+# API
+# api_key: "your-secret-key"    # optionnel mais recommandé
+disable_log_requests: false
+# Thinking mode Qwen3 (raisonnement)
+# reasoning_parser suffit à activer le mode thinking — enable_reasoning n'existe plus
+reasoning_parser: deepseek_r1

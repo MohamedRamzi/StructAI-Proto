@@ -1,0 +1,12 @@
+# vLLM serve config — Qwen3-Embedding-0.6B
+model: /models/Qwen/Qwen3-Embedding-0.6B
+served_model_name: qwen3-embedding
+host: 0.0.0.0
+port: 8000
+dtype: float16
+# Contexte embedding
+max_model_len: 8192
+max_num_seqs: 32             # embeddings sont légers, on peut batcho plus
+gpu_memory_utilization: 0.08 # ~1.2 Go modèle + blocs KV — le reste est pour le chat
+# api_key: "your-secret-key"
+disable_log_requests: false

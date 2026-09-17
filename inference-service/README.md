@@ -113,13 +113,23 @@ Le sidecar vLLM est **toujours mocké** dans les tests (`app.services.inference_
 
 ## Production (Linux + GPU, Docker)
 
+Deux stacks Docker Compose **séparées**, démarrées/arrêtées indépendamment — un redéploiement de
+l'app ne doit jamais toucher les sidecars GPU (chargement de modèle long), et un crash/restart de
+sidecar ne doit jamais couper l'API :
+
 ```bash
+# Sidecars vLLM (chat + embedding) — image officielle vllm/vllm-openai, GPU passthrough.
+docker compose -f docker-compose.yml up -d
+
+# L'application FastAPI — sans GPU, jointe en network_mode: host pour atteindre les
+# sidecars via localhost:8001 / localhost:8002 (les ports publiés par la stack ci-dessus),
+# exactement comme en dev.
 export JWT_SECRET=$(openssl rand -hex 32)
 export ADMIN_PASSWORD=... # mot de passe admin initial
-docker compose up -d
+docker compose -f docker-compose.app.yml up -d --build
 ```
 
-`docker-compose.yml` démarre 3 conteneurs : `vllm-chat` et `vllm-embed` (image officielle `vllm/vllm-openai`, GPU passthrough) et `app` (ce service, sans GPU). Ajuster les noms de modèles et `--gpu-memory-utilization` une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper GH200, 96 Go de VRAM).
+Arrêt indépendant : `docker compose -f docker-compose.yml down` ou `docker compose -f docker-compose.app.yml down`. Ajuster les noms de modèles et `--gpu-memory-utilization` dans les fichiers `--config` des sidecars (`qwen3.8-27b.yaml`, `qwen3-embedding.yaml`) une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper GH200, 96 Go de VRAM) — et `LLM_MODEL`/`EMBEDDING_MODEL` dans `docker-compose.app.yml` en conséquence (ce sont les `served_model_name` de ces fichiers, pas le chemin du modèle).
 
 ## Authentification
 

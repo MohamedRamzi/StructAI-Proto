@@ -1,82 +1,80 @@
 # Production deployment (Linux + NVIDIA GPU, e.g. a Grace Hopper GH200 with
-# 96GB VRAM). Three services:
+# 96GB VRAM) — the vLLM SIDECARS ONLY:
 #
-#   - vllm-chat   : vLLM serving the chat/analysis model, OpenAI-compatible API.
-#   - vllm-embed  : vLLM serving the embedding model, OpenAI-compatible API.
-#   - app         : this FastAPI service — no GPU required, calls the two
-#                   vLLM services over the docker-compose network via HTTP.
+#   - vllm-chat      : vLLM serving the chat/analysis model, OpenAI-compatible API.
+#   - vllm-embedding : vLLM serving the embedding model, OpenAI-compatible API.
+#
+# The FastAPI app itself lives in its own stack (docker-compose.app.yml), on
+# purpose — the two are started/stopped independently: reloading or
+# redeploying the app must never touch these GPU processes (which take a
+# while to load a model), and a sidecar restart/crash must never take the API
+# down with it. The app reaches these two services over the HOST's published
+# ports (8001, 8002 below), not a shared Docker network — see
+# docker-compose.app.yml for how.
 #
 # Both vLLM services use the OFFICIAL `vllm/vllm-openai` image — no hand-rolled
-# CUDA Dockerfile to build or maintain. `app` never imports vllm; see
+# CUDA Dockerfile to build or maintain. The app never imports vllm; see
 # app/services/inference_client.py.
 #
 # Adjust model names, --gpu-memory-utilization, and --max-model-len once the
-# real model sizes are settled against the 96GB of VRAM available. If a single
-# GPU can't comfortably host both models at once, split them across GPUs with
-# CUDA_VISIBLE_DEVICES / `deploy.resources.reservations.devices.device_ids`.
+# real model sizes are settled against the 96GB of VRAM available (see
+# qwen3.8-27b.yaml / qwen3-embedding.yaml — the --config files referenced
+# below). If a single GPU can't comfortably host both models at once, split
+# them across GPUs with CUDA_VISIBLE_DEVICES / `deploy.resources.reservations.devices.device_ids`.
+#
+# Start/stop independently:
+#   docker compose -f docker-compose.yml up -d       # sidecars
+#   docker compose -f docker-compose.yml down
+#   docker compose -f docker-compose.app.yml up -d    # app
+#   docker compose -f docker-compose.app.yml down
 
 services:
   vllm-chat:
-    image: vllm/vllm-openai:latest
-    command: >
-      --model Qwen/Qwen3-32B
-      --port 8000
-      --gpu-memory-utilization 0.45
+    image: docker-proxy-dockerhub.artifactory.mycloud.intrabpce.fr/vllm/vllm-openai:qwen38-arm64-cu130
+    container_name: vllm-chat
+    devices:
+      - nvidia.com/gpu=all
+    security_opt:
+      - label=disable
+    ipc: host
     ports:
       - "8001:8000"
+    environment:
+    #  - HF_TOKEN=${HF_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TMPDIR=/srv/tmp
+      - VLLM_USE_MODELSCOPE=0
+      - TRANSFORMERS_OFFLINE=1   # empêche tout appel HuggingFace pendant le chargement
+      - HF_DATASETS_OFFLINE=1
     volumes:
-      - vllm-cache:/root/.cache/huggingface
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      - /srv/CA.pem:/etc/ssl/certs/ca-certificates.crt
+      - ~/.cache/huggingface:/root/.cache/huggingface
+      - /srv/models:/models
+      - /srv/config/qwen3.8-27b.yaml:/configs/qwen3.8-27b.yaml:ro
+    command: --config /configs/qwen3.8-27b.yaml
     restart: unless-stopped
 
-  vllm-embed:
-    image: vllm/vllm-openai:latest
-    command: >
-      --model Qwen/Qwen3-Embedding-0.6B
-      --port 8000
-      --runner pooling
-      --gpu-memory-utilization 0.15
+  vllm-embedding:
+    image: docker-proxy-dockerhub.artifactory.mycloud.intrabpce.fr/vllm/vllm-openai:qwen38-arm64-cu130
+    container_name: vllm-embedding
+    devices:
+      - nvidia.com/gpu=all
+    security_opt:
+      - label=disable
+    ipc: host
     ports:
       - "8002:8000"
-    volumes:
-      - vllm-cache:/root/.cache/huggingface
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    restart: unless-stopped
-
-  app:
-    build: .
-    ports:
-      - "4001:4001"
     environment:
-      PORT: "4001"
-      JWT_SECRET: "${JWT_SECRET}"
-      ADMIN_EMAIL: "${ADMIN_EMAIL:-admin@structai.local}"
-      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
-      LLM_BASE_URL: "http://vllm-chat:8000/v1"
-      LLM_MODEL: "Qwen/Qwen3-32B"
-      EMBEDDING_BASE_URL: "http://vllm-embed:8000/v1"
-      EMBEDDING_MODEL: "Qwen/Qwen3-Embedding-0.6B"
-      DB_PATH: "/data/inference-service.db"
-      CHROMA_PATH: "/data/chroma"
+    #  - HF_TOKEN=${HF_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TMPDIR=/srv/tmp
     volumes:
-      - app-data:/data
-    depends_on:
-      - vllm-chat
-      - vllm-embed
+      - /srv/CA.pem:/etc/ssl/certs/ca-certificates.crt
+      - ~/.cache/huggingface:/root/.cache/huggingface
+      - /srv/models:/models
+      - /srv/config/qwen3-embedding.yaml:/configs/qwen3-embedding.yaml:ro
+    command: --config /configs/qwen3-embedding.yaml
     restart: unless-stopped
-
-volumes:
-  vllm-cache:
-  app-data:
+    depends_on:
+      vllm-chat:
+        condition: service_started
