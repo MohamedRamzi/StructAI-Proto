@@ -95,7 +95,7 @@ export async function sendLlmLogToServer(data: {
  *
  * The actual prompt-concatenation + LLM call + missing-field detection now
  * lives entirely in the standalone inference-service (see
- * inference-service/app/routers/analyze.py) — this just calls the main app's
+ * ../inference-service/app/routers/analyze.py) — this just calls the main app's
  * own POST /api/parse-query, which proxies to inference-service and then
  * resolves the underlying + prices the result (see server.ts, spec-builder.ts).
  * The LLM provider/model is configured centrally there (its admin UI), not

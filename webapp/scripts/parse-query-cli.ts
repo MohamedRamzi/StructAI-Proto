@@ -31,7 +31,7 @@ async function processSingleQuery(query: string, opts: { pipeline?: string; reas
       providerUsed: 'none',
       modelUsed: 'none',
       success: false,
-      error: 'INFERENCE_SERVICE_API_KEY manquante dans .env — générez une clé depuis la page d\'admin de inference-service (voir inference-service/README.md).',
+      error: 'INFERENCE_SERVICE_API_KEY manquante dans .env — générez une clé depuis la page d\'admin de inference-service (voir ../inference-service/README.md).',
     };
   }
 
@@ -76,7 +76,7 @@ async function processSingleQuery(query: string, opts: { pipeline?: string; reas
       providerUsed: 'error',
       modelUsed: 'error',
       success: false,
-      error: `Erreur lors de l'appel à inference-service (${INFERENCE_SERVICE_URL}) : ${err.message}. Vérifiez qu'il tourne ("npm run dev" dans inference-service/).`,
+      error: `Erreur lors de l'appel à inference-service (${INFERENCE_SERVICE_URL}) : ${err.message}. Vérifiez qu'il tourne ("npm run dev" dans ../inference-service/).`,
     };
   }
 }
@@ -157,8 +157,8 @@ Options:
   --pipeline <mode>       "routed" (défaut), "single" (ancien schéma plat), ou "route" (routage seul : classe d'actif + pré-prompt, sans extraction)
   --reasoning <mode>     "auto" | "fast" | "thinking" — surcharge le mode de raisonnement configuré dans inference-service
 
-Prérequis : inference-service doit tourner (npm run dev dans inference-service/,
-avec ses deux sidecars vLLM démarrés séparément — voir inference-service/README.md)
+Prérequis : inference-service doit tourner (npm run dev dans ../inference-service/,
+avec ses deux sidecars vLLM démarrés séparément — voir ../inference-service/README.md)
 et INFERENCE_SERVICE_URL / INFERENCE_SERVICE_API_KEY doivent être définis dans .env.
 
 Exemples:

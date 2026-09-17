@@ -35,7 +35,7 @@ async function main() {
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
     console.error(
       '[Seed] INFERENCE_SERVICE_ADMIN_EMAIL / INFERENCE_SERVICE_ADMIN_PASSWORD manquantes dans .env — ' +
-      "renseignez les identifiants d'un compte admin inference-service (voir inference-service/.env pour ADMIN_EMAIL/ADMIN_PASSWORD)."
+      "renseignez les identifiants d'un compte admin inference-service (voir ../inference-service/.env pour ADMIN_EMAIL/ADMIN_PASSWORD)."
     );
     process.exit(1);
   }

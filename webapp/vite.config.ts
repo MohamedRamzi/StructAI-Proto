@@ -20,10 +20,11 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     test: {
-      // inference-service/ is a standalone Python package (pytest, not vitest) --
-      // exclude it defensively in case its data/ or venv ever contain stray
-      // JS-looking files; its own suite runs via `pytest` inside that directory.
-      exclude: [...configDefaults.exclude, 'inference-service/**'],
+      // inference-service/ is now a sibling directory (../inference-service),
+      // not nested under this project — vitest's own root (this file's
+      // directory) never sees it, so no exclude is needed for it. Its own
+      // suite runs via `pytest` inside that directory.
+      exclude: [...configDefaults.exclude],
     },
   };
 });

@@ -1,9 +1,4 @@
-node_modules/
-build/
-dist/
-coverage/
+# Repo-wide junk only — each subproject owns its own build/dependency
+# ignores: webapp/.gitignore (Node), inference-service/.gitignore (Python).
 .DS_Store
-*.log
-.env*
-!.env.example
 .claude/settings.local.json

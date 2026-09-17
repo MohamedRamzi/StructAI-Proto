@@ -29,9 +29,9 @@ const LOG_FILE_PATH = path.join(process.cwd(), 'llm_debug.log');
 
 // Both the NLP analysis layer (prompt + LLM call + missing-field detection)
 // and the qualitative/semantic search over underlyings (embeddings + ChromaDB)
-// are delegated to the standalone inference-service (see inference-service/),
+// are delegated to the standalone inference-service (see ../inference-service/),
 // a single Python/FastAPI service backed by vLLM (run as HTTP sidecars — see
-// inference-service/README.md), reached with a service API key generated
+// ../inference-service/README.md), reached with a service API key generated
 // from its admin UI (http://localhost:4001/admin/login.html). This replaces
 // the former quotation-service + vector-service pair.
 const INFERENCE_SERVICE_URL = (process.env.INFERENCE_SERVICE_URL || 'http://localhost:4001').replace(/\/$/, '');
@@ -128,7 +128,7 @@ app.post('/api/instruments/search', async (req, res) => {
   if (!INFERENCE_SERVICE_API_KEY) {
     return res.status(503).json({
       success: false,
-      error: "Le service d'inférence (inference-service) n'est pas configuré : INFERENCE_SERVICE_API_KEY est manquante dans .env. Générez une clé depuis sa page d'admin (voir inference-service/README.md).",
+      error: "Le service d'inférence (inference-service) n'est pas configuré : INFERENCE_SERVICE_API_KEY est manquante dans .env. Générez une clé depuis sa page d'admin (voir ../inference-service/README.md).",
     });
   }
 
@@ -182,7 +182,7 @@ app.post('/api/parse-query', async (req, res) => {
 
     if (!INFERENCE_SERVICE_API_KEY) {
       return res.status(503).json({
-        error: "Le service d'inférence (inference-service) n'est pas configuré : INFERENCE_SERVICE_API_KEY est manquante dans .env. Générez une clé depuis sa page d'admin (voir inference-service/README.md).",
+        error: "Le service d'inférence (inference-service) n'est pas configuré : INFERENCE_SERVICE_API_KEY est manquante dans .env. Générez une clé depuis sa page d'admin (voir ../inference-service/README.md).",
       });
     }
 
@@ -204,7 +204,7 @@ app.post('/api/parse-query', async (req, res) => {
       console.error('[Parse Query] inference-service unreachable:', networkErr.message);
       logServerLlmDebug('INFERENCE SERVICE UNREACHABLE', networkErr.message);
       return res.status(503).json({
-        error: `Service d'analyse NLP (inference-service) indisponible : ${networkErr.message}. Vérifiez qu'il tourne sur ${INFERENCE_SERVICE_URL} ("npm run dev" dans inference-service/).`,
+        error: `Service d'analyse NLP (inference-service) indisponible : ${networkErr.message}. Vérifiez qu'il tourne sur ${INFERENCE_SERVICE_URL} ("npm run dev" dans ../inference-service/).`,
       });
     }
 

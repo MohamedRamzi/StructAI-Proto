@@ -34,7 +34,7 @@ cd ~/Documents
 
 # Cloner le dépôt Git
 git clone <URL_DU_DEPOT> structai
-cd structai
+cd structai/webapp
 ```
 
 ### B. Installer les Dépendances npm
@@ -43,7 +43,7 @@ npm install
 ```
 
 ### C. Configurer le Fichier d'Environnement `.env`
-Créez un fichier `.env` à la racine de votre dossier `structai` :
+Créez un fichier `.env` à la racine de votre dossier `webapp` :
 ```bash
 cp .env.example .env
 ```
