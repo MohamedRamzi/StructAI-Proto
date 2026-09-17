@@ -25,27 +25,28 @@ WORKDIR /app
 # (the outside world isn't reachable from this network) — same two settings
 # either way: a pip.conf [global] section (cert / index-url) or, as used
 # here, the equivalent PIP_CERT / PIP_INDEX_URL env vars pip maps them to.
+# Both set as normal (persistent) ENV, not scoped to just the install RUN
+# below — harmless at runtime, and it means an ad-hoc `docker exec ...
+# pip install` later still goes through the mirror instead of trying (and
+# failing) to reach the public internet.
 #
 # CA.pem is copied from the build context root (inference-service/CA.pem —
 # the same cert the vLLM sidecars trust via /srv/CA.pem, see
 # ../../config/docker-compose.yml, just placed inside this build context
-# too) to /srv/CA.pem in the image, matching that same path convention.
-# A `RUN --mount=type=bind,source=/srv/CA.pem,...` (reading the host's
-# /srv/CA.pem directly at build time, nothing copied into the image) was
-# tried first but didn't work in this environment — plain COPY does, so
-# that's what's used. One consequence of COPY over the bind-mount: the cert
-# ends up baked into an image layer, unlike the bind-mount approach — fine
-# for a CA cert (public trust material, not a secret/private key), but
+# too) to /app/CA.pem (WORKDIR, set above) in the image — hence PIP_CERT
+# pointing there, not at /srv/CA.pem. A `RUN --mount=type=bind,
+# source=/srv/CA.pem,...` (reading the host's /srv/CA.pem directly at build
+# time, nothing copied into the image) was tried first but didn't work in
+# this environment — plain COPY does, so that's what's used. One consequence
+# of COPY over the bind-mount: the cert ends up baked into an image layer —
+# fine for a CA cert (public trust material, not a secret/private key), but
 # worth knowing if that image is ever pushed somewhere less trusted.
-#
-# PIP_INDEX_URL is a normal (persistent) ENV — harmless at runtime, and it
-# means an ad-hoc `docker exec ... pip install` later still goes through the
-# mirror instead of trying (and failing) to reach the public internet.
 ENV PIP_INDEX_URL=https://artifactory.mycloud.intranatixis.com/artifactory/api/pypi/python/simple
+ENV PIP_CERT=/app/CA.pem
 
-COPY CA.pem /srv/CA.pem
+COPY CA.pem .
 COPY requirements.txt .
-RUN PIP_CERT=/srv/CA.pem pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
