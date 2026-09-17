@@ -283,3 +283,135 @@ def test_gemini_thinking_summary_parts_are_dropped_from_the_answer(client, monke
 
     monkeypatch.setattr(httpx, "post", fake_post)
     assert inference_client.chat_completion("system", "user") == '{"quotes": []}'
+
+
+# --- chat() — the general multi-turn entry point (admin direct-chat tester) --
+
+def test_chat_openai_compatible_forwards_multi_turn_messages_unchanged(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="qwen3", base_url="http://localhost:8001/v1", api_key=None, updated_by=1)
+    captured = _capture_openai_post(monkeypatch)
+
+    messages = [
+        {"role": "system", "content": "Tu es un assistant."},
+        {"role": "user", "content": "Bonjour"},
+        {"role": "assistant", "content": "Salut !"},
+        {"role": "user", "content": "Ça va ?"},
+    ]
+    inference_client.chat(messages)
+    assert captured["json"]["messages"] == messages
+
+
+def test_chat_openai_compatible_returns_usage_finish_reason_and_duration(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="qwen3", base_url="http://localhost:8001/v1", api_key=None, updated_by=1)
+
+    def fake_post(url, json=None, headers=None, timeout=None, params=None):
+        return FakeResponse(200, {
+            "model": "qwen3-4b-instruct",
+            "choices": [{"message": {"content": "Bonjour !"}, "finish_reason": "stop"}],
+            "usage": {"prompt_tokens": 12, "completion_tokens": 4, "total_tokens": 16},
+        })
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    result = inference_client.chat([{"role": "user", "content": "Salut"}])
+
+    assert result["content"] == "Bonjour !"
+    assert result["model"] == "qwen3-4b-instruct"  # echoed by the server, preferred over cfg's
+    assert result["finishReason"] == "stop"
+    assert result["usage"] == {"promptTokens": 12, "completionTokens": 4, "totalTokens": 16}
+    assert isinstance(result["durationMs"], int) and result["durationMs"] >= 0
+
+
+def test_chat_openai_compatible_missing_usage_reports_none_not_zero(client, monkeypatch):
+    """A server that doesn't echo `usage` must show up as "unknown" (None) to
+    the admin UI, not a silently wrong 0 — no-silent-fallback applies to
+    diagnostic stats too, not just the answer content."""
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="m", base_url="http://localhost:8001/v1", api_key=None, updated_by=1)
+
+    def fake_post(url, json=None, headers=None, timeout=None, params=None):
+        return FakeResponse(200, {"choices": [{"message": {"content": "ok"}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    result = inference_client.chat([{"role": "user", "content": "Salut"}])
+    assert result["usage"] == {"promptTokens": None, "completionTokens": None, "totalTokens": None}
+    assert result["finishReason"] is None
+    assert result["model"] == "m"  # falls back to the configured model name
+
+
+def test_chat_json_mode_false_does_not_affect_openai_compatible_payload(client, monkeypatch):
+    """This provider has never set response_format at all — json_mode is a
+    no-op for it either way, verified so a future regression here is caught."""
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="openai_compatible", model="m", base_url="http://localhost:8001/v1", api_key=None, updated_by=1)
+    captured = _capture_openai_post(monkeypatch)
+    inference_client.chat([{"role": "user", "content": "Salut"}], json_mode=False)
+    assert "response_format" not in captured["json"]
+
+
+def test_chat_gemini_splits_system_message_and_maps_assistant_to_model_role(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="k", updated_by=1)
+    captured = _capture_gemini_post(monkeypatch)
+
+    messages = [
+        {"role": "system", "content": "Tu es un assistant."},
+        {"role": "user", "content": "Bonjour"},
+        {"role": "assistant", "content": "Salut !"},
+        {"role": "user", "content": "Ça va ?"},
+    ]
+    inference_client.chat(messages)
+
+    assert captured["json"]["system_instruction"]["parts"][0]["text"] == "Tu es un assistant."
+    assert captured["json"]["contents"] == [
+        {"role": "user", "parts": [{"text": "Bonjour"}]},
+        {"role": "model", "parts": [{"text": "Salut !"}]},
+        {"role": "user", "parts": [{"text": "Ça va ?"}]},
+    ]
+
+
+def test_chat_gemini_json_mode_false_skips_response_mime_type(client, monkeypatch):
+    """Forcing JSON mode on a free-form "Bonjour, comment vas-tu ?" chat would
+    be actively wrong, not just unhelpful — the admin's raw chat tester must
+    be able to turn it off."""
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="k", updated_by=1)
+
+    captured = _capture_gemini_post(monkeypatch)
+    inference_client.chat([{"role": "user", "content": "Bonjour"}], json_mode=True)
+    assert captured["json"]["generationConfig"]["responseMimeType"] == "application/json"
+
+    captured = _capture_gemini_post(monkeypatch)
+    inference_client.chat([{"role": "user", "content": "Bonjour"}], json_mode=False)
+    assert "responseMimeType" not in captured["json"]["generationConfig"]
+
+
+def test_chat_gemini_returns_usage_and_finish_reason(client, monkeypatch):
+    from app import db
+    from app.services import inference_client
+
+    db.update_llm_settings(provider="gemini", model="gemini-flash-latest", api_key="k", updated_by=1)
+
+    def fake_post(url, params=None, json=None, timeout=None, headers=None):
+        return FakeResponse(200, {
+            "candidates": [{"content": {"parts": [{"text": "Bonjour !"}]}, "finishReason": "STOP"}],
+            "usageMetadata": {"promptTokenCount": 8, "candidatesTokenCount": 3, "totalTokenCount": 11},
+        })
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    result = inference_client.chat([{"role": "user", "content": "Salut"}])
+    assert result["finishReason"] == "STOP"
+    assert result["usage"] == {"promptTokens": 8, "completionTokens": 3, "totalTokens": 11}

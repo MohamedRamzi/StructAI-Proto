@@ -21,6 +21,7 @@
       <button data-tab="prompts">Pré-prompts</button>
       <button data-tab="analyze">Tester l'analyse</button>
       <button data-tab="logs">Journal des requêtes</button>
+      <button data-tab="chat">Chat direct</button>
       <button data-tab="llm">Config. Chat (vLLM)</button>
       <button data-tab="embedding">Config. Embedding (vLLM)</button>
       <button data-tab="users">Utilisateurs</button>
@@ -285,6 +286,33 @@
       </div>
     </div>
 
+    <!-- Direct chat with the model -->
+    <section id="tab-chat" class="card hidden">
+      <h2>Chat direct avec le modèle</h2>
+      <p class="subtitle" style="margin-bottom:14px">
+        Conversation brute avec le moteur de chat configuré (<span class="mono">POST /api/direct-chat</span>) —
+        aucun routeur, aucun pré-prompt de domaine, aucune extraction de schéma : juste le modèle, pour tester
+        son comportement (suivi d'instructions, vitesse, mode réflexion) indépendamment du pipeline d'analyse.
+      </p>
+      <div id="chat-msg"></div>
+
+      <div class="row" style="margin-bottom:12px; align-items:center">
+        <label style="display:flex; align-items:center; gap:6px; margin:0; cursor:pointer">
+          <input type="checkbox" id="chat-think-toggle" style="width:auto" />
+          Mode réflexion (thinking)
+        </label>
+        <span class="spacer" style="flex:1"></span>
+        <button class="secondary" id="chat-reset-btn">Réinitialiser la conversation</button>
+      </div>
+
+      <div id="chat-transcript" class="chat-transcript" style="min-height:120px; max-height:440px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:16px; background:var(--panel-2); margin-bottom:14px;"></div>
+
+      <div class="row" style="align-items:flex-end">
+        <textarea id="chat-input" rows="3" placeholder="Votre message... (Entrée pour envoyer, Maj+Entrée pour un saut de ligne)" style="flex:1"></textarea>
+        <button id="chat-send-btn">Envoyer</button>
+      </div>
+    </section>
+
     <!-- Chat (LLM) config -->
     <section id="tab-llm" class="card hidden">
       <h2>Configuration du moteur de chat (analyse NLP)</h2>
@@ -416,6 +444,7 @@
       prompts: document.getElementById('tab-prompts'),
       analyze: document.getElementById('tab-analyze'),
       logs: document.getElementById('tab-logs'),
+      chat: document.getElementById('tab-chat'),
       llm: document.getElementById('tab-llm'),
       embedding: document.getElementById('tab-embedding'),
       users: document.getElementById('tab-users'),
@@ -1232,6 +1261,97 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !document.getElementById('log-detail-modal-overlay').classList.contains('hidden')) closeLogDetail();
+    });
+
+    // --- Direct chat with the model ---
+    var chatHistory = []; // [{role: 'user'|'assistant', content}] — sent whole each turn for real multi-turn context
+
+    function formatChatStats(stats) {
+      var parts = [];
+      if (stats.model) parts.push('<span>' + escapeHtml(stats.model) + '</span>');
+      if (stats.durationMs != null) {
+        parts.push('<span>' + (stats.durationMs >= 1000 ? (stats.durationMs / 1000).toFixed(1) + 's' : stats.durationMs + 'ms') + '</span>');
+      }
+      var u = stats.usage || {};
+      if (u.promptTokens != null || u.completionTokens != null || u.totalTokens != null) {
+        parts.push('<span>' + (u.promptTokens ?? '?') + '+' + (u.completionTokens ?? '?') + '=' + (u.totalTokens ?? '?') + ' tokens</span>');
+      }
+      if (u.completionTokens != null && stats.durationMs) {
+        parts.push('<span>' + (u.completionTokens / (stats.durationMs / 1000)).toFixed(1) + ' tok/s</span>');
+      }
+      if (stats.finishReason) parts.push('<span>fin: ' + escapeHtml(stats.finishReason) + '</span>');
+      return parts.join('');
+    }
+
+    function appendChatTurn(role, content, stats, isError) {
+      var transcript = document.getElementById('chat-transcript');
+      var turn = document.createElement('div');
+      turn.className = 'chat-turn ' + role + (isError ? ' error' : '');
+      var bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = content;
+      turn.appendChild(bubble);
+      if (stats) {
+        var statsRow = document.createElement('div');
+        statsRow.className = 'chat-stats';
+        statsRow.innerHTML = formatChatStats(stats);
+        turn.appendChild(statsRow);
+      }
+      transcript.appendChild(turn);
+      transcript.scrollTop = transcript.scrollHeight;
+      return turn;
+    }
+
+    function resetChat() {
+      chatHistory = [];
+      document.getElementById('chat-transcript').innerHTML = '';
+      document.getElementById('chat-msg').innerHTML = '';
+    }
+
+    async function sendChatMessage() {
+      var input = document.getElementById('chat-input');
+      var text = input.value.trim();
+      if (!text) return;
+
+      var sendBtn = document.getElementById('chat-send-btn');
+      document.getElementById('chat-msg').innerHTML = '';
+      appendChatTurn('user', text);
+      chatHistory.push({ role: 'user', content: text });
+      input.value = '';
+      input.disabled = true;
+      sendBtn.disabled = true;
+
+      var typing = document.createElement('div');
+      typing.className = 'chat-typing';
+      typing.textContent = 'Le modèle réfléchit...';
+      document.getElementById('chat-transcript').appendChild(typing);
+      document.getElementById('chat-transcript').scrollTop = document.getElementById('chat-transcript').scrollHeight;
+
+      var reasoningMode = document.getElementById('chat-think-toggle').checked ? 'thinking' : 'fast';
+      try {
+        var data = await Api.post('/api/direct-chat', { messages: chatHistory, reasoningMode: reasoningMode });
+        typing.remove();
+        appendChatTurn('assistant', data.content, data);
+        chatHistory.push({ role: 'assistant', content: data.content });
+      } catch (err) {
+        typing.remove();
+        appendChatTurn('assistant', err.message, null, true);
+        // The user's turn stays in chatHistory (it was genuinely sent) but no
+        // assistant reply is recorded — retrying re-sends the same history.
+      } finally {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
+    document.getElementById('chat-reset-btn').addEventListener('click', resetChat);
+    document.getElementById('chat-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
     });
 
     loadInstruments();

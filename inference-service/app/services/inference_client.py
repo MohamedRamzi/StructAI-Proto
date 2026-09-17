@@ -71,26 +71,52 @@ def _resolve_reasoning_mode(cfg: dict, override: Optional[str]) -> str:
 
 
 def chat_completion(system_prompt: str, user_prompt: str, reasoning_mode: Optional[str] = None) -> str:
+    """Content-only convenience wrapper around chat() for the routed-analyze
+    pipeline's two calls (router classification, domain extraction) — both
+    always want JSON back, so json_mode stays at its default (True)."""
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    return chat(messages, reasoning_mode=reasoning_mode)["content"]
+
+
+def chat(messages: list[dict], reasoning_mode: Optional[str] = None, json_mode: bool = True) -> dict:
+    """General entry point: an arbitrary multi-turn message list (roles
+    "system"/"user"/"assistant"), not just one fixed system+user pair — used
+    directly by the admin's raw chat tester (POST /api/direct-chat), which
+    needs real conversation history and free-form text (json_mode=False).
+
+    Returns {content, model, finishReason, usage: {promptTokens,
+    completionTokens, totalTokens}, durationMs} — `usage`/`finishReason`
+    fields are None where a provider doesn't report them. `durationMs` times
+    only the HTTP call itself, not JSON (de)serialization overhead."""
     cfg = db.get_llm_settings()
     provider = cfg.get("provider") or "openai_compatible"
     mode = _resolve_reasoning_mode(cfg, reasoning_mode)
     if provider == "gemini":
-        return _gemini_chat_completion(system_prompt, user_prompt, cfg, mode)
+        return _gemini_chat(messages, cfg, mode, json_mode)
     if provider == "openai_compatible":
-        return _openai_compatible_chat_completion(system_prompt, user_prompt, cfg, mode)
+        return _openai_compatible_chat(messages, cfg, mode, json_mode)
     raise RuntimeError(f'Provider LLM inconnu ou non configuré : "{provider}". Configurez un moteur depuis la page d\'admin.')
 
 
-def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, reasoning_mode: str = "auto") -> str:
-    """Calls POST {baseUrl}/chat/completions (OpenAI-compatible) and returns the
-    assistant message's raw text content. `apiKey`, if set, is sent as a Bearer
-    token — required for a real cloud OpenAI-compatible API, optional (and
-    normally unset) for a local sidecar.
+def _openai_compatible_chat(messages: list[dict], cfg: dict, reasoning_mode: str = "auto", json_mode: bool = True) -> dict:
+    """Calls POST {baseUrl}/chat/completions (OpenAI-compatible). `apiKey`, if
+    set, is sent as a Bearer token — required for a real cloud OpenAI-compatible
+    API, optional (and normally unset) for a local sidecar. `messages` is
+    forwarded as-is: OpenAI's chat format already uses "system"/"user"/"assistant"
+    roles natively, so no conversion is needed here (unlike Gemini, see below).
 
     `reasoning_mode` "fast"/"thinking" is passed via vLLM's `chat_template_kwargs`
     (`enable_thinking`), which Qwen3 & other reasoning models' chat templates
     honour; "auto" sends nothing. A non-vLLM endpoint (real OpenAI, LM Studio)
-    may reject `chat_template_kwargs` — keep the mode on "auto" there."""
+    may reject `chat_template_kwargs` — keep the mode on "auto" there.
+    `json_mode` is unused here on purpose: this path has never set a strict
+    `response_format`, relying on prompt instructions instead (see the
+    "Réponds uniquement avec l'objet JSON..." lines callers already send),
+    which also lets free-form chat (json_mode=False) just work with zero
+    extra plumbing."""
     base_url = (cfg.get("baseUrl") or "").rstrip("/")
     if not base_url:
         raise RuntimeError("Aucune URL de base configurée pour le moteur de chat. Configurez-la depuis la page d'admin.")
@@ -99,10 +125,7 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
 
     payload = {
         "model": cfg["model"],
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
+        "messages": messages,
         "temperature": cfg["temperature"],
     }
     if reasoning_mode == "fast":
@@ -110,6 +133,7 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
     elif reasoning_mode == "thinking":
         payload["chat_template_kwargs"] = {"enable_thinking": True}
 
+    started = time.monotonic()
     try:
         # 300s, not 120s: a local vLLM-metal sidecar on Apple Silicon (dev) can
         # run an order of magnitude slower than the GH200 target (single-digit
@@ -124,24 +148,46 @@ def _openai_compatible_chat_completion(system_prompt: str, user_prompt: str, cfg
             f"Impossible de contacter le moteur de chat configuré sur {base_url} : {exc}. "
             f'Vérifiez que le sidecar "vllm serve" (ou l\'endpoint configuré) tourne et que l\'URL est correcte.'
         ) from exc
+    duration_ms = round((time.monotonic() - started) * 1000)
 
     if response.status_code != 200:
         raise RuntimeError(f"Le moteur de chat ne répond pas ({response.status_code}) sur {url} : {response.text[:300]}")
 
     data = response.json()
     try:
-        content = data["choices"][0]["message"]["content"]
+        choice = data["choices"][0]
+        content = choice["message"]["content"]
     except (KeyError, IndexError, TypeError) as exc:
         raise RuntimeError(f"Réponse du moteur de chat dans un format inattendu : {data}") from exc
-    return content or ""
+
+    usage = data.get("usage") or {}
+    return {
+        "content": content or "",
+        "model": data.get("model") or cfg.get("model"),
+        "finishReason": choice.get("finish_reason"),
+        "usage": {
+            "promptTokens": usage.get("prompt_tokens"),
+            "completionTokens": usage.get("completion_tokens"),
+            "totalTokens": usage.get("total_tokens"),
+        },
+        "durationMs": duration_ms,
+    }
 
 
-def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, reasoning_mode: str = "auto") -> str:
+def _gemini_chat(messages: list[dict], cfg: dict, reasoning_mode: str = "auto", json_mode: bool = True) -> dict:
     """Calls Google's Generative Language API directly (no SDK dependency).
+    Gemini's protocol splits a "system" message into its own top-level
+    `system_instruction` field (at most one, conventionally first) and uses
+    role "model" (not "assistant") for the model's own turns in `contents` —
+    both handled by the conversion below, so callers only ever deal in the
+    OpenAI-style "system"/"user"/"assistant" roles.
 
     `reasoning_mode` maps to `thinkingConfig.thinkingBudget` (0 = off for
     "fast", -1 = dynamic for "thinking"); "auto" sends nothing. Only the 2.5+
-    thinking models honour it — an older model may 400, so keep "auto" there."""
+    thinking models honour it — an older model may 400, so keep "auto" there.
+    `json_mode=False` (the admin's free-form chat tester) skips
+    `responseMimeType: "application/json"` — forcing JSON mode on a plain
+    "Bonjour, comment vas-tu ?" would be actively wrong, not just unhelpful."""
     api_key = cfg.get("apiKey")
     if not api_key:
         raise RuntimeError("Aucune clé API Gemini configurée. Renseignez-la depuis la page d'admin (\"Config. Chat\").")
@@ -154,28 +200,33 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, rea
     model = cfg.get("model") or "gemini-flash-latest"
     url = f"{GEMINI_API_BASE}/models/{model}:generateContent"
 
-    generation_config = {
-        "temperature": cfg["temperature"],
-        "responseMimeType": "application/json",
-    }
+    system_instruction = None
+    contents = []
+    for m in messages:
+        if m["role"] == "system":
+            if system_instruction is None:  # only the first — Gemini takes one
+                system_instruction = {"parts": [{"text": m["content"]}]}
+            continue
+        contents.append({"role": "model" if m["role"] == "assistant" else "user", "parts": [{"text": m["content"]}]})
+
+    generation_config = {"temperature": cfg["temperature"]}
+    if json_mode:
+        generation_config["responseMimeType"] = "application/json"
     if reasoning_mode == "fast":
         generation_config["thinkingConfig"] = {"thinkingBudget": 0}
     elif reasoning_mode == "thinking":
         generation_config["thinkingConfig"] = {"thinkingBudget": -1}
 
+    body = {"contents": contents, "generationConfig": generation_config}
+    if system_instruction:
+        body["system_instruction"] = system_instruction
+
+    started = time.monotonic()
     try:
-        response = _post_with_retry(
-            url,
-            params={"key": api_key},
-            json={
-                "system_instruction": {"parts": [{"text": system_prompt}]},
-                "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
-                "generationConfig": generation_config,
-            },
-            timeout=120.0,
-        )
+        response = _post_with_retry(url, params={"key": api_key}, json=body, timeout=120.0)
     except httpx.RequestError as exc:
         raise RuntimeError(f"Impossible de contacter l'API Gemini : {exc}.") from exc
+    duration_ms = round((time.monotonic() - started) * 1000)
 
     if response.status_code != 200:
         # Gemini's error body is JSON with useful detail (invalid key, quota, ...) —
@@ -185,13 +236,26 @@ def _gemini_chat_completion(system_prompt: str, user_prompt: str, cfg: dict, rea
 
     data = response.json()
     try:
-        parts = data["candidates"][0]["content"]["parts"]
+        candidate = data["candidates"][0]
+        parts = candidate["content"]["parts"]
         # In "thinking" mode a reasoning summary can come back as parts flagged
         # `thought: true` — keep only the actual answer text.
         content = "".join(part.get("text", "") for part in parts if not part.get("thought"))
     except (KeyError, IndexError, TypeError) as exc:
         raise RuntimeError(f"Réponse Gemini dans un format inattendu : {data}") from exc
-    return content or ""
+
+    usage_meta = data.get("usageMetadata") or {}
+    return {
+        "content": content or "",
+        "model": model,
+        "finishReason": candidate.get("finishReason"),
+        "usage": {
+            "promptTokens": usage_meta.get("promptTokenCount"),
+            "completionTokens": usage_meta.get("candidatesTokenCount"),
+            "totalTokens": usage_meta.get("totalTokenCount"),
+        },
+        "durationMs": duration_ms,
+    }
 
 
 def embed(texts: list[str]) -> list[list[float]]:
