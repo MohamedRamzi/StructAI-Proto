@@ -9,7 +9,16 @@
 # docker-compose.app.yml's `build:`), because COPY . . below needs
 # requirements.txt, run.py, app/, public/, prompts/ — all siblings of this
 # file's own app/config/ directory, not inside it.
-FROM python:3.12-slim
+#
+# `slim-trixie` currently resolves to Python 3.14 (Debian 13) — confirmed
+# compatible 2026-09-17: `pip install -r requirements.txt` installs entirely
+# from precompiled wheels and the full pytest suite (188 tests) passes
+# unmodified. It's a FLOATING tag — a future rebuild picks up whatever
+# `slim-trixie` points to then (e.g. once 3.15 is promoted), not necessarily
+# 3.14 — pin to an exact tag (e.g. 3.14.7-slim-trixie) instead if that drift
+# is undesirable. Pulled through the internal Artifactory Docker Hub proxy,
+# same pattern as vllm/vllm-openai in ../../config/docker-compose.yml.
+FROM docker-proxy-dockerhub.artifactory.mycloud.intrabpce.fr/python:slim-trixie
 
 WORKDIR /app
 
