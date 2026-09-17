@@ -1,12 +1,3 @@
-# syntax=docker/dockerfile:1
-# The above parser directive MUST be the file's first line (Docker only scans
-# leading comment lines for it) — it opts into the `RUN --mount=type=bind`
-# form used below, needed to reach /srv/CA.pem at build time. Requires
-# BuildKit, the default backend for `docker build` / `docker compose build`
-# on any reasonably current Docker Engine; if it's ever disabled, set
-# DOCKER_BUILDKIT=1 (or COMPOSE_BAKE / a compose.yml `x-bake` override) before
-# building.
-#
 # The `app` service in ./docker-compose.app.yml (this file lives right next
 # to it, inference-service/app/config/) — this service NEVER imports vllm, so
 # this image stays small and GPU-free. Only httpx is used to reach the two
@@ -35,23 +26,26 @@ WORKDIR /app
 # either way: a pip.conf [global] section (cert / index-url) or, as used
 # here, the equivalent PIP_CERT / PIP_INDEX_URL env vars pip maps them to.
 #
-# /srv/CA.pem is a HOST path (same file the vLLM sidecars trust — see
-# ../../config/docker-compose.yml), outside this Dockerfile's build context,
-# so a plain COPY can't reach it. `--mount=type=bind` exposes it to this ONE
-# RUN layer only, at build time — it's never copied into an image layer, so
-# it doesn't need to exist at runtime and isn't baked into the final image.
-# Needs /srv/CA.pem present on whatever machine actually runs `docker build`
-# (i.e. the deployment host — this isn't built elsewhere and pushed).
+# CA.pem is copied from the build context root (inference-service/CA.pem —
+# the same cert the vLLM sidecars trust via /srv/CA.pem, see
+# ../../config/docker-compose.yml, just placed inside this build context
+# too) to /srv/CA.pem in the image, matching that same path convention.
+# A `RUN --mount=type=bind,source=/srv/CA.pem,...` (reading the host's
+# /srv/CA.pem directly at build time, nothing copied into the image) was
+# tried first but didn't work in this environment — plain COPY does, so
+# that's what's used. One consequence of COPY over the bind-mount: the cert
+# ends up baked into an image layer, unlike the bind-mount approach — fine
+# for a CA cert (public trust material, not a secret/private key), but
+# worth knowing if that image is ever pushed somewhere less trusted.
 #
-# PIP_INDEX_URL is also kept as a normal (persistent) ENV below — harmless at
-# runtime, and it means an ad-hoc `docker exec ... pip install` later still
-# goes through the mirror instead of trying (and failing) to reach the public
-# internet.
+# PIP_INDEX_URL is a normal (persistent) ENV — harmless at runtime, and it
+# means an ad-hoc `docker exec ... pip install` later still goes through the
+# mirror instead of trying (and failing) to reach the public internet.
 ENV PIP_INDEX_URL=https://artifactory.mycloud.intranatixis.com/artifactory/api/pypi/python/simple
 
+COPY CA.pem /srv/CA.pem
 COPY requirements.txt .
-RUN --mount=type=bind,source=/srv/CA.pem,target=/srv/CA.pem \
-    PIP_CERT=/srv/CA.pem pip install --no-cache-dir -r requirements.txt
+RUN PIP_CERT=/srv/CA.pem pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 

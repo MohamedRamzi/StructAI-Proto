@@ -7,3 +7,4 @@ data/chroma/
 .env
 *.log
 .pytest_cache/
+CA.pem
