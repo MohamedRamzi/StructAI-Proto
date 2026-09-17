@@ -1,0 +1,17 @@
+# Build context for app/config/Dockerfile is inference-service/ (see
+# app/config/docker-compose.app.yml) — exclude everything the running app
+# image doesn't need: dev tooling, secrets, local data, and the sidecar's own
+# Docker config (config/, app/config/ itself — not needed inside the image
+# they describe how to build).
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.git/
+.env
+data/
+tests/
+config/
+app/config/
+samples/
+REFACTO-PLAN.md

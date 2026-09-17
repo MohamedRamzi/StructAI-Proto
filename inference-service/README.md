@@ -115,21 +115,35 @@ Le sidecar vLLM est **toujours mocké** dans les tests (`app.services.inference_
 
 Deux stacks Docker Compose **séparées**, démarrées/arrêtées indépendamment — un redéploiement de
 l'app ne doit jamais toucher les sidecars GPU (chargement de modèle long), et un crash/restart de
-sidecar ne doit jamais couper l'API :
+sidecar ne doit jamais couper l'API. Chacune vit dans son propre `config/`, à l'écart du code :
+
+```
+inference-service/            (déployé sur la machine Linux dans /srv/StructAI)
+├── config/                     ← sidecars vLLM
+│   ├── docker-compose.yml
+│   ├── qwen3.8-27b.yaml
+│   └── qwen3-embedding.yaml
+└── app/                         ← code du parseur (FastAPI)
+    └── config/                    ← Docker de l'app, à l'écart du code Python
+        ├── docker-compose.app.yml
+        └── Dockerfile
+```
 
 ```bash
+cd inference-service   # toutes les commandes ci-dessous sont relatives à ce répertoire
+
 # Sidecars vLLM (chat + embedding) — image officielle vllm/vllm-openai, GPU passthrough.
-docker compose -f docker-compose.yml up -d
+docker compose -f config/docker-compose.yml up -d
 
 # L'application FastAPI — sans GPU, jointe en network_mode: host pour atteindre les
 # sidecars via localhost:8001 / localhost:8002 (les ports publiés par la stack ci-dessus),
 # exactement comme en dev.
 export JWT_SECRET=$(openssl rand -hex 32)
 export ADMIN_PASSWORD=... # mot de passe admin initial
-docker compose -f docker-compose.app.yml up -d --build
+docker compose -f app/config/docker-compose.app.yml up -d --build
 ```
 
-Arrêt indépendant : `docker compose -f docker-compose.yml down` ou `docker compose -f docker-compose.app.yml down`. Ajuster les noms de modèles et `--gpu-memory-utilization` dans les fichiers `--config` des sidecars (`qwen3.8-27b.yaml`, `qwen3-embedding.yaml`) une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper GH200, 96 Go de VRAM) — et `LLM_MODEL`/`EMBEDDING_MODEL` dans `docker-compose.app.yml` en conséquence (ce sont les `served_model_name` de ces fichiers, pas le chemin du modèle).
+Arrêt indépendant : `docker compose -f config/docker-compose.yml down` ou `docker compose -f app/config/docker-compose.app.yml down`. Ajuster les noms de modèles et `--gpu-memory-utilization` dans les fichiers `--config` des sidecars (`config/qwen3.8-27b.yaml`, `config/qwen3-embedding.yaml`) une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper GH200, 96 Go de VRAM) — et `LLM_MODEL`/`EMBEDDING_MODEL` dans `app/config/docker-compose.app.yml` en conséquence (ce sont les `served_model_name` de ces fichiers, pas le chemin du modèle).
 
 ## Authentification
 

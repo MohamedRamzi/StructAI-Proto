@@ -1,0 +1,67 @@
+# Production deployment — the FastAPI app ONLY (this service never imports
+# vllm; see app/services/inference_client.py). The vLLM sidecars (vllm-chat,
+# vllm-embedding) live in their own stack, ../../config/docker-compose.yml, so
+# the two can be started/stopped/redeployed independently — see that file's
+# header for the reasoning and the exact commands. This file's own directory
+# (inference-service/app/config/) mirrors that split: the app's code lives in
+# app/, its Docker config lives in app/config/, right next to it. On the
+# target Linux host, inference-service/ is deployed to /srv/StructAI (so this
+# file's own directory is /srv/StructAI/app/config/).
+#
+# --- Build context ---
+# The Dockerfile lives right next to this file (./Dockerfile), but it COPYs
+# the whole inference-service/ tree (requirements.txt, run.py, app/, public/,
+# prompts/) — not just app/config/ — so the build context is set two levels
+# up (`../..`, i.e. inference-service/), with `dockerfile:` pointing back down
+# to this file's own directory.
+#
+# --- How the app reaches the sidecars ---
+# This stack does NOT share a Docker network with the sidecars' stack (two
+# `docker compose` projects never do, unless explicitly wired together).
+# Instead, `app` runs with `network_mode: host` and reaches the sidecars the
+# same way a local dev setup does: via localhost + the ports the sidecar
+# stack publishes on the HOST (8001 for vllm-chat, 8002 for vllm-embedding).
+# This needs no shared external network, no `depends_on` across files
+# (Compose can't express that anyway) — just the sidecar stack's ports
+# already being published on this host, in either order relative to the app
+# starting. `network_mode: host` is Linux-only, matching this deployment's target.
+#
+# LLM_MODEL / EMBEDDING_MODEL below MUST match `served_model_name` in the
+# vLLM --config files the sidecars run with (../../config/qwen3.8-27b.yaml,
+# ../../config/qwen3-embedding.yaml) — vLLM matches a request's "model" field
+# against that name, not the on-disk model path.
+#
+# Start/stop independently of the sidecars (run from inference-service/):
+#   docker compose -f app/config/docker-compose.app.yml up -d --build
+#   docker compose -f app/config/docker-compose.app.yml down
+
+# Explicit project name — see config/docker-compose.yml's own `name:` for why
+# (both files sit in a directory called `config`; without this they'd derive
+# the same default project name and collide).
+name: inference-service-app
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: app/config/Dockerfile
+    container_name: inference-service-app
+    network_mode: host
+    environment:
+      PORT: "4001"
+      JWT_SECRET: "${JWT_SECRET}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL:-admin@structai.local}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      # host networking => same localhost URLs as a bare-metal dev setup.
+      LLM_BASE_URL: "http://localhost:8001/v1"
+      LLM_MODEL: "qwen3.8-27b"           # served_model_name in qwen3.8-27b.yaml
+      EMBEDDING_BASE_URL: "http://localhost:8002/v1"
+      EMBEDDING_MODEL: "qwen3-embedding" # served_model_name in qwen3-embedding.yaml
+      DB_PATH: "/data/inference-service.db"
+      CHROMA_PATH: "/data/chroma"
+    volumes:
+      - app-data:/data
+    restart: unless-stopped
+
+volumes:
+  app-data:

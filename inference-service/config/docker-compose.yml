@@ -4,13 +4,15 @@
 #   - vllm-chat      : vLLM serving the chat/analysis model, OpenAI-compatible API.
 #   - vllm-embedding : vLLM serving the embedding model, OpenAI-compatible API.
 #
-# The FastAPI app itself lives in its own stack (docker-compose.app.yml), on
-# purpose — the two are started/stopped independently: reloading or
-# redeploying the app must never touch these GPU processes (which take a
-# while to load a model), and a sidecar restart/crash must never take the API
-# down with it. The app reaches these two services over the HOST's published
-# ports (8001, 8002 below), not a shared Docker network — see
-# docker-compose.app.yml for how.
+# Lives in inference-service/config/ — deliberately OUTSIDE inference-service/app/
+# (the FastAPI app's own code + its own Docker config, app/config/docker-compose.app.yml)
+# so the two stacks are started/stopped independently: reloading or redeploying
+# the app must never touch these GPU processes (which take a while to load a
+# model), and a sidecar restart/crash must never take the API down with it.
+# The app reaches these two services over the HOST's published ports (8001,
+# 8002 below), not a shared Docker network — see app/config/docker-compose.app.yml
+# for how. On the target Linux host, this whole inference-service/ tree is
+# deployed to /srv/StructAI (so this file's own directory is /srv/StructAI/config/).
 #
 # Both vLLM services use the OFFICIAL `vllm/vllm-openai` image — no hand-rolled
 # CUDA Dockerfile to build or maintain. The app never imports vllm; see
@@ -18,15 +20,23 @@
 #
 # Adjust model names, --gpu-memory-utilization, and --max-model-len once the
 # real model sizes are settled against the 96GB of VRAM available (see
-# qwen3.8-27b.yaml / qwen3-embedding.yaml — the --config files referenced
-# below). If a single GPU can't comfortably host both models at once, split
-# them across GPUs with CUDA_VISIBLE_DEVICES / `deploy.resources.reservations.devices.device_ids`.
+# qwen3.8-27b.yaml / qwen3-embedding.yaml, alongside this file — the --config
+# files referenced below). If a single GPU can't comfortably host both models
+# at once, split them across GPUs with CUDA_VISIBLE_DEVICES /
+# `deploy.resources.reservations.devices.device_ids`.
 #
-# Start/stop independently:
-#   docker compose -f docker-compose.yml up -d       # sidecars
-#   docker compose -f docker-compose.yml down
-#   docker compose -f docker-compose.app.yml up -d    # app
-#   docker compose -f docker-compose.app.yml down
+# Start/stop independently (run from inference-service/, either order):
+#   docker compose -f config/docker-compose.yml up -d              # sidecars
+#   docker compose -f config/docker-compose.yml down
+#   docker compose -f app/config/docker-compose.app.yml up -d --build   # app
+#   docker compose -f app/config/docker-compose.app.yml down
+
+# Explicit project name: both this file and app/config/docker-compose.app.yml
+# now sit in a directory literally called `config`, which Compose would
+# otherwise use to derive the (identical, colliding) default project name for
+# both stacks — collapsing their networks/volumes into one namespace even
+# though they're meant to be fully independent.
+name: inference-service-sidecars
 
 services:
   vllm-chat:
@@ -50,7 +60,7 @@ services:
       - /srv/CA.pem:/etc/ssl/certs/ca-certificates.crt
       - ~/.cache/huggingface:/root/.cache/huggingface
       - /srv/models:/models
-      - /srv/config/qwen3.8-27b.yaml:/configs/qwen3.8-27b.yaml:ro
+      - ./qwen3.8-27b.yaml:/configs/qwen3.8-27b.yaml:ro
     command: --config /configs/qwen3.8-27b.yaml
     restart: unless-stopped
 
@@ -72,7 +82,7 @@ services:
       - /srv/CA.pem:/etc/ssl/certs/ca-certificates.crt
       - ~/.cache/huggingface:/root/.cache/huggingface
       - /srv/models:/models
-      - /srv/config/qwen3-embedding.yaml:/configs/qwen3-embedding.yaml:ro
+      - ./qwen3-embedding.yaml:/configs/qwen3-embedding.yaml:ro
     command: --config /configs/qwen3-embedding.yaml
     restart: unless-stopped
     depends_on:
