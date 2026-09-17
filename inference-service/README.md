@@ -125,25 +125,38 @@ inference-service/            (déployé sur la machine Linux dans /srv/StructAI
 │   └── qwen3-embedding.yaml
 └── app/                         ← code du parseur (FastAPI)
     └── config/                    ← Docker de l'app, à l'écart du code Python
-        ├── docker-compose.app.yml
+        ├── docker-compose.yml
         └── Dockerfile
 ```
 
-```bash
-cd inference-service   # toutes les commandes ci-dessous sont relatives à ce répertoire
+Les deux fichiers s'appellent `docker-compose.yml` (pas de collision : répertoires différents) — Compose le trouve
+automatiquement sans `-f` tant que vous êtes dans le bon répertoire.
 
+```bash
 # Sidecars vLLM (chat + embedding) — image officielle vllm/vllm-openai, GPU passthrough.
-docker compose -f config/docker-compose.yml up -d
+cd inference-service/config
+docker compose up -d
 
 # L'application FastAPI — sans GPU, jointe en network_mode: host pour atteindre les
 # sidecars via localhost:8001 / localhost:8002 (les ports publiés par la stack ci-dessus),
 # exactement comme en dev.
+cd ../app/config
 export JWT_SECRET=$(openssl rand -hex 32)
 export ADMIN_PASSWORD=... # mot de passe admin initial
-docker compose -f app/config/docker-compose.app.yml up -d --build
+docker compose up -d --build
 ```
 
-Arrêt indépendant : `docker compose -f config/docker-compose.yml down` ou `docker compose -f app/config/docker-compose.app.yml down`. Ajuster les noms de modèles et `--gpu-memory-utilization` dans les fichiers `--config` des sidecars (`config/qwen3.8-27b.yaml`, `config/qwen3-embedding.yaml`) une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper GH200, 96 Go de VRAM) — et `LLM_MODEL`/`EMBEDDING_MODEL` dans `app/config/docker-compose.app.yml` en conséquence (ce sont les `served_model_name` de ces fichiers, pas le chemin du modèle).
+Le `.env` que Compose lit pour les `${...}` (`JWT_SECRET`, `ADMIN_PASSWORD`) doit être **dans le répertoire d'où
+vous lancez la commande** (`app/config/` ci-dessus) — pas de rapport avec le `context: ../..` du `build:`, qui ne
+sert qu'à ce que le `Dockerfile` puisse `COPY` les fichiers à la racine d'`inference-service/`. Pour réutiliser le
+`.env` de dev bare-metal (`inference-service/.env`) plutôt que d'en dupliquer un ici : `export` comme ci-dessus, ou
+`docker compose --env-file ../../.env up -d --build`.
+
+Arrêt indépendant : `docker compose down` dans chacun des deux répertoires. Ajuster les noms de modèles et
+`--gpu-memory-utilization` dans les fichiers `--config` des sidecars (`config/qwen3.8-27b.yaml`,
+`config/qwen3-embedding.yaml`) une fois les tailles définitives connues sur le GPU cible (ex: NVIDIA Grace Hopper
+GH200, 96 Go de VRAM) — et `LLM_MODEL`/`EMBEDDING_MODEL` dans `app/config/docker-compose.yml` en conséquence (ce
+sont les `served_model_name` de ces fichiers, pas le chemin du modèle).
 
 ## Authentification
 

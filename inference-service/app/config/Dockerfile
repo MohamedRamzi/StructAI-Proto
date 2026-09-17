@@ -1,4 +1,4 @@
-# The `app` service in ./docker-compose.app.yml (this file lives right next
+# The `app` service in ./docker-compose.yml (this file lives right next
 # to it, inference-service/app/config/) — this service NEVER imports vllm, so
 # this image stays small and GPU-free. Only httpx is used to reach the two
 # vLLM sidecars (vllm-chat, vllm-embedding), which run as their own,
@@ -6,7 +6,7 @@
 # built from the official vllm/vllm-openai image.
 #
 # Build context is inference-service/ (two levels up from this file — see
-# docker-compose.app.yml's `build:`), because COPY . . below needs
+# docker-compose.yml's `build:`), because COPY . . below needs
 # requirements.txt, run.py, app/, public/, prompts/ — all siblings of this
 # file's own app/config/ directory, not inside it.
 #

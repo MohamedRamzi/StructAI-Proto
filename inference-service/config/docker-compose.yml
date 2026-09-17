@@ -5,12 +5,12 @@
 #   - vllm-embedding : vLLM serving the embedding model, OpenAI-compatible API.
 #
 # Lives in inference-service/config/ — deliberately OUTSIDE inference-service/app/
-# (the FastAPI app's own code + its own Docker config, app/config/docker-compose.app.yml)
+# (the FastAPI app's own code + its own Docker config, app/config/docker-compose.yml)
 # so the two stacks are started/stopped independently: reloading or redeploying
 # the app must never touch these GPU processes (which take a while to load a
 # model), and a sidecar restart/crash must never take the API down with it.
 # The app reaches these two services over the HOST's published ports (8001,
-# 8002 below), not a shared Docker network — see app/config/docker-compose.app.yml
+# 8002 below), not a shared Docker network — see app/config/docker-compose.yml
 # for how. On the target Linux host, this whole inference-service/ tree is
 # deployed to /srv/StructAI (so this file's own directory is /srv/StructAI/config/).
 #
@@ -28,10 +28,10 @@
 # Start/stop independently (run from inference-service/, either order):
 #   docker compose -f config/docker-compose.yml up -d              # sidecars
 #   docker compose -f config/docker-compose.yml down
-#   docker compose -f app/config/docker-compose.app.yml up -d --build   # app
-#   docker compose -f app/config/docker-compose.app.yml down
+#   docker compose -f app/config/docker-compose.yml up -d --build   # app
+#   docker compose -f app/config/docker-compose.yml down
 
-# Explicit project name: both this file and app/config/docker-compose.app.yml
+# Explicit project name: both this file and app/config/docker-compose.yml
 # now sit in a directory literally called `config`, which Compose would
 # otherwise use to derive the (identical, colliding) default project name for
 # both stacks — collapsing their networks/volumes into one namespace even

@@ -31,9 +31,19 @@
 # ../../config/qwen3-embedding.yaml) — vLLM matches a request's "model" field
 # against that name, not the on-disk model path.
 #
-# Start/stop independently of the sidecars (run from inference-service/):
-#   docker compose -f app/config/docker-compose.app.yml up -d --build
-#   docker compose -f app/config/docker-compose.app.yml down
+# Named docker-compose.yml (not docker-compose.app.yml) — the sidecar
+# compose file lives in a DIFFERENT directory (../../config/), so there's no
+# name collision, and Compose auto-discovers a plain docker-compose.yml in
+# the current directory without needing a `-f` flag every time.
+#
+# Start/stop independently of the sidecars, run FROM THIS DIRECTORY
+# (app/config/ — Compose's own .env lookup for the ${...} substitutions
+# below is relative to wherever you invoke it from / the compose file's own
+# directory, NOT the `context: ../..` above, which only affects what the
+# Dockerfile's COPY can reach; put a .env here, or pass
+# `--env-file ../../.env` to reuse inference-service/.env instead):
+#   docker compose up -d --build
+#   docker compose down
 
 # Explicit project name — see config/docker-compose.yml's own `name:` for why
 # (both files sit in a directory called `config`; without this they'd derive
